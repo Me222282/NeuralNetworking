@@ -1,0 +1,4 @@
+[submodule "Zene"]
+	path = Zene
+	url = https://github.com/Me222282/ZeneLibrary.git
+	branch = graphics

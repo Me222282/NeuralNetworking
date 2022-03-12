@@ -7,13 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeuralNetworkingTest", "Tes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeuralNetworking", "NeuralNetworking\NeuralNetworking.csproj", "{F26AB903-1EDA-4552-AC78-A4113B5CF0E8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Structs", "ZeneLibrary\Structs\Structs.csproj", "{8EEB4E8C-6EC3-44B1-8B6C-CA154A147D9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Structs", "Zene\Structs\Structs.csproj", "{8EEB4E8C-6EC3-44B1-8B6C-CA154A147D9F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Graphics", "ZeneLibrary\Graphics\Graphics.csproj", "{5F17699C-8DC9-4360-B7AB-6B33F964332D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Graphics", "Zene\Graphics\Graphics.csproj", "{5F17699C-8DC9-4360-B7AB-6B33F964332D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckDLL", "CheckDLL\CheckDLL.csproj", "{86F50D88-6E12-443E-A433-265F72185040}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windowing", "ZeneLibrary\Windowing\Windowing.csproj", "{4A794562-2729-4786-B5EE-E9EBDAB8A481}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windowing", "Zene\Windowing\Windowing.csproj", "{4A794562-2729-4786-B5EE-E9EBDAB8A481}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
