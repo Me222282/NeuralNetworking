@@ -15,8 +15,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Zene\Graphics\Graphics.csproj" />
-    <ProjectReference Include="..\Zene\Windowing\Windowing.csproj" />
-    <ProjectReference Include="..\Zene\Structs\Structs.csproj" />
+    <ProjectReference Include="..\ZeneGraphics\Graphics\Graphics.csproj" />
+    <ProjectReference Include="..\ZeneGraphics\Windowing\Windowing.csproj" />
+    <ProjectReference Include="..\ZeneGraphics\Structs\Structs.csproj" />
   </ItemGroup>
 </Project>
