@@ -70,19 +70,22 @@ namespace GenFileLoader
 
         public struct FramePart
         {
-            public FramePart(byte r, byte g, byte b, int x, int y)
+            public FramePart(byte r, byte g, byte b, int x, int y, bool a)
             {
                 Colour = new Colour(r, g, b);
                 Position = new Vector2I(x, y);
+                Alive = a;
             }
-            public FramePart(Colour c, int x, int y)
+            public FramePart(Colour c, int x, int y, bool a)
             {
                 Colour = c;
                 Position = new Vector2I(x, y);
+                Alive = a;
             }
 
             public Colour Colour { get; }
             public Vector2I Position { get; }
+            public bool Alive { get; }
         }
 
         public static unsafe FramePart[,] ImportFrames_old(byte[] data, out int frameCount, out int lifeCount, out int worldSize)
@@ -114,13 +117,13 @@ namespace GenFileLoader
                     int y = BitConverter.ToInt32(data, readOffset);
                     readOffset += 4;
 
-                    frames[f, l] = new FramePart(r, g, b, x, y);
+                    frames[f, l] = new FramePart(r, g, b, x, y, true);
                 }
             }
 
             return frames;
         }
-        
+
         public static unsafe FramePart[,] ImportFrames(byte[] data, out int frameCount, out int lifeCount, out int worldSize)
         {
             if (!ValidateGenFile(data))
@@ -151,7 +154,7 @@ namespace GenFileLoader
             MemoryStream mem = new MemoryStream(s.ToArray());
 
             ZipArchive zip = new ZipArchive(mem, ZipArchiveMode.Read, true);
-            ZipArchiveEntry entry =  zip.GetEntry("data");
+            ZipArchiveEntry entry = zip.GetEntry("data");
             Stream stream = entry.Open();
 
             Span<Colour> colours = stackalloc Colour[lifeCount];
@@ -175,6 +178,7 @@ namespace GenFileLoader
                     stream.Read(currentData, 0, currentData.Length);
 
                     int x, y;
+                    bool alive = true;
 
                     switch (dataSize)
                     {
@@ -182,25 +186,31 @@ namespace GenFileLoader
                             // Int
                             x = BitConverter.ToInt32(currentData, 0);
                             y = BitConverter.ToInt32(currentData, 4);
+
+                            if (x == int.MaxValue && y == int.MaxValue) { alive = false; }
                             break;
 
                         case 2:
                             // Short
                             x = BitConverter.ToInt16(currentData, 0);
                             y = BitConverter.ToInt16(currentData, 2);
+
+                            if (x == short.MaxValue && y == short.MaxValue) { alive = false; }
                             break;
 
                         case 1:
                             // Byte
                             x = currentData[0];
                             y = currentData[1];
+
+                            if (x == byte.MaxValue && y == byte.MaxValue) { alive = false; }
                             break;
 
                         default:
                             throw new Exception();
                     }
 
-                    frames[f, l] = new FramePart(colours[l], x, y);
+                    frames[f, l] = new FramePart(colours[l], x, y, alive);
                 }
             }
 
@@ -209,7 +219,7 @@ namespace GenFileLoader
 
             return frames;
         }
-        
+
         public static bool ValidateGenFile(byte[] data)
         {
             return data[0] == 'Z' &&
@@ -262,19 +272,27 @@ namespace GenFileLoader
             {
                 for (int l = 0; l < lifeCount; l++)
                 {
+                    int x = frameData[f, l].Position.X;
+                    int y = frameData[f, l].Position.X;
+                    bool a = frameData[f, l].Alive;
+
                     switch (type)
                     {
                         case DataType.Int:
-                            WriteBytes(data, ref readOffset, frameData[f, l].Position.X, frameData[f, l].Position.Y);
+                            WriteBytes(data, ref readOffset,
+                                a ? x : int.MaxValue,
+                                a ? y : int.MaxValue);
                             break;
 
                         case DataType.Short:
-                            WriteBytes(data, ref readOffset, (short)frameData[f, l].Position.X, (short)frameData[f, l].Position.Y);
+                            WriteBytes(data, ref readOffset,
+                                a ? (short)x : short.MaxValue,
+                                a ? (short)y : short.MaxValue);
                             break;
 
                         case DataType.Byte:
-                            data[readOffset] = (byte)frameData[f, l].Position.X;
-                            data[readOffset + 1] = (byte)frameData[f, l].Position.Y;
+                            data[readOffset] = a ? (byte)x : byte.MaxValue;
+                            data[readOffset + 1] = a ? (byte)y : byte.MaxValue;
                             readOffset += 2;
                             break;
 

@@ -29,6 +29,7 @@ namespace Zene.NeuralNetworking
         public Gene[] Genes { get; }
         public NeuralNetwork NeuralNetwork { get; }
         public int Age { get; set; } = 0;
+        public bool Alive { get; set; } = true;
 
         public Colour Colour { get; }
         public LifeProperties Properties;
