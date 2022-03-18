@@ -264,7 +264,7 @@ namespace Zene.NeuralNetworking
             return LifeformGrid[x, y];
         }
 
-        private static Vector2I[] NoiseMap(int w, int h, int seed)
+        internal static Vector2I[] NoiseMap(int w, int h, int seed)
         {
             static int Compare(NoiseValue x, NoiseValue y)
             {
@@ -299,7 +299,7 @@ namespace Zene.NeuralNetworking
 
             return output;
         }
-        private struct NoiseValue
+        internal struct NoiseValue
         {
             public Vector2I Location { get; set; }
             public double Value { get; set; }

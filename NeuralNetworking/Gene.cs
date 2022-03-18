@@ -36,23 +36,23 @@
                 //Console.WriteLine("Mutation");
 
                 int mutant = Lifeform.Random.Generate(0, 2);
-                ushort change = (ushort)Lifeform.Random.Generate(0, 1);
-
-                // Make sure that the change is either -1 or +1
-                if (change == 0) { change--; }
 
                 switch (mutant)
                 {
                     case 0:
-                        source += change;
+                        source += (ushort)Lifeform.Random.Generate(
+                            -NeuralNetwork.PosibleGetCells.Count + 1,
+                            NeuralNetwork.PosibleGetCells.Count - 1);
                         break;
 
                     case 1:
-                        destination += change;
+                        destination += (ushort)Lifeform.Random.Generate(
+                            -NeuralNetwork.PosibleSetCells.Count + 1,
+                            NeuralNetwork.PosibleSetCells.Count - 1);
                         break;
 
                     case 2:
-                        strength += change;
+                        strength += (uint)Lifeform.Random.Generate(-StrengthChange, StrengthChange);
                         break;
                 }
             }
@@ -64,6 +64,7 @@
         }
 
         public static double MutationChance { get; set; }
+        public static uint StrengthChange { get; set; } = 1000;
 
         public static Gene Generate(PRNG random)
         {

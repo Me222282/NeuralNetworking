@@ -102,6 +102,51 @@ namespace NeuralNetworkingTest
             //Zene.Graphics.GL4.GL.Enable(Zene.Graphics.GL4.GLEnum.Blend);
             //Zene.Graphics.GL4.GL.BlendFunc(Zene.Graphics.GL4.GLEnum.SrcAlpha, Zene.Graphics.GL4.GLEnum.OneMinusSrcAlpha);
         }
+        public WindowL(int width, int height, string title, int worldSize, int genLength, int lifeCount, Gene[][] genes)
+            : base(width, height, title, 4.3, new WindowInitProperties()
+            {
+                // Anti aliasing
+                Samples = 4
+            })
+        {
+            _lifeforms = lifeCount;
+            _worldSize = worldSize;
+            _genLength = genLength;
+
+            _shader = new BasicShader();
+
+            _lifeGraphics = new DrawObject<Vector2, byte>(new Vector2[]
+                {
+                    new Vector2(-0.5, 0.25),
+                    new Vector2(-0.25, 0.5),
+                    new Vector2(0.25, 0.5),
+                    new Vector2(0.5, 0.25),
+                    new Vector2(0.5, -0.25),
+                    new Vector2(0.25, -0.5),
+                    new Vector2(-0.25, -0.5),
+                    new Vector2(-0.5, -0.25)
+                },
+                new byte[]
+                {
+                    0, 1, 2,
+                    0, 2, 3,
+                    0, 3, 4,
+                    0, 4, 7,
+                    4, 5, 6,
+                    4, 6, 7
+                }, 1, 0, AttributeSize.D2, BufferUsage.DrawFrequent);
+
+            _world = new World(worldSize, worldSize, Lifeform.FromGenes(Lifeform.Random, genes, lifeCount, worldSize, worldSize));
+
+            // Set Framebuffer's clear colour to light-grey
+            BaseFramebuffer.ClearColour = new Colour(225, 225, 225);
+
+            OnSizePixelChange(new SizeChangeEventArgs(width, height));
+
+            // Setup propper alpha channel support
+            //Zene.Graphics.GL4.GL.Enable(Zene.Graphics.GL4.GLEnum.Blend);
+            //Zene.Graphics.GL4.GL.BlendFunc(Zene.Graphics.GL4.GLEnum.SrcAlpha, Zene.Graphics.GL4.GLEnum.OneMinusSrcAlpha);
+        }
 
         private readonly BasicShader _shader;
         private readonly DrawObject<Vector2, byte> _lifeGraphics;

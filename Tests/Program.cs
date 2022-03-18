@@ -17,7 +17,7 @@ namespace NeuralNetworkingTest
         {
             Core.Init();
 
-            SimulateCustom(1, 128, 1000, true, 0);
+            SimulateCustom(1, 128, 300, true, 0);
 
             //SimulateLive(1, 1000, 80, 128, 300, true, 0);
 
@@ -136,21 +136,24 @@ namespace NeuralNetworkingTest
         {
             SetupEnvironment(seed);
 
-            Gene[] genes = new Gene[]
+            Gene[] genes1 = new Gene[]
             {
-                new Gene(11, 4, 1.0),
-                new Gene(12, 5, 1.0),
+                new Gene(4, 4, -5.0),
+                new Gene(5, 5, -5.0)
             };
 
-            Lifeform[] lifeforms = new Lifeform[]
+            Gene[] genes2 = new Gene[]
             {
-                new Lifeform(genes, new Vector2I(50, 50), null),
-                new Lifeform(genes, new Vector2I(100, 120), null),
-                new Lifeform(genes, new Vector2I(70, 80), null)
+                new Gene(10, 4, 1.0),
+                new Gene(10, 5, 1.0)
             };
 
             WindowL window = new WindowL(128 * 6, 128 * 6, "Work",
-                worldSize, genLength, lifeforms);
+                worldSize, genLength, 1000, new Gene[][]
+                {
+                    genes1,
+                    genes2
+                });
 
             window.Run(vsync, delay);
         }

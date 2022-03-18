@@ -167,7 +167,7 @@ namespace Zene.NeuralNetworking
         /// <returns></returns>
         public double Generate()
         {
-            return this.Genrand();
+            return Genrand();
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace Zene.NeuralNetworking
             {
                 throw new ArgumentException($"{nameof(lowerBound)} must be less than {nameof(higherBound)}.");
             }
-            return (int)Math.Floor(Generate((double)lowerBound, (double)higherBound));
+            return (int)Math.Floor(Generate((double)lowerBound, (double)(higherBound + 1)));
         }
         /// <summary>
         /// Generate an int between two bounds
@@ -196,7 +196,7 @@ namespace Zene.NeuralNetworking
             {
                 throw new ArgumentException($"{nameof(lowerBound)} must be less than {nameof(higherBound)}.");
             }
-            return (long)Math.Floor(Generate((double)lowerBound, (double)higherBound));
+            return (long)Math.Floor(Generate((double)lowerBound, (double)(higherBound + 1)));
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace Zene.NeuralNetworking
             {
                 return double.NaN;
             }
-            return (Generate() * (higherBound - lowerBound + 1)) + lowerBound;
+            return (Generate() * (higherBound - lowerBound)) + lowerBound;
         }
         #endregion
     }

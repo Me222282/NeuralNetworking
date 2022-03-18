@@ -146,6 +146,33 @@ namespace Zene.NeuralNetworking
                 world);
         }
 
+        public static Lifeform[] FromGenes(PRNG random, Gene[] genes, int lifeCount, int width, int height)
+        {
+            Vector2I[] posHierarchy = World.NoiseMap(width, height, random.Generate(0, int.MaxValue));
+
+            Lifeform[] lifeforms = new Lifeform[lifeCount];
+
+            for (int i = 0; i < lifeCount; i++)
+            {
+                lifeforms[i] = new Lifeform(genes, posHierarchy[i], null);
+            }
+
+            return lifeforms;
+        }
+        public static Lifeform[] FromGenes(PRNG random, Gene[][] genes, int lifeCount, int width, int height)
+        {
+            Vector2I[] posHierarchy = World.NoiseMap(width, height, random.Generate(0, int.MaxValue));
+
+            Lifeform[] lifeforms = new Lifeform[lifeCount];
+
+            for (int i = 0; i < lifeCount; i++)
+            {
+                lifeforms[i] = new Lifeform(genes[random.Generate(0, genes.Length - 1)], posHierarchy[i], null);
+            }
+
+            return lifeforms;
+        }
+
         public static Lifeform Empty { get; } = Dud(Vector2I.Zero, null);
         /// <summary>
         /// Creates a lifeless lifeform.
