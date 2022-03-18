@@ -138,8 +138,6 @@ namespace Zene.NeuralNetworking
 
             value *= Scale;
 
-            Console.WriteLine(Scale);
-
             Destination.SetValue(lifeform, value);
         }
 
