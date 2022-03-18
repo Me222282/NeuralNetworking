@@ -23,13 +23,13 @@ namespace Zene.NeuralNetworking
             LifeformGrid = new Lifeform[width, height];
             Vector2I[] posHierarchy = NoiseMap(width, height, seed);
 
-            _random = new Random(seed);
+            _random = new PRNG((ulong)seed);
 
             for (int i = 0; i < lifeCount; i++)
             {
                 Vector2I pos = posHierarchy[i];
 
-                Lifeform life = Lifeform.Generate(_random.Next(), geneCount, pos, this);
+                Lifeform life = Lifeform.Generate(_random, geneCount, pos, this);
 
                 LifeformGrid[pos.X, pos.Y] = life;
                 Lifeforms[i] = life;
@@ -47,7 +47,7 @@ namespace Zene.NeuralNetworking
             Lifeforms = new Lifeform[lifeCount];
 
             LifeformGrid = new Lifeform[width, height];
-            Vector2I[] posHierarchy = NoiseMap(width, height, Lifeform.Random.Next());
+            Vector2I[] posHierarchy = NoiseMap(width, height, Lifeform.Random.Generate(0, int.MaxValue));
 
             _random = Lifeform.Random;
 
@@ -74,17 +74,18 @@ namespace Zene.NeuralNetworking
             Lifeforms = lifeforms;
             LifeformGrid = new Lifeform[width, height];
 
-            _random = new Random(seed);
+            _random = new PRNG((ulong)seed);
 
             for (int i = 0; i < lifeforms.Length; i++)
             {
                 Vector2I pos = lifeforms[i].Location;
 
-                if (LifeformGrid[pos.X, pos.Y].Alive)
+                if (LifeformGrid[pos.X, pos.Y] is not null)
                 {
                     throw new Exception("Cannot place 2 different lifeforms in the same spot.");
                 }
 
+                lifeforms[i].CurrentWorld = this;
                 LifeformGrid[pos.X, pos.Y] = lifeforms[i];
             }
         }
@@ -106,16 +107,17 @@ namespace Zene.NeuralNetworking
             {
                 Vector2I pos = lifeforms[i].Location;
 
-                if (LifeformGrid[pos.X, pos.Y].Alive)
+                if (LifeformGrid[pos.X, pos.Y] is not null)
                 {
                     throw new Exception("Cannot place 2 different lifeforms in the same spot.");
                 }
 
+                lifeforms[i].CurrentWorld = this;
                 LifeformGrid[pos.X, pos.Y] = lifeforms[i];
             }
         }
 
-        private World(int width, int height, int generation, Random r)
+        private World(int width, int height, int generation, PRNG r)
         {
             Width = width;
             Height = height;
@@ -151,7 +153,7 @@ namespace Zene.NeuralNetworking
 
         private readonly Rectangle _rect;
 
-        private readonly Random _random;
+        private readonly PRNG _random;
 
         public void Update()
         {
@@ -227,7 +229,7 @@ namespace Zene.NeuralNetworking
                 return world;
             }
 
-            Vector2I[] posHierarchy = NoiseMap(width, height, _random.Next());
+            Vector2I[] posHierarchy = NoiseMap(width, height, _random.Generate(0, int.MaxValue));
             int childCount = (int)Math.Round((double)lifeCount / survivors.Count);
             Console.WriteLine($"Generation {Generation} - {(((double)survivors.Count / Lifeforms.Length) * 100):F2}% survived - {childCount * survivors.Count} new lifeforms");
             world.Lifeforms = new Lifeform[childCount * survivors.Count];

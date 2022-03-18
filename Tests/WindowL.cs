@@ -15,10 +15,10 @@ namespace NeuralNetworkingTest
 
         public WindowL(int width, int height, string title, int lifeforms, int brainSize, int worldSize, int genLength)
             : base(width, height, title, 4.3, new WindowInitProperties()
-            {
-                // Anti aliasing
-                Samples = 4
-            })
+                {
+                    // Anti aliasing
+                    Samples = 4
+                })
         {
             _lifeforms = lifeforms;
             _worldSize = worldSize;
@@ -47,6 +47,51 @@ namespace NeuralNetworkingTest
                 }, 1, 0, AttributeSize.D2, BufferUsage.DrawFrequent);
 
             _world = new World(_lifeforms, brainSize, _worldSize, _worldSize);
+
+            // Set Framebuffer's clear colour to light-grey
+            BaseFramebuffer.ClearColour = new Colour(225, 225, 225);
+
+            OnSizePixelChange(new SizeChangeEventArgs(width, height));
+
+            // Setup propper alpha channel support
+            //Zene.Graphics.GL4.GL.Enable(Zene.Graphics.GL4.GLEnum.Blend);
+            //Zene.Graphics.GL4.GL.BlendFunc(Zene.Graphics.GL4.GLEnum.SrcAlpha, Zene.Graphics.GL4.GLEnum.OneMinusSrcAlpha);
+        }
+        public WindowL(int width, int height, string title, int worldSize, int genLength, Lifeform[] lifeforms)
+            : base(width, height, title, 4.3, new WindowInitProperties()
+            {
+                // Anti aliasing
+                Samples = 4
+            })
+        {
+            _lifeforms = lifeforms.Length;
+            _worldSize = worldSize;
+            _genLength = genLength;
+
+            _shader = new BasicShader();
+
+            _lifeGraphics = new DrawObject<Vector2, byte>(new Vector2[]
+                {
+                    new Vector2(-0.5, 0.25),
+                    new Vector2(-0.25, 0.5),
+                    new Vector2(0.25, 0.5),
+                    new Vector2(0.5, 0.25),
+                    new Vector2(0.5, -0.25),
+                    new Vector2(0.25, -0.5),
+                    new Vector2(-0.25, -0.5),
+                    new Vector2(-0.5, -0.25)
+                },
+                new byte[]
+                {
+                    0, 1, 2,
+                    0, 2, 3,
+                    0, 3, 4,
+                    0, 4, 7,
+                    4, 5, 6,
+                    4, 6, 7
+                }, 1, 0, AttributeSize.D2, BufferUsage.DrawFrequent);
+
+            _world = new World(worldSize, worldSize, lifeforms);
 
             // Set Framebuffer's clear colour to light-grey
             BaseFramebuffer.ClearColour = new Colour(225, 225, 225);
@@ -145,7 +190,7 @@ namespace NeuralNetworkingTest
             base.OnSizePixelChange(e);
 
             // Set drawing view
-            Framebuffer.ViewSize = new Vector2I((int)e.Width, (int)e.Height);
+            Framebuffer.ViewSize = new Vector2I(e.Width, e.Height);
 
             int w;
             int h;
@@ -153,12 +198,12 @@ namespace NeuralNetworkingTest
             if (e.Height > e.Width)
             {
                 w = _worldSize;
-                h = (int)((e.Height / e.Width) * _worldSize);
+                h = (int)((e.Height / (double)e.Width) * _worldSize);
             }
             else // Width is bigger
             {
                 h = _worldSize;
-                w = (int)((e.Width / e.Height) * _worldSize);
+                w = (int)((e.Width / (double)e.Height) * _worldSize);
             }
 
             _shader.Matrix3 = Matrix4.CreateOrthographic(w, h, -10, 10);

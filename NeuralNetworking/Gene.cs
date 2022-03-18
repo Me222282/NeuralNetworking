@@ -1,32 +1,42 @@
-﻿using System;
-
-namespace Zene.NeuralNetworking
+﻿namespace Zene.NeuralNetworking
 {
     public struct Gene
     {
-        private Gene(short src, short des, int str)
+        public Gene(ushort src, ushort des, uint str)
         {
             Source = src;
             Destination = des;
             Strength = str;
         }
+        /// <summary>
+        /// Asigns <see cref="Strength"/> to <paramref name="str"/> passed through <see cref="Neuron.CreateStrength(double)"/>.
+        /// </summary>
+        /// <param name="src"></param>
+        /// <param name="des"></param>
+        /// <param name="str"></param>
+        public Gene(ushort src, ushort des, double str)
+        {
+            Source = src;
+            Destination = des;
+            Strength = Neuron.CreateStrength(str);
+        }
 
-        public short Source { get; }
-        public short Destination { get; }
-        public int Strength { get; }
+        public ushort Source { get; }
+        public ushort Destination { get; }
+        public uint Strength { get; }
 
         public Gene CreateChild()
         {
-            short source = Source;
-            short destination = Destination;
-            int strength = Strength;
+            ushort source = Source;
+            ushort destination = Destination;
+            uint strength = Strength;
 
             if (Lifeform.OneInChance(MutationChance))
             {
                 //Console.WriteLine("Mutation");
 
-                int mutant = Lifeform.Random.Next(0, 3);
-                short change = (short)Lifeform.Random.Next(0, 2);
+                int mutant = Lifeform.Random.Generate(0, 2);
+                ushort change = (ushort)Lifeform.Random.Generate(0, 1);
 
                 // Make sure that the change is either -1 or +1
                 if (change == 0) { change--; }
@@ -35,29 +45,14 @@ namespace Zene.NeuralNetworking
                 {
                     case 0:
                         source += change;
-
-                        if (source < 0)
-                        {
-                            source = 0;
-                        }
                         break;
 
                     case 1:
                         destination += change;
-
-                        if (destination < 0)
-                        {
-                            destination = 0;
-                        }
                         break;
 
                     case 2:
                         strength += change;
-
-                        if (strength < 0)
-                        {
-                            strength = 0;
-                        }
                         break;
                 }
             }
@@ -70,27 +65,25 @@ namespace Zene.NeuralNetworking
 
         public static double MutationChance { get; set; }
 
-        public static Gene Generate(int seed)
+        public static Gene Generate(PRNG random)
         {
-            Random r = new Random(seed);
-
             return new Gene(
-                (short)r.Next(short.MaxValue),
-                (short)r.Next(short.MaxValue),
-                r.Next());
+                (ushort)random.Generate(0, ushort.MaxValue),
+                (ushort)random.Generate(0, ushort.MaxValue),
+                (uint)random.Generate(0, uint.MaxValue));
         }
 
         public static Gene Generate()
         {
-            short a;
-            short b;
-            int c;
+            ushort a;
+            ushort b;
+            uint c;
 
             lock (Lifeform.RandSync)
             {
-                a = (short)Lifeform.Random.Next(short.MaxValue);
-                b = (short)Lifeform.Random.Next(short.MaxValue);
-                c = Lifeform.Random.Next();
+                a = (ushort)Lifeform.Random.Generate(0, ushort.MaxValue);
+                b = (ushort)Lifeform.Random.Generate(0, ushort.MaxValue);
+                c = (uint)Lifeform.Random.Generate(0, uint.MaxValue);
             }
 
             return new Gene(a, b, c);

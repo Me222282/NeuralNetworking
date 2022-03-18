@@ -1,6 +1,5 @@
 ﻿using System;
 using Zene.NeuralNetworking;
-using Zene.Structs;
 
 namespace NeuralNetworkingTest
 {
@@ -9,7 +8,7 @@ namespace NeuralNetworkingTest
         public int GetOrder => 0;
         public int SetOrder => throw new NotSupportedException();
 
-        public double GetValue(Lifeform lifeform) => Lifeform.Random.NextDouble();
+        public double GetValue(Lifeform lifeform) => Lifeform.Random.Generate();
 
         public void SetValue(Lifeform lifeform, double value)
         {

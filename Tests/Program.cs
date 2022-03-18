@@ -17,11 +17,13 @@ namespace NeuralNetworkingTest
         {
             Core.Init();
 
+            SimulateCustom(1, 128, 1000, true, 0);
+
             //SimulateLive(1, 1000, 80, 128, 300, true, 0);
 
             //SimulateLive(1, 1000, 4, 128, 300, true, 0);
 
-            Simulate(300, new int[] { 100, 200, 300 }, 1, 1000, 4, 128, 300);
+            //Simulate(300, new int[] { 100, 200, 300 }, 1, 1000, 4, 128, 300);
             //RunGeneration(new string[] { "output100.gen", "output200.gen", "output300.gen" });
             //RunGeneration(args);
             /*
@@ -128,6 +130,29 @@ namespace NeuralNetworkingTest
             WindowW window = new WindowW(128 * 6, 128 * 6, text.ToString(), data);
 
             window.Run();
+        }
+
+        private static void SimulateCustom(int seed, int worldSize, int genLength, bool vsync, int delay)
+        {
+            SetupEnvironment(seed);
+
+            Gene[] genes = new Gene[]
+            {
+                new Gene(11, 4, 1.0),
+                new Gene(12, 5, 1.0),
+            };
+
+            Lifeform[] lifeforms = new Lifeform[]
+            {
+                new Lifeform(genes, new Vector2I(50, 50), null),
+                new Lifeform(genes, new Vector2I(100, 120), null),
+                new Lifeform(genes, new Vector2I(70, 80), null)
+            };
+
+            WindowL window = new WindowL(128 * 6, 128 * 6, "Work",
+                worldSize, genLength, lifeforms);
+
+            window.Run(vsync, delay);
         }
 
         private static void Convert(string[] paths, DataType type)
@@ -473,13 +498,18 @@ namespace NeuralNetworkingTest
             NeuralNetwork.PosibleGetCells.Add(new PLCell());
             NeuralNetwork.PosibleGetCells.Add(new PRCell());
 
+            // New
+            NeuralNetwork.PosibleGetCells.Add(new RandCell());
+            NeuralNetwork.PosibleGetCells.Add(new SinCell());
+            NeuralNetwork.PosibleGetCells.Add(new CosCell());
+
             XMCell.Add();
             YMCell.Add();
 
             LifeProperties.NeuronValueNumber = NeuralNetwork.PosibleSetCells.Count;
 
             Gene.MutationChance = _mutation;
-            Lifeform.Random = new Random(seed);
+            Lifeform.Random = new PRNG((ulong)seed);
         }
 
 

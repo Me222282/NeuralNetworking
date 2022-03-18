@@ -16,7 +16,7 @@ namespace Zene.NeuralNetworking
             }
             else
             {
-                Colour = GenColour(genes);
+                Colour = GeneColour(genes);
             }
             _location = pos;
             PreLocation = pos;
@@ -33,7 +33,7 @@ namespace Zene.NeuralNetworking
 
         public Colour Colour { get; }
         public LifeProperties Properties;
-        public World CurrentWorld { get; }
+        public World CurrentWorld { get; internal set; }
 
         private Vector2I _location;
         public Vector2I Location
@@ -113,18 +113,16 @@ namespace Zene.NeuralNetworking
             return HashCode.Combine(Genes, NeuralNetwork, Age, Properties);
         }
 
-        public static Random Random { get; set; }
+        public static PRNG Random { get; set; }
         public static object RandSync { get; } = new object();
 
-        public static Lifeform Generate(int seed, int nGene, Vector2I location, World world)
+        public static Lifeform Generate(PRNG random, int nGene, Vector2I location, World world)
         {
             Gene[] genes = new Gene[nGene];
 
-            Random r = new Random(seed);
-
             for (int i = 0; i < nGene; i++)
             {
-                genes[i] = Gene.Generate(r.Next());
+                genes[i] = Gene.Generate(random);
             }
 
             return new Lifeform(
@@ -144,7 +142,6 @@ namespace Zene.NeuralNetworking
 
             return new Lifeform(
                 genes,
-                NeuralNetwork.Generate(genes),
                 location,
                 world);
         }
@@ -155,7 +152,7 @@ namespace Zene.NeuralNetworking
         /// </summary>
         public static Lifeform Dud(Vector2I location, World world)
         {
-            return new Lifeform(Array.Empty<Gene>(), NeuralNetwork.Empty(), location, world);
+            return new Lifeform(Array.Empty<Gene>(), location, world);
         }
 
         public static bool operator ==(Lifeform a, Lifeform b)
@@ -169,6 +166,9 @@ namespace Zene.NeuralNetworking
 
         public static bool OneInChance(double chance)
         {
+            // Guaranteed
+            if (chance >= 1) { return true; }
+
             int max = (int)Math.Round(1 / chance);
 
             // Fix dealing with vary small chances - numbers bigger
@@ -181,16 +181,16 @@ namespace Zene.NeuralNetworking
 
             lock (RandSync)
             {
-                compare = Random.Next(0, max) == Random.Next(0, max);
+                compare = Random.Generate(1, max) == Random.Generate(1, max);
             }
 
             return compare;
         }
-        private static Colour GenColour(Gene[] genes)
+        private static Colour GeneColour(Gene[] genes)
         {
             int r = 0;
             int g = 0;
-            int b = 0;
+            uint b = 0;
 
             foreach (Gene gene in genes)
             {

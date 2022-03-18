@@ -142,7 +142,7 @@ namespace NeuralNetworkingTest
             base.OnSizePixelChange(e);
 
             // Set drawing view
-            Framebuffer.ViewSize = new Vector2I((int)e.Width, (int)e.Height);
+            Framebuffer.ViewSize = new Vector2I(e.Width, e.Height);
 
             int w;
             int h;
@@ -150,12 +150,12 @@ namespace NeuralNetworkingTest
             if (e.Height > e.Width)
             {
                 w = _worldSize[_vidCounter];
-                h = (int)((e.Height / e.Width) * _worldSize[_vidCounter]);
+                h = (int)((e.Height / (double)e.Width) * _worldSize[_vidCounter]);
             }
             else // Width is bigger
             {
                 h = _worldSize[_vidCounter];
-                w = (int)((e.Width / e.Height) * _worldSize[_vidCounter]);
+                w = (int)((e.Width / (double)e.Height) * _worldSize[_vidCounter]);
             }
 
             _shader.Matrix3 = Matrix4.CreateOrthographic(w, h, -10, 10);
