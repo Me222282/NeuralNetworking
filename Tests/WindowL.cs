@@ -123,8 +123,14 @@ namespace NeuralNetworkingTest
             // Clear screen light-grey
             Framebuffer.Clear(BufferBit.Colour);
 
+            _world.Update();
             // Update and draw all lifeforms
-            _world.UpdateDraw(DrawLifeform);
+            //_world.UpdateDraw(DrawLifeform);
+
+            foreach (Lifeform l in _world.Lifeforms)
+            {
+                DrawLifeform(l);
+            }
         }
 
         private void DrawLifeform(Lifeform lifeform)
