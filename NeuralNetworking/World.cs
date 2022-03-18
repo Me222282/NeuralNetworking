@@ -108,6 +108,8 @@ namespace Zene.NeuralNetworking
         {
             foreach (Lifeform life in Lifeforms)
             {
+                if (!life.Alive) { continue; }
+
                 life.Update();
                 drawMethod.Invoke(life);
             }
@@ -136,9 +138,18 @@ namespace Zene.NeuralNetworking
             // Determine which lifeforms survived to be able to reproduce
             foreach (Lifeform lifeform in Lifeforms)
             {
+                // Lifeform died in generation
+                if (!lifeform.Alive) { continue; }
                 if (!lifeformCondition.Invoke(lifeform)) { continue; }
 
                 survivors.Add(lifeform);
+            }
+
+            if (survivors.Count == 0)
+            {
+                Console.WriteLine("Everyone died.");
+                world.Lifeforms = Array.Empty<Lifeform>();
+                return world;
             }
 
             Vector2I[] posHierarchy = NoiseMap(width, height, _random.Next());

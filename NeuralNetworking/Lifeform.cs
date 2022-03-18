@@ -91,6 +91,9 @@ namespace Zene.NeuralNetworking
         /// </summary>
         public void Update()
         {
+            // Lifeform is dead - won't do anything
+            if (!Alive) { return; }
+
             Age++;
 
             Properties.ClearNeuronValues();
