@@ -5,10 +5,10 @@ namespace Zene.NeuralNetworking
 {
     public class Lifeform
     {
-        private Lifeform(Gene[] genes, NeuralNetwork neuralNetwork, Vector2I pos, World world)
+        public Lifeform(Gene[] genes, Vector2I pos, World world)
         {
             Genes = genes;
-            NeuralNetwork = neuralNetwork;
+            NeuralNetwork = NeuralNetwork.Generate(genes);
 
             if (genes.Length < 1)
             {
@@ -81,7 +81,6 @@ namespace Zene.NeuralNetworking
 
             return new Lifeform(
                 genes,
-                NeuralNetwork.Generate(genes),
                 location,
                 world);
         }
@@ -130,7 +129,6 @@ namespace Zene.NeuralNetworking
 
             return new Lifeform(
                 genes, 
-                NeuralNetwork.Generate(genes),
                 location,
                 world);
         }

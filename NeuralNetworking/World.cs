@@ -35,7 +35,6 @@ namespace Zene.NeuralNetworking
                 Lifeforms[i] = life;
             }
         }
-
         public World(int lifeCount, int geneCount, int width, int height)
         {
             Width = width;
@@ -63,6 +62,59 @@ namespace Zene.NeuralNetworking
             }
         }
 
+        public World(int seed, int width, int height, Lifeform[] lifeforms)
+        {
+            Width = width;
+            Height = height;
+
+            Generation = 0;
+
+            _rect = new Rectangle(0, height - 1, width - 1, height - 1);
+
+            Lifeforms = lifeforms;
+            LifeformGrid = new Lifeform[width, height];
+
+            _random = new Random(seed);
+
+            for (int i = 0; i < lifeforms.Length; i++)
+            {
+                Vector2I pos = lifeforms[i].Location;
+
+                if (LifeformGrid[pos.X, pos.Y].Alive)
+                {
+                    throw new Exception("Cannot place 2 different lifeforms in the same spot.");
+                }
+
+                LifeformGrid[pos.X, pos.Y] = lifeforms[i];
+            }
+        }
+        public World(int width, int height, Lifeform[] lifeforms)
+        {
+            Width = width;
+            Height = height;
+
+            Generation = 0;
+
+            _rect = new Rectangle(0, height - 1, width - 1, height - 1);
+
+            Lifeforms = lifeforms;
+            LifeformGrid = new Lifeform[width, height];
+
+            _random = Lifeform.Random;
+
+            for (int i = 0; i < lifeforms.Length; i++)
+            {
+                Vector2I pos = lifeforms[i].Location;
+
+                if (LifeformGrid[pos.X, pos.Y].Alive)
+                {
+                    throw new Exception("Cannot place 2 different lifeforms in the same spot.");
+                }
+
+                LifeformGrid[pos.X, pos.Y] = lifeforms[i];
+            }
+        }
+
         private World(int width, int height, int generation, Random r)
         {
             Width = width;
@@ -84,12 +136,27 @@ namespace Zene.NeuralNetworking
         public int Height { get; }
         public int Generation { get; }
 
+        /// <summary>
+        /// Time between iterations - in seconds.
+        /// </summary>
+        public double DeltaTime { get; set; } = 1.0 / 16.0;
+        public int CurrentIteration { get; private set; } = 0;
+        /// <summary>
+        /// Time through generation - in seconds.
+        /// </summary>
+        public double Time
+        {
+            get => DeltaTime * CurrentIteration;
+        }
+
         private readonly Rectangle _rect;
 
         private readonly Random _random;
 
         public void Update()
         {
+            CurrentIteration++;
+
             if (Multithreading)
             {
                 Parallel.ForEach(Lifeforms, life =>
@@ -112,6 +179,8 @@ namespace Zene.NeuralNetworking
         /// <param name="drawMethod">The method to draw the lifeforms with.</param>
         public void UpdateDraw(DrawLifeform drawMethod)
         {
+            CurrentIteration++;
+
             foreach (Lifeform life in Lifeforms)
             {
                 if (!life.Alive) { continue; }
