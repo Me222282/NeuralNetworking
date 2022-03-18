@@ -7,6 +7,8 @@ namespace Zene.NeuralNetworking
 {
     public class World
     {
+        public static bool Multithreading { get; set; } = true;
+
         public World(int seed, int lifeCount, int geneCount, int width, int height)
         {
             Width = width;
@@ -88,15 +90,19 @@ namespace Zene.NeuralNetworking
 
         public void Update()
         {
-            Parallel.ForEach(Lifeforms, life =>
+            if (Multithreading)
             {
-                life.Update();
-            });
-            /*
+                Parallel.ForEach(Lifeforms, life =>
+                {
+                    life.Update();
+                });
+                return;
+            }
+
             foreach (Lifeform life in Lifeforms)
             {
                 life.Update();
-            }*/
+            }
         }
 
         public delegate void DrawLifeform(Lifeform lifeform);
