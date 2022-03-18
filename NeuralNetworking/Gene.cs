@@ -35,14 +35,29 @@ namespace Zene.NeuralNetworking
                 {
                     case 0:
                         source += change;
+
+                        if (source < 0)
+                        {
+                            source = 0;
+                        }
                         break;
 
                     case 1:
                         destination += change;
+
+                        if (destination < 0)
+                        {
+                            destination = 0;
+                        }
                         break;
 
                     case 2:
                         strength += change;
+
+                        if (strength < 0)
+                        {
+                            strength = 0;
+                        }
                         break;
                 }
             }
