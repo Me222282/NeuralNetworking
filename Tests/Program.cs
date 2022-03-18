@@ -19,9 +19,9 @@ namespace NeuralNetworkingTest
 
             //SimulateLive(1, 1000, 80, 128, 300, true, 0);
 
-            SimulateLive(1, 1000, 4, 128, 300, true, 0);
+            //SimulateLive(1, 1000, 4, 128, 300, true, 0);
 
-            //Simulate(300, new int[] { 100, 200, 300 }, 1, 1000, 4, 128, 300);
+            Simulate(300, new int[] { 100, 200, 300 }, 1, 1000, 4, 128, 300);
             //RunGeneration(new string[] { "output100.gen", "output200.gen", "output300.gen" });
             //RunGeneration(args);
             /*
@@ -632,7 +632,7 @@ namespace NeuralNetworkingTest
                 for (int l = 0; l < lifeCount; l++)
                 {
                     int x = frameData[f, l].Position.X;
-                    int y = frameData[f, l].Position.X;
+                    int y = frameData[f, l].Position.Y;
                     bool a = frameData[f, l].Alive;
 
                     switch (type)

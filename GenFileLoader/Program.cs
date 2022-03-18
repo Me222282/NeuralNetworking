@@ -273,7 +273,7 @@ namespace GenFileLoader
                 for (int l = 0; l < lifeCount; l++)
                 {
                     int x = frameData[f, l].Position.X;
-                    int y = frameData[f, l].Position.X;
+                    int y = frameData[f, l].Position.Y;
                     bool a = frameData[f, l].Alive;
 
                     switch (type)
