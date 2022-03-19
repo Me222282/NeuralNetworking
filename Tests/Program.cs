@@ -17,13 +17,13 @@ namespace NeuralNetworkingTest
         {
             Core.Init();
 
-            SimulateCustom(1, 128, 300, true, 0);
+            SimulateCustom(666, 128, 300, true, 0);
 
             //SimulateLive(1, 1000, 80, 128, 300, true, 0);
 
-            //SimulateLive(1, 1000, 4, 128, 300, true, 0);
+            //SimulateLive(666, 1000, 4, 128, 300, true, 0);
 
-            //Simulate(300, new int[] { 100, 200, 300 }, 1, 1000, 4, 128, 300);
+            //Simulate(300, new int[] { 100, 200, 300 }, 666, 1000, 4, 128, 300);
             //RunGeneration(new string[] { "output100.gen", "output200.gen", "output300.gen" });
             //RunGeneration(args);
             /*
@@ -46,7 +46,7 @@ namespace NeuralNetworkingTest
 
             List<int> exportGens = new List<int>(exportGenerations);
 
-            World world = new World(lifeforms, brainSize, worldSize, worldSize);
+            World world = new World(lifeforms, brainSize, worldSize, worldSize, genLength);
 
             FramePart[,] frames = null;
             generations++;
@@ -148,11 +148,17 @@ namespace NeuralNetworkingTest
                 new Gene(10, 5, 1.0)
             };
 
+            Gene[] genes3 = new Gene[]
+            {
+                new Gene(13, 4, 1.0)
+            };
+
             WindowL window = new WindowL(128 * 6, 128 * 6, "Work",
                 worldSize, genLength, 1000, new Gene[][]
                 {
                     genes1,
-                    genes2
+                    genes2,
+                    genes3
                 });
 
             window.Run(vsync, delay);
@@ -452,6 +458,22 @@ namespace NeuralNetworkingTest
                         case YPCell:
                             str.Append($"YP_");
                             break;
+
+                        case SinCell:
+                            str.Append($"SIN");
+                            break;
+
+                        case CosCell:
+                            str.Append($"COS");
+                            break;
+
+                        case RandCell:
+                            str.Append($"RND");
+                            break;
+
+                        case TimeCell:
+                            str.Append($"TIM");
+                            break;
                     }
 
                     str.Append(" - ");
@@ -505,6 +527,7 @@ namespace NeuralNetworkingTest
             NeuralNetwork.PosibleGetCells.Add(new RandCell());
             NeuralNetwork.PosibleGetCells.Add(new SinCell());
             NeuralNetwork.PosibleGetCells.Add(new CosCell());
+            NeuralNetwork.PosibleGetCells.Add(new TimeCell());
 
             XMCell.Add();
             YMCell.Add();

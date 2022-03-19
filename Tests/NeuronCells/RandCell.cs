@@ -8,7 +8,7 @@ namespace NeuralNetworkingTest
         public int GetOrder => 0;
         public int SetOrder => throw new NotSupportedException();
 
-        public double GetValue(Lifeform lifeform) => Lifeform.Random.Generate();
+        public double GetValue(Lifeform lifeform) => Lifeform.Random.Generate(-1d, 1d);
 
         public void SetValue(Lifeform lifeform, double value)
         {

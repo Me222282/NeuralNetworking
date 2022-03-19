@@ -4,6 +4,7 @@ using Zene.Windowing.Base;
 using Zene.Graphics.Shaders;
 using Zene.Structs;
 using Zene.NeuralNetworking;
+using System;
 
 namespace NeuralNetworkingTest
 {
@@ -46,7 +47,7 @@ namespace NeuralNetworkingTest
                     4, 6, 7
                 }, 1, 0, AttributeSize.D2, BufferUsage.DrawFrequent);
 
-            _world = new World(_lifeforms, brainSize, _worldSize, _worldSize);
+            _world = new World(_lifeforms, brainSize, _worldSize, _worldSize, genLength);
 
             // Set Framebuffer's clear colour to light-grey
             BaseFramebuffer.ClearColour = new Colour(225, 225, 225);
@@ -91,7 +92,7 @@ namespace NeuralNetworkingTest
                     4, 6, 7
                 }, 1, 0, AttributeSize.D2, BufferUsage.DrawFrequent);
 
-            _world = new World(worldSize, worldSize, lifeforms);
+            _world = new World(worldSize, worldSize, lifeforms, genLength);
 
             // Set Framebuffer's clear colour to light-grey
             BaseFramebuffer.ClearColour = new Colour(225, 225, 225);
@@ -136,7 +137,7 @@ namespace NeuralNetworkingTest
                     4, 6, 7
                 }, 1, 0, AttributeSize.D2, BufferUsage.DrawFrequent);
 
-            _world = new World(worldSize, worldSize, Lifeform.FromGenes(Lifeform.Random, genes, lifeCount, worldSize, worldSize));
+            _world = new World(worldSize, worldSize, Lifeform.FromGenes(Lifeform.Random, genes, lifeCount, worldSize, worldSize), genLength);
 
             // Set Framebuffer's clear colour to light-grey
             BaseFramebuffer.ClearColour = new Colour(225, 225, 225);

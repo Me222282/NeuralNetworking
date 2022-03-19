@@ -196,19 +196,11 @@ namespace Zene.NeuralNetworking
             // Guaranteed
             if (chance >= 1) { return true; }
 
-            int max = (int)Math.Round(1 / chance);
-
-            // Fix dealing with vary small chances - numbers bigger
-            if (max == int.MinValue) { max += 1; }
-
-            // Random doesn't support negatives
-            if (max < 0) { max *= -1; }
-
             bool compare;
 
             lock (RandSync)
             {
-                compare = Random.Generate(1, max) == Random.Generate(1, max);
+                compare = Random.Generate() < chance;
             }
 
             return compare;

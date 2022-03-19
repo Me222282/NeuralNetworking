@@ -9,12 +9,13 @@ namespace Zene.NeuralNetworking
     {
         public static bool Multithreading { get; set; } = true;
 
-        public World(int seed, int lifeCount, int geneCount, int width, int height)
+        public World(int seed, int lifeCount, int geneCount, int width, int height, int genLength)
         {
             Width = width;
             Height = height;
 
             Generation = 0;
+            GenerationLength = genLength;
 
             _rect = new Rectangle(0, height - 1, width - 1, height - 1);
 
@@ -35,12 +36,13 @@ namespace Zene.NeuralNetworking
                 Lifeforms[i] = life;
             }
         }
-        public World(int lifeCount, int geneCount, int width, int height)
+        public World(int lifeCount, int geneCount, int width, int height, int genLength)
         {
             Width = width;
             Height = height;
 
             Generation = 0;
+            GenerationLength = genLength;
 
             _rect = new Rectangle(0, height - 1, width - 1, height - 1);
 
@@ -62,12 +64,13 @@ namespace Zene.NeuralNetworking
             }
         }
 
-        public World(int seed, int width, int height, Lifeform[] lifeforms)
+        public World(int seed, int width, int height, Lifeform[] lifeforms, int genLength)
         {
             Width = width;
             Height = height;
 
             Generation = 0;
+            GenerationLength = genLength;
 
             _rect = new Rectangle(0, height - 1, width - 1, height - 1);
 
@@ -89,12 +92,13 @@ namespace Zene.NeuralNetworking
                 LifeformGrid[pos.X, pos.Y] = lifeforms[i];
             }
         }
-        public World(int width, int height, Lifeform[] lifeforms)
+        public World(int width, int height, Lifeform[] lifeforms, int genLength)
         {
             Width = width;
             Height = height;
 
             Generation = 0;
+            GenerationLength = genLength;
 
             _rect = new Rectangle(0, height - 1, width - 1, height - 1);
 
@@ -117,12 +121,13 @@ namespace Zene.NeuralNetworking
             }
         }
 
-        private World(int width, int height, int generation, PRNG r)
+        private World(int width, int height, int generation, int genLength, PRNG r)
         {
             Width = width;
             Height = height;
 
             Generation = generation;
+            GenerationLength = genLength;
 
             _random = r;
 
@@ -143,6 +148,7 @@ namespace Zene.NeuralNetworking
         /// </summary>
         public double DeltaTime { get; set; } = 1.0 / 16.0;
         public int CurrentIteration { get; private set; } = 0;
+        public int GenerationLength { get; }
         /// <summary>
         /// Time through generation - in seconds.
         /// </summary>
@@ -157,6 +163,9 @@ namespace Zene.NeuralNetworking
 
         public void Update()
         {
+            // Trying to update at end of generation
+            if (CurrentIteration == (GenerationLength - 1)) { return; }
+
             CurrentIteration++;
 
             if (Multithreading)
@@ -181,6 +190,9 @@ namespace Zene.NeuralNetworking
         /// <param name="drawMethod">The method to draw the lifeforms with.</param>
         public void UpdateDraw(DrawLifeform drawMethod)
         {
+            // Trying to update at end of generation
+            if (CurrentIteration == (GenerationLength - 1)) { return; }
+
             CurrentIteration++;
 
             foreach (Lifeform life in Lifeforms)
@@ -208,7 +220,7 @@ namespace Zene.NeuralNetworking
         public delegate bool LifeformCondition(Lifeform lifeform);
         public World NextGeneration(int width, int height, int lifeCount, LifeformCondition lifeformCondition)
         {
-            World world = new World(width, height, Generation + 1, _random);
+            World world = new World(width, height, Generation + 1, GenerationLength, _random);
 
             List<Lifeform> survivors = new List<Lifeform>();
 
