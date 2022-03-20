@@ -114,7 +114,7 @@ namespace Zene.NeuralNetworking
             Destination = NeuralNetwork.PosibleSetCells[dN];
 
             // Scale the strength value to a number between -MaxScale and +MaxScale
-            Scale = ScaleValue(0, uint.MaxValue, -MaxScale, MaxScale, gene.Strength);
+            Scale = GetStrength(gene.Strength);
         }
 
         public INeuronCell Source { get; }
@@ -123,10 +123,32 @@ namespace Zene.NeuralNetworking
 
         //public Gene DataSource { get; }
 
+        static Neuron()
+        {
+            MaxScale = 5;
+        }
+
+        private static double _maxScale;
         /// <summary>
         /// The maximum scale factor of a neuron
         /// </summary>
-        public static double MaxScale { get; set; } = 5;
+        public static double MaxScale
+        {
+            get => _maxScale;
+            set
+            {
+                _maxScale = value;
+
+                StrengthPerScale = (uint)(uint.MaxValue / (value + value));
+            }
+        }
+        /// <summary>
+        /// The size change in <see cref="Gene.Strength"/> required to change <see cref="Scale"/> by 1.0.
+        /// </summary>
+        public static uint StrengthPerScale { get; private set; }
+
+        public static ushort SourceModifier => (ushort)NeuralNetwork.PosibleGetCells.Count;
+        public static ushort DestinationModifier => (ushort)NeuralNetwork.PosibleSetCells.Count;
 
         /// <summary>
         /// Perform the per frame calculation for this <see cref="Neuron"/>.
@@ -141,22 +163,15 @@ namespace Zene.NeuralNetworking
             Destination.SetValue(lifeform, value);
         }
 
-        private static double ScaleValue(uint inMin, uint inMax, double outMin, double outMax, uint value)
+        private const double _uintMax = uint.MaxValue;
+
+        public static double GetStrength(uint value)
         {
-            // Make sure in bounds
-            uint boundVal = Math.Clamp(value, inMin, inMax);
+            // Find scale between uint bounds
+            double scale = value / _uintMax;
 
-            // Make it so min value is now 0 and max relative
-            boundVal -= inMin;
-            inMax -= inMin;
-
-            double scale = (double)boundVal / inMax;
-
-            double valueOffset = (outMax - outMin) * scale;
-
-            return outMin + valueOffset;
+            return ((MaxScale + MaxScale) * scale) - MaxScale;
         }
-
         public static uint CreateStrength(double value)
         {
             // Make sure in bounds

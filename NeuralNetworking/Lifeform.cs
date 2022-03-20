@@ -191,6 +191,24 @@ namespace Zene.NeuralNetworking
             return !a.Equals(b);
         }
 
+        static Lifeform()
+        {
+            ColourGrade = 15;
+        }
+
+        private static int _colourGrade;
+        private static int _colourMulti;
+        public static byte ColourGrade
+        {
+            get => (byte)(_colourGrade - 1);
+            set
+            {
+                _colourGrade = value <= 1 ? 2 : (value + 1);
+
+                _colourMulti = 255 / (_colourGrade - 1);
+            }
+        }
+
         public static bool OneInChance(double chance)
         {
             // Guaranteed
@@ -213,15 +231,25 @@ namespace Zene.NeuralNetworking
 
             foreach (Gene gene in genes)
             {
-                r += gene.Source % 256;
-                g += gene.Destination % 256;
-                b += gene.Strength % 256;
+                r += gene.Source % Neuron.SourceModifier;
+                g += gene.Destination % Neuron.DestinationModifier;
+
+                double scale = Math.Round(Neuron.GetStrength(gene.Strength));
+
+                // Value cannot be passed through % or /
+                if (scale == 0.0)
+                {
+                    b += gene.Strength;
+                    continue;
+                }
+
+                b += gene.Strength % (uint)scale;
             }
 
             return new Colour(
-                (byte)((r % 16) * 16),
-                (byte)((g % 16) * 16),
-                (byte)((b % 16) * 16));
+                (byte)((r % _colourGrade) * _colourMulti),
+                (byte)((g % _colourGrade) * _colourMulti),
+                (byte)((b % _colourGrade) * _colourMulti));
         }
     }
 }

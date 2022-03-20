@@ -17,13 +17,13 @@ namespace NeuralNetworkingTest
         {
             Core.Init();
 
-            SimulateCustom(666, 128, 300, true, 0);
+            //SimulateCustom(666, 128, 300, true, 0);
 
             //SimulateLive(1, 1000, 80, 128, 300, true, 0);
 
-            //SimulateLive(666, 1000, 4, 128, 300, true, 0);
+            SimulateLive(1, 1000, 4, 128, 300, true, 0);
 
-            //Simulate(300, new int[] { 100, 200, 300 }, 666, 1000, 4, 128, 300);
+            //Simulate(300, new int[] { 100, 200, 300 }, 1, 1000, 4, 128, 300);
             //RunGeneration(new string[] { "output100.gen", "output200.gen", "output300.gen" });
             //RunGeneration(args);
             /*
