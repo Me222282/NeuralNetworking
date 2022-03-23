@@ -17,11 +17,11 @@ namespace NeuralNetworkingTest
         {
             Core.Init();
 
-            //SimulateCustom(666, 128, 300, true, 0);
+            SimulateCustom(666, 128, 300, true, 0);
 
             //SimulateLive(1, 1000, 80, 128, 300, true, 0);
 
-            SimulateLive(1, 1000, 4, 128, 300, true, 0);
+            //SimulateLive(1, 1000, 4, 128, 300, true, 0);
 
             //Simulate(300, new int[] { 100, 200, 300 }, 1, 1000, 4, 128, 300);
             //RunGeneration(new string[] { "output100.gen", "output200.gen", "output300.gen" });
@@ -153,12 +153,18 @@ namespace NeuralNetworkingTest
                 new Gene(13, 4, 1.0)
             };
 
+            Gene[] genes4 = new Gene[]
+            {
+                new Gene(12, 4, 2.0)
+            };
+
             WindowL window = new WindowL(128 * 6, 128 * 6, "Work",
                 worldSize, genLength, 1000, new Gene[][]
                 {
                     genes1,
                     genes2,
-                    genes3
+                    genes3,
+                    genes4
                 });
 
             window.Run(vsync, delay);

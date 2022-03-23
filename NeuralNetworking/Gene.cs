@@ -9,7 +9,7 @@
             Strength = str;
         }
         /// <summary>
-        /// Asigns <see cref="Strength"/> to <paramref name="str"/> passed through <see cref="Neuron.CreateStrength(double)"/>.
+        /// Asigns <see cref="Strength"/> to <paramref name="str"/> passed through <see cref="Neuron.GetStrength(double)"/>.
         /// </summary>
         /// <param name="src"></param>
         /// <param name="des"></param>
@@ -18,7 +18,7 @@
         {
             Source = src;
             Destination = des;
-            Strength = Neuron.CreateStrength(str);
+            Strength = Neuron.GetStrength(str);
         }
 
         public ushort Source { get; }
