@@ -1,0 +1,9 @@
+[submodule "Zene/Graphics"]
+	path = Zene/Graphics
+	url = https://github.com/Me222282/ZeneGraphics.git
+[submodule "Zene/Structs"]
+	path = Zene/Structs
+	url = https://github.com/Me222282/ZeneStructs.git
+[submodule "Zene/Windowing"]
+	path = Zene/Windowing
+	url = https://github.com/Me222282/ZeneWindowing.git

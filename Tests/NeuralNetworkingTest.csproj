@@ -15,9 +15,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ZeneGraphics\Graphics\Graphics.csproj" />
-    <ProjectReference Include="..\ZeneGraphics\Structs\Structs.csproj" />
-    <ProjectReference Include="..\ZeneGraphics\Windowing\Windowing.csproj" />
+    <ProjectReference Include="..\Zene\Graphics\src\Graphics.csproj" />
+    <ProjectReference Include="..\Zene\Structs\src\Structs.csproj" />
+    <ProjectReference Include="..\Zene\Windowing\src\Windowing.csproj" />
     <ProjectReference Include="..\NeuralNetworking\NeuralNetworking.csproj" />
   </ItemGroup>
 

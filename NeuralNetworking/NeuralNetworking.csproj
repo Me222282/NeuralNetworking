@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ZeneGraphics\Structs\Structs.csproj" />
+    <ProjectReference Include="..\Zene\Structs\src\Structs.csproj" />
   </ItemGroup>
 
 </Project>
