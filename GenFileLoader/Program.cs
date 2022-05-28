@@ -47,7 +47,7 @@ namespace GenFileLoader
 
             Core.Terminate();
         }
-
+        /*
         public static void Window(string[] paths)
         {
             byte[][] data = new byte[paths.Length][];
@@ -67,7 +67,42 @@ namespace GenFileLoader
 
             window.Run();
         }
+        */
+        public static void Window(string[] paths)
+        {
+            FramePart[][,] frames = new FramePart[paths.Length][,];
+            int[] frameCount = new int[paths.Length];
+            int[] lifeCount = new int[paths.Length];
+            int[] worldSize = new int[paths.Length];
 
+            string text = "";
+
+            for (int i = 0; i < paths.Length; i++)
+            {
+                text += paths[i] + " - ";
+
+                byte[] data = File.ReadAllBytes(paths[i]);
+
+                Console.WriteLine($"Opened file {i} at {paths[i]}");
+
+                try
+                {
+                    frames[i] = ImportFrames(data, out frameCount[i], out lifeCount[i], out worldSize[i]);
+                }
+                catch (Exception)
+                {
+                    frames[i] = ImportFrames_old(data, out frameCount[i], out lifeCount[i], out worldSize[i]);
+                }
+
+                Console.WriteLine();
+            }
+
+            text = text.Remove(text.Length - 3);
+
+            WindowW window = new WindowW(128 * 6, 128 * 6, text, frames, frameCount, lifeCount, worldSize);
+
+            window.Run();
+        }
         public struct FramePart
         {
             public FramePart(byte r, byte g, byte b, int x, int y, bool a)
@@ -119,6 +154,8 @@ namespace GenFileLoader
 
                     frames[f, l] = new FramePart(r, g, b, x, y, true);
                 }
+
+                Console.WriteLine($"Loaded frame {f}");
             }
 
             return frames;
@@ -212,6 +249,8 @@ namespace GenFileLoader
 
                     frames[f, l] = new FramePart(colours[l], x, y, alive);
                 }
+
+                Console.WriteLine($"Loaded frame {f}");
             }
 
             zip.Dispose();
@@ -264,7 +303,7 @@ namespace GenFileLoader
                 int di = i * 3;
                 data[di] = frameData[0, i].Colour.R;
                 data[di + 1] = frameData[0, i].Colour.G;
-                data[di + 2] = frameData[0, i].Colour.A;
+                data[di + 2] = frameData[0, i].Colour.B;
             }
             int readOffset = lifeCount * 3;
             // Frame data

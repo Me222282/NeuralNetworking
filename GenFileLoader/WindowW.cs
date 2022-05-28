@@ -41,8 +41,47 @@ namespace GenFileLoader
 
             for (int i = 0; i < frameData.Length; i++)
             {
-                _frames[i] = Program.ImportFrames(frameData[i], out _frameCount[i], out _lifeCount[i], out _worldSize[i]);
+                try
+                {
+                    _frames[i] = Program.ImportFrames(frameData[i], out _frameCount[i], out _lifeCount[i], out _worldSize[i]);
+                }
+                catch (Exception)
+                {
+                    _frames[i] = Program.ImportFrames_old(frameData[i], out _frameCount[i], out _lifeCount[i], out _worldSize[i]);
+                }
             }
+
+            OnSizePixelChange(new SizeChangeEventArgs(width, height));
+        }
+        public WindowW(int width, int height, string title, Program.FramePart[][,] frames, int[] frameCount, int[] lifeCount, int[] worldSize)
+            : base(width, height, title, 4.3)
+        {
+            _shader = new BasicShader();
+
+            _lifeGraphics = new DrawObject<Vector2, byte>(new Vector2[]
+                {
+                    new Vector2(-0.5, 0.25),
+                    new Vector2(-0.25, 0.5),
+                    new Vector2(0.25, 0.5),
+                    new Vector2(0.5, 0.25),
+                    new Vector2(0.5, -0.25),
+                    new Vector2(0.25, -0.5),
+                    new Vector2(-0.25, -0.5),
+                    new Vector2(-0.5, -0.25)
+                }, new byte[]
+                {
+                    0, 1, 2,
+                    0, 2, 3,
+                    0, 3, 4,
+                    0, 4, 7,
+                    4, 5, 6,
+                    4, 6, 7
+                }, 1, 0, AttributeSize.D2, BufferUsage.DrawFrequent);
+
+            _frames = frames;
+            _frameCount = frameCount;
+            _lifeCount = lifeCount;
+            _worldSize = worldSize;
 
             OnSizePixelChange(new SizeChangeEventArgs(width, height));
         }

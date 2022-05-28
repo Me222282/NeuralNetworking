@@ -234,7 +234,7 @@ namespace Zene.NeuralNetworking
                 r += gene.Source % Neuron.SourceModifier;
                 g += gene.Destination % Neuron.DestinationModifier;
 
-                double scale = Math.Round(Neuron.GetStrength(gene.Strength));
+                double scale = Math.Round(Neuron.GetScale(gene.Strength));
 
                 // Value cannot be passed through % or /
                 if (scale == 0.0)

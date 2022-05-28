@@ -685,7 +685,7 @@ namespace NeuralNetworkingTest
                 int di = i * 3;
                 data[di] = frameData[0, i].Colour.R;
                 data[di + 1] = frameData[0, i].Colour.G;
-                data[di + 2] = frameData[0, i].Colour.A;
+                data[di + 2] = frameData[0, i].Colour.B;
             }
             int readOffset = lifeCount * 3;
             // Frame data
