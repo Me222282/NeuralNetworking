@@ -6,6 +6,7 @@ using Zene.Structs;
 using Zene.Windowing;
 using System.Text;
 using System.IO.Compression;
+using System.Threading.Tasks;
 
 namespace NeuralNetworkingTest
 {
@@ -51,6 +52,9 @@ namespace NeuralNetworkingTest
             FramePart[,] frames = null;
             generations++;
 
+            int exporting = 0;
+            object exportRef = new object();
+
             int counter = 0;
             while (world.Generation < generations)
             {
@@ -62,10 +66,19 @@ namespace NeuralNetworkingTest
                     {
                         //ExportFrames($"output{world.Generation}.gen", frames, counter, world.Lifeforms.Length, worldSize);
 
-                        byte[] export = ExportFrames(frames, worldSize, DataType.Byte);
-                        File.WriteAllBytes($"output{world.Generation}.gen", export);
+                        int generation = world.Generation;
 
-                        ExportLifeforms($"lifeforms{world.Generation}.txt", world.Lifeforms);
+                        lock (exportRef) { exporting++; }
+
+                        Task.Run(() =>
+                        {
+                            byte[] export = ExportFrames(frames, worldSize, DataType.Byte);
+                            File.WriteAllBytes($"output{generation}.gen", export);
+
+                            ExportLifeforms($"lifeforms{generation}.txt", world.Lifeforms);
+
+                            lock (exportRef) { exporting--; }
+                        });
                     }
 
                     counter = 0;
@@ -90,6 +103,11 @@ namespace NeuralNetworkingTest
                 }
 
                 counter++;
+            }
+
+            while (exporting > 0)
+            {
+                // Do nothing to let exporting finish
             }
         }
         private static void Simulate(Settings s)
