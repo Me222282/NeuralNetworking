@@ -36,9 +36,15 @@ namespace NeuralNetworkingTest
                 return;
             }
 
-            SimulateCustom();
-            //SimulateLive();
-            //Simulate();
+            if (Settings.Windowed)
+            {
+                SimulateCustom();
+                //SimulateLive();
+            }
+            else
+            {
+                Simulate();
+            }
 
             //RunGeneration(new string[] { "output100.gen", "output200.gen", "output300.gen" });
             //RunGeneration(args);
@@ -312,7 +318,7 @@ namespace NeuralNetworkingTest
 
                 foreach (Neuron n in lifeforms[i].NeuralNetwork.Neurons)
                 {
-                    str.Append($"{n.Source.Name} - {n.Destination.Name} - {n.Scale}");
+                    str.AppendLine($"{n.Source.Name} - {n.Destination.Name} - {n.Scale}");
                 }
 
                 lines.Add(str.ToString());
