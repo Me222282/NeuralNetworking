@@ -1,0 +1,20 @@
+﻿{
+    "seed": 1,
+    "worldSize": 128,
+    "generationLength": 300,
+    "generationCount": 0,
+
+    "lifeformCount": 1000,
+    "brainSize": 4,
+    "innerCells": 4,
+    "mutationChance": 0.001,
+
+    "dlls": [],
+    "exports": [],
+    "exportName": "export",
+    "exportPath": "./exports",
+
+    "windowed": true,
+    "frameDelay": 0,
+    "vSync": true
+}

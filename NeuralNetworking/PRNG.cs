@@ -148,7 +148,14 @@ namespace Zene.NeuralNetworking
                 mti = 0;
             }
 
-            y = mt[mti++];
+            try
+            {
+                y = mt[mti++];
+            }
+            catch (Exception)
+            {
+                y = mt[mti++];
+            }
             y ^= TEMPERING_SHIFT_U(y);
             y ^= TEMPERING_SHIFT_S(y) & TEMPERING_MASK_B;
             y ^= TEMPERING_SHIFT_T(y) & TEMPERING_MASK_C;

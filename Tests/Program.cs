@@ -12,83 +12,90 @@ namespace NeuralNetworkingTest
 {
     class Program
     {
-        private static double _mutation = 0.001;
+        private const string SettingsPath = "settings.json";
+        public static Settings Settings;
 
         private static void Main(string[] args)
         {
             Core.Init();
 
-            SimulateCustom(666, 128, 300, true, 0);
-
-            //SimulateLive(1, 1000, 80, 128, 300, true, 0);
-
-            //SimulateLive(1, 1000, 4, 128, 300, true, 0);
-
-            //Simulate(300, new int[] { 100, 200, 300 }, 1, 1000, 4, 128, 300);
-            //RunGeneration(new string[] { "output100.gen", "output200.gen", "output300.gen" });
-            //RunGeneration(args);
-            /*
-            if (!File.Exists("settings.txt"))
+            if (!File.Exists(SettingsPath))
             {
                 Console.WriteLine("No settings file.");
                 Console.ReadLine();
                 return;
-            }*/
+            }
 
-            //SimulateLive(GetSettings("settings.txt"));
-            //Simulate(GetSettings("settings.txt"));
+            try
+            {
+                Settings = Settings.Parse(File.ReadAllText(SettingsPath));
+            }
+            catch (Exception)
+            {
+                Console.ReadLine();
+                return;
+            }
+
+            SimulateCustom();
+            //SimulateLive();
+            //Simulate();
+
+            //RunGeneration(new string[] { "output100.gen", "output200.gen", "output300.gen" });
+            //RunGeneration(args);
 
             Core.Terminate();
         }
 
-        private static void Simulate(int generations, int[] exportGenerations, int seed, int lifeforms, int brainSize, int worldSize, int genLength)
+        private static void Simulate()
         {
-            SetupEnvironment(seed);
+            SetupEnvironment();
 
-            List<int> exportGens = new List<int>(exportGenerations);
+            List<int> exportGens = new List<int>(Settings.ExportGens);
 
-            World world = new World(lifeforms, brainSize, worldSize, worldSize, genLength);
+            World world = new World(
+                Settings.LifeForms,
+                Settings.BrainSize,
+                Settings.WorldSize,
+                Settings.WorldSize,
+                Settings.GenLength);
 
             FramePart[,] frames = null;
-            generations++;
 
             int exporting = 0;
             object exportRef = new object();
 
-            int counter = 0;
-            while (world.Generation < generations)
-            {
-                bool exportGen = exportGens.Contains(world.Generation);
+            bool exportGen = exportGens.Contains(world.Generation);
 
-                if (counter >= genLength)
+            int counter = 0;
+            while (world.Generation < Settings.Gens || Settings.Gens <= 0)
+            {
+                if (counter >= Settings.GenLength)
                 {
                     if (exportGen)
                     {
-                        //ExportFrames($"output{world.Generation}.gen", frames, counter, world.Lifeforms.Length, worldSize);
-
                         int generation = world.Generation;
 
                         lock (exportRef) { exporting++; }
 
                         Task.Run(() =>
                         {
-                            byte[] export = ExportFrames(frames, worldSize, DataType.Byte);
-                            File.WriteAllBytes($"output{generation}.gen", export);
+                            byte[] export = ExportFrames(frames, Settings.WorldSize);
+                            File.WriteAllBytes($"{Settings.ExportPath}/{Settings.ExportName}{generation}.gen", export);
 
-                            ExportLifeforms($"lifeforms{generation}.txt", world.Lifeforms);
+                            ExportLifeforms($"{Settings.ExportPath}/{Settings.ExportName}-lf{generation}.txt", world.Lifeforms);
 
                             lock (exportRef) { exporting--; }
                         });
                     }
 
                     counter = 0;
-                    world = world.NextGeneration(lifeforms, CheckLifeform);
+                    world = world.NextGeneration(Settings.LifeForms, CheckLifeform);
 
                     exportGen = exportGens.Contains(world.Generation);
 
                     if (exportGen)
                     {
-                        frames = new FramePart[genLength, world.Lifeforms.Length];
+                        frames = new FramePart[Settings.GenLength, world.Lifeforms.Length];
                     }
                 }
 
@@ -103,6 +110,11 @@ namespace NeuralNetworkingTest
                 }
 
                 counter++;
+
+                if (Settings.Delay != 0)
+                {
+                    System.Threading.Thread.Sleep(Settings.Delay);
+                }
             }
 
             while (exporting > 0)
@@ -110,22 +122,13 @@ namespace NeuralNetworkingTest
                 // Do nothing to let exporting finish
             }
         }
-        private static void Simulate(Settings s)
+        private static void SimulateLive()
         {
-            Simulate(s.Gens, s.ExportGens, s.Seed, s.LifeForms, s.BrainSize, s.WorldSize, s.GenLength);
-        }
-        private static void SimulateLive(int seed, int lifeforms, int brainSize, int worldSize, int genLength, bool vsync, int delay)
-        {
-            SetupEnvironment(seed);
+            SetupEnvironment();
 
-            WindowL window = new WindowL(128 * 6, 128 * 6, "Work", 
-                lifeforms, brainSize, worldSize, genLength);
+            WindowL window = new WindowL(128 * 6, 128 * 6, "Work");
 
-            window.Run(vsync, delay);
-        }
-        private static void SimulateLive(Settings s)
-        {
-            SimulateLive(s.Seed, s.LifeForms, s.BrainSize, s.WorldSize, s.GenLength, s.VSync, s.Delay);
+            window.Run();
         }
         private static void RunGeneration(string[] paths)
         {
@@ -150,9 +153,9 @@ namespace NeuralNetworkingTest
             window.Run();
         }
 
-        private static void SimulateCustom(int seed, int worldSize, int genLength, bool vsync, int delay)
+        private static void SimulateCustom()
         {
-            SetupEnvironment(seed);
+            SetupEnvironment();
 
             Gene[] genes1 = new Gene[]
             {
@@ -177,7 +180,7 @@ namespace NeuralNetworkingTest
             };
 
             WindowL window = new WindowL(128 * 6, 128 * 6, "Work",
-                worldSize, genLength, 1000, new Gene[][]
+                new Gene[][]
                 {
                     genes1,
                     genes2,
@@ -185,7 +188,7 @@ namespace NeuralNetworkingTest
                     genes4
                 });
 
-            window.Run(vsync, delay);
+            window.Run();
         }
 
         private static void Convert(string[] paths, DataType type)
@@ -242,59 +245,6 @@ namespace NeuralNetworkingTest
         }
 
         //public static ICheckLifeform CheckLifeformFunc;
-
-        public struct Settings
-        {
-            public Settings(int g, int s, int l, int b, int w, int gl, int d, bool v, int[] e)
-            {
-                Gens = g;
-                Seed = s;
-                LifeForms = l;
-                BrainSize = b;
-                WorldSize = w;
-                GenLength = gl;
-                Delay = d;
-                VSync = v;
-                ExportGens = e;
-            }
-
-            public int Gens { get; }
-            public int Seed { get; }
-            public int LifeForms { get; }
-            public int BrainSize { get; }
-            public int WorldSize { get; }
-            public int GenLength { get; }
-            public int Delay { get; }
-            public bool VSync { get; }
-            public int[] ExportGens { get; }
-        }
-        public static Settings GetSettings(string path)
-        {
-            string[] lines = File.ReadAllLines(path);
-
-            _mutation = double.Parse(lines[0]);
-            int gens = int.Parse(lines[1]);
-            int seed = int.Parse(lines[2]);
-            int lfs = int.Parse(lines[3]);
-            int brain = int.Parse(lines[4]);
-            int world = int.Parse(lines[5]);
-            int length = int.Parse(lines[6]);
-            int delay = int.Parse(lines[7]);
-            bool vsync = bool.Parse(lines[8]);
-
-            int[] exports = new int[lines.Length - 10];
-
-            for (int i = 10; i < lines.Length; i++)
-            {
-                exports[i - 10] = int.Parse(lines[i]);
-            }
-            /*
-            Assembly asm = Assembly.LoadFrom(lines[9]);
-            Type type = asm.GetType("CheckLifeform");
-            CheckLifeformFunc = Activator.CreateInstanceFrom(lines[9], "CheckLifeform") as ICheckLifeform;
-            */
-            return new Settings(gens, seed, lfs, brain, world, length, delay, vsync ,exports);
-        }
 
         public static bool CheckLifeform(Lifeform lifeform)
         {
@@ -528,12 +478,10 @@ namespace NeuralNetworkingTest
             File.WriteAllLines(path, lines);
         }
 
-        public static void SetupEnvironment(int seed)
+        public static void SetupEnvironment()
         {
-            int innerCellCount = 4;
-
             // Inner Cells
-            for (int i = 0; i < innerCellCount; i++)
+            for (int i = 0; i < Settings.InnerCells; i++)
             {
                 InnerCell.Add();
             }
@@ -558,8 +506,8 @@ namespace NeuralNetworkingTest
 
             LifeProperties.NeuronValueNumber = NeuralNetwork.PosibleSetCells.Count;
 
-            Gene.MutationChance = _mutation;
-            Lifeform.Random = new PRNG((ulong)seed);
+            Gene.MutationChance = Settings.Mutation;
+            Lifeform.Random = new PRNG((ulong)Settings.Seed);
         }
 
 
@@ -795,6 +743,26 @@ namespace NeuralNetworkingTest
             Array.Copy(compressedData, 0, finalData, 20, compressedData.Length);
 
             return finalData;
+        }
+        public static unsafe byte[] ExportFrames(FramePart[,] frameData, int worldSize)
+        {
+            DataType type;
+
+            // Determine smallest type that can fit world
+            if (worldSize <= byte.MaxValue)
+            {
+                type = DataType.Byte;
+            }
+            else if (worldSize <= short.MaxValue)
+            {
+                type = DataType.Short;
+            }
+            else
+            {
+                type = DataType.Int;
+            }
+
+            return ExportFrames(frameData, worldSize, type);
         }
         private static void WriteBytes(byte[] data, ref int index, short a, short b)
         {

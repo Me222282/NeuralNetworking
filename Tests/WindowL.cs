@@ -5,26 +5,21 @@ using Zene.Graphics.Shaders;
 using Zene.Structs;
 using Zene.NeuralNetworking;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace NeuralNetworkingTest
 {
     public class WindowL : Window
     {
-        private readonly int _worldSize;
-        private readonly int _lifeforms;
-        private readonly int _genLength;
-
-        public WindowL(int width, int height, string title, int lifeforms, int brainSize, int worldSize, int genLength)
+        public WindowL(int width, int height, string title)
             : base(width, height, title, 4.3, new WindowInitProperties()
                 {
                     // Anti aliasing
                     Samples = 4
                 })
         {
-            _lifeforms = lifeforms;
-            _worldSize = worldSize;
-            _genLength = genLength;
-
             _shader = new BasicShader();
 
             _lifeGraphics = new DrawObject<Vector2, byte>(new Vector2[]
@@ -47,7 +42,12 @@ namespace NeuralNetworkingTest
                     4, 6, 7
                 }, 1, 0, AttributeSize.D2, BufferUsage.DrawFrequent);
 
-            _world = new World(_lifeforms, brainSize, _worldSize, _worldSize, genLength);
+            _world = new World(
+                Program.Settings.LifeForms,
+                Program.Settings.BrainSize,
+                Program.Settings.WorldSize,
+                Program.Settings.WorldSize,
+                Program.Settings.GenLength);
 
             // Set Framebuffer's clear colour to light-grey
             BaseFramebuffer.ClearColour = new Colour(225, 225, 225);
@@ -58,16 +58,17 @@ namespace NeuralNetworkingTest
             //Zene.Graphics.GL4.GL.Enable(Zene.Graphics.GL4.GLEnum.Blend);
             //Zene.Graphics.GL4.GL.BlendFunc(Zene.Graphics.GL4.GLEnum.SrcAlpha, Zene.Graphics.GL4.GLEnum.OneMinusSrcAlpha);
         }
-        public WindowL(int width, int height, string title, int worldSize, int genLength, Lifeform[] lifeforms)
+        public WindowL(int width, int height, string title, Lifeform[] lifeforms)
             : base(width, height, title, 4.3, new WindowInitProperties()
             {
                 // Anti aliasing
                 Samples = 4
             })
         {
-            _lifeforms = lifeforms.Length;
-            _worldSize = worldSize;
-            _genLength = genLength;
+            if (lifeforms.Length != Program.Settings.LifeForms)
+            {
+                throw new Exception();
+            }
 
             _shader = new BasicShader();
 
@@ -92,7 +93,11 @@ namespace NeuralNetworkingTest
                     4, 6, 7
                 }, 1, 0, AttributeSize.D2, BufferUsage.DrawFrequent);
 
-            _world = new World(worldSize, worldSize, lifeforms, genLength);
+            _world = new World(
+                Program.Settings.WorldSize,
+                Program.Settings.WorldSize,
+                lifeforms,
+                Program.Settings.GenLength);
 
             // Set Framebuffer's clear colour to light-grey
             BaseFramebuffer.ClearColour = new Colour(225, 225, 225);
@@ -103,17 +108,13 @@ namespace NeuralNetworkingTest
             //Zene.Graphics.GL4.GL.Enable(Zene.Graphics.GL4.GLEnum.Blend);
             //Zene.Graphics.GL4.GL.BlendFunc(Zene.Graphics.GL4.GLEnum.SrcAlpha, Zene.Graphics.GL4.GLEnum.OneMinusSrcAlpha);
         }
-        public WindowL(int width, int height, string title, int worldSize, int genLength, int lifeCount, Gene[][] genes)
+        public WindowL(int width, int height, string title, Gene[][] genes)
             : base(width, height, title, 4.3, new WindowInitProperties()
             {
                 // Anti aliasing
                 Samples = 4
             })
         {
-            _lifeforms = lifeCount;
-            _worldSize = worldSize;
-            _genLength = genLength;
-
             _shader = new BasicShader();
 
             _lifeGraphics = new DrawObject<Vector2, byte>(new Vector2[]
@@ -137,7 +138,14 @@ namespace NeuralNetworkingTest
                     4, 6, 7
                 }, 1, 0, AttributeSize.D2, BufferUsage.DrawFrequent);
 
-            _world = new World(worldSize, worldSize, Lifeform.FromGenes(Lifeform.Random, genes, lifeCount, worldSize, worldSize), genLength);
+            _world = new World(
+                Program.Settings.WorldSize,
+                Program.Settings.WorldSize,
+                Lifeform.FromGenes(Lifeform.Random, genes,
+                    Program.Settings.LifeForms,
+                    Program.Settings.WorldSize,
+                    Program.Settings.WorldSize),
+                Program.Settings.GenLength);
 
             // Set Framebuffer's clear colour to light-grey
             BaseFramebuffer.ClearColour = new Colour(225, 225, 225);
@@ -152,9 +160,9 @@ namespace NeuralNetworkingTest
         private readonly BasicShader _shader;
         private readonly DrawObject<Vector2, byte> _lifeGraphics;
 
-        public void Run(bool vsync, int delay)
+        public void Run()
         {
-            if (vsync)
+            if (Program.Settings.VSync)
             {
                 GLFW.SwapInterval(1);
             }
@@ -163,25 +171,68 @@ namespace NeuralNetworkingTest
                 GLFW.SwapInterval(0);
             }
 
+            Program.FramePart[,] frames = null;
+
+            List<int> exportGens = new List<int>(Program.Settings.ExportGens);
+            bool exportGen = exportGens.Contains(_world.Generation);
+
+            int exporting = 0;
+            object exportRef = new object();
+
             int counter = 0;
 
-            while (GLFW.WindowShouldClose(Handle) == 0) // While window shouldn't close
+            while (GLFW.WindowShouldClose(Handle) == 0 && // While window shouldn't close
+                // Or have not finished simulating generations
+                (_world.Generation < Program.Settings.Gens || Program.Settings.Gens <= 0))
             {
-                if (counter >= _genLength)
+                if (counter >= Program.Settings.GenLength)
                 {
+                    // Export generation
+                    if (exportGen)
+                    {
+                        int generation = _world.Generation;
+
+                        lock (exportRef) { exporting++; }
+
+                        Task.Run(() =>
+                        {
+                            byte[] export = Program.ExportFrames(frames, Program.Settings.WorldSize);
+                            File.WriteAllBytes($"{Program.Settings.ExportPath}/{Program.Settings.ExportName}{generation}.gen", export);
+
+                            Program.ExportLifeforms($"{Program.Settings.ExportPath}/{Program.Settings.ExportName}-lf{generation}.txt", _world.Lifeforms);
+
+                            lock (exportRef) { exporting--; }
+                        });
+                    }
+
                     counter = 0;
-                    _world = _world.NextGeneration(_lifeforms, Program.CheckLifeform);
+                    _world = _world.NextGeneration(Program.Settings.LifeForms, Program.CheckLifeform);
+
+                    exportGen = exportGens.Contains(_world.Generation);
+
+                    if (exportGen)
+                    {
+                        frames = new Program.FramePart[Program.Settings.GenLength, _world.Lifeforms.Length];
+                    }
                 }
 
                 Update();
+
+                if (exportGen)
+                {
+                    for (int i = 0; i < _world.Lifeforms.Length; i++)
+                    {
+                        frames[counter, i] = new Program.FramePart(_world.Lifeforms[i]);
+                    }
+                }
 
                 // Manage window input and output
                 GLFW.SwapBuffers(Handle);
                 GLFW.PollEvents();
 
-                if (delay != 0)
+                if (Program.Settings.Delay != 0)
                 {
-                    System.Threading.Thread.Sleep(delay);
+                    System.Threading.Thread.Sleep(Program.Settings.Delay);
                 }
 
                 counter++;
@@ -209,7 +260,7 @@ namespace NeuralNetworkingTest
             _shader.SetColourSource(ColourSource.UniformColour);
 
             // Shift so (0, 0) is in the bottom-left corner and increase the size of the drawn objects
-            _shader.Matrix2 = Matrix4.CreateTranslation((_worldSize / -2) + 0.5, (_worldSize / -2) + 0.5, 0);
+            _shader.Matrix2 = Matrix4.CreateTranslation((Program.Settings.WorldSize / -2) + 0.5, (Program.Settings.WorldSize / -2) + 0.5, 0);
 
             // Clear screen light-grey
             Framebuffer.Clear(BufferBit.Colour);
@@ -243,13 +294,13 @@ namespace NeuralNetworkingTest
 
             if (e.Height > e.Width)
             {
-                w = _worldSize;
-                h = (int)((e.Height / (double)e.Width) * _worldSize);
+                w = Program.Settings.WorldSize;
+                h = (int)((e.Height / (double)e.Width) * Program.Settings.WorldSize);
             }
             else // Width is bigger
             {
-                h = _worldSize;
-                w = (int)((e.Width / (double)e.Height) * _worldSize);
+                h = Program.Settings.WorldSize;
+                w = (int)((e.Width / (double)e.Height) * Program.Settings.WorldSize);
             }
 
             _shader.Matrix3 = Matrix4.CreateOrthographic(w, h, -10, 10);
