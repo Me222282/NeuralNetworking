@@ -6,6 +6,8 @@ namespace NeuralNetworkingTest
 {
     public struct PDCell : INeuronCell
     {
+        public string Name => "PD_";
+
         public int GetOrder => 0;
         public int SetOrder => throw new NotSupportedException();
 

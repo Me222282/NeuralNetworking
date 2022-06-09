@@ -6,6 +6,8 @@ namespace NeuralNetworkingTest
 {
     public struct XMCell : INeuronCell
     {
+        public string Name => "XM_";
+
         public XMCell(int neuronAllocant)
         {
             NeuronAllocant = neuronAllocant;

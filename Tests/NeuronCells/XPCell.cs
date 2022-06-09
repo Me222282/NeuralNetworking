@@ -5,6 +5,8 @@ namespace NeuralNetworkingTest
 {
     public struct XPCell : INeuronCell
     {
+        public string Name => "XP_";
+
         public int GetOrder => 0;
         public int SetOrder => throw new NotSupportedException();
 

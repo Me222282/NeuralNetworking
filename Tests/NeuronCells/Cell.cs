@@ -6,6 +6,8 @@ namespace NeuralNetworkingTest
 {
     public struct Cell : INeuronCell
     {
+        public string Name => throw new NotSupportedException();
+
         public int GetOrder => throw new NotSupportedException();
         public int SetOrder => throw new NotSupportedException();
 

@@ -6,6 +6,8 @@ namespace NeuralNetworkingTest
 {
     public struct YMCell : INeuronCell
     {
+        public string Name => "YM_";
+
         public YMCell(int neuronAllocant)
         {
             NeuronAllocant = neuronAllocant;

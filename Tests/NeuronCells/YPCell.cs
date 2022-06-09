@@ -5,6 +5,8 @@ namespace NeuralNetworkingTest
 {
     public struct YPCell : INeuronCell
     {
+        public string Name => "YP_";
+
         public int GetOrder => 0;
         public int SetOrder => throw new NotSupportedException();
 

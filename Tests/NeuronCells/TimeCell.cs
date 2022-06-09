@@ -5,6 +5,8 @@ namespace NeuralNetworkingTest
 {
     public struct TimeCell : INeuronCell
     {
+        public string Name => "TIM";
+
         public int GetOrder => 0;
         public int SetOrder => throw new NotSupportedException();
 

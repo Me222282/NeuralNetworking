@@ -8,10 +8,14 @@ namespace NeuralNetworkingTest
         public InnerCell(int neuronAllocant)
         {
             NeuronAllocant = neuronAllocant;
+
+            Name = $"IN{neuronAllocant}";
         }
 
         // The allocated position in the LifeformProperties.NeuronValues array.
         public readonly int NeuronAllocant;
+
+        public string Name { get; }
 
         public int GetOrder => 10;
         public int SetOrder => 0;

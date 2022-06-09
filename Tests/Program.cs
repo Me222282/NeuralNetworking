@@ -402,73 +402,7 @@ namespace NeuralNetworkingTest
 
                 foreach (Neuron n in lifeforms[i].NeuralNetwork.Neurons)
                 {
-                    switch (n.Source)
-                    {
-                        case InnerCell:
-                            InnerCell inn = (InnerCell)n.Source;
-                            str.Append($"IN{inn.NeuronAllocant}");
-                            break;
-
-                        case PUCell:
-                            str.Append($"PU_");
-                            break;
-
-                        case PDCell:
-                            str.Append($"PD_");
-                            break;
-
-                        case PRCell:
-                            str.Append($"PR_");
-                            break;
-
-                        case PLCell:
-                            str.Append($"PL_");
-                            break;
-
-                        case XPCell:
-                            str.Append($"XP_");
-                            break;
-
-                        case YPCell:
-                            str.Append($"YP_");
-                            break;
-
-                        case SinCell:
-                            str.Append($"SIN");
-                            break;
-
-                        case CosCell:
-                            str.Append($"COS");
-                            break;
-
-                        case RandCell:
-                            str.Append($"RND");
-                            break;
-
-                        case TimeCell:
-                            str.Append($"TIM");
-                            break;
-                    }
-
-                    str.Append(" - ");
-
-                    switch (n.Destination)
-                    {
-                        case InnerCell:
-                            InnerCell inn = (InnerCell)n.Destination;
-                            str.Append($"IN{inn.NeuronAllocant}");
-                            break;
-
-                        case XMCell:
-                            str.Append($"XM_");
-                            break;
-
-                        case YMCell:
-                            str.Append($"YM_");
-                            break;
-                    }
-
-                    str.AppendLine($" - {n.Scale}");
+                    str.Append($"{n.Source.Name} - {n.Destination.Name} - {n.Scale}");
                 }
 
                 lines.Add(str.ToString());

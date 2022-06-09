@@ -2,6 +2,8 @@
 {
     public interface INeuronCell
     {
+        public string Name { get; }
+
         public int GetOrder { get; }
         public int SetOrder { get; }
 

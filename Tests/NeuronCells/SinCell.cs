@@ -6,6 +6,8 @@ namespace NeuralNetworkingTest
 {
     public struct SinCell : INeuronCell
     {
+        public string Name => "SIN";
+
         public int GetOrder => 0;
         public int SetOrder => throw new NotSupportedException();
 

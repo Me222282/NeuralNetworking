@@ -5,6 +5,8 @@ namespace NeuralNetworkingTest
 {
     public struct RandCell : INeuronCell
     {
+        public string Name => "RND";
+
         public int GetOrder => 0;
         public int SetOrder => throw new NotSupportedException();
 

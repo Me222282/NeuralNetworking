@@ -6,6 +6,8 @@ namespace NeuralNetworkingTest
 {
     public struct CosCell : INeuronCell
     {
+        public string Name => "COS";
+
         public int GetOrder => 0;
         public int SetOrder => throw new NotSupportedException();
 
