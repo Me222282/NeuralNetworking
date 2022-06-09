@@ -215,7 +215,7 @@ namespace NeuralNetworkingTest
             {
                 byte[] data = File.ReadAllBytes(s);
 
-                FramePart[,] frameData = ImportFrames_old(data, out _, out _, out int ws);
+                FramePart[,] frameData = ImportFramesOld(data, out _, out _, out int ws);
 
                 DataType type;
 
@@ -245,7 +245,6 @@ namespace NeuralNetworkingTest
         }
 
         //public static ICheckLifeform CheckLifeformFunc;
-
         public static bool CheckLifeform(Lifeform lifeform)
         {
             // Get to left
@@ -270,148 +269,6 @@ namespace NeuralNetworkingTest
                 (lifeform.Location.Y > (lifeform.CurrentWorld.Height / 4)) &&
                 (lifeform.Location.Y < (lifeform.CurrentWorld.Height - (lifeform.CurrentWorld.Height / 4)));
         }
-
-        public struct FramePart
-        {
-            public FramePart(Lifeform l)
-            {
-                Colour = l.Colour;
-                Position = l.Location;
-                Alive = l.Alive;
-            }
-            public FramePart(byte r, byte g, byte b, int x, int y, bool a)
-            {
-                Colour = new Colour(r, g, b);
-                Position = new Vector2I(x, y);
-                Alive = a;
-            }
-            public FramePart(Colour c, int x, int y, bool a)
-            {
-                Colour = c;
-                Position = new Vector2I(x, y);
-                Alive = a;
-            }
-
-            public Colour Colour { get; }
-            public Vector2I Position { get; }
-            public bool Alive { get; }
-        }
-
-        public static unsafe void ExportFrames_old(string path, FramePart[,] frames, int frameCount, int lifeCount, int worldSize)
-        {
-            byte[] data = new byte[(sizeof(FramePart) * frameCount * lifeCount) + (sizeof(int) * 3)];
-
-            byte[] dataAdd;
-            int writeOffset = 0;
-
-            dataAdd = BitConverter.GetBytes(worldSize);
-            for (int i = 0; i < dataAdd.Length; i++)
-            {
-                data[writeOffset] = dataAdd[i];
-                writeOffset++;
-            }
-
-            dataAdd = BitConverter.GetBytes(frameCount);
-            for (int i = 0; i < dataAdd.Length; i++)
-            {
-                data[writeOffset] = dataAdd[i];
-                writeOffset++;
-            }
-
-            dataAdd = BitConverter.GetBytes(lifeCount);
-            for (int i = 0; i < dataAdd.Length; i++)
-            {
-                data[writeOffset] = dataAdd[i];
-                writeOffset++;
-            }
-
-            for (int f = 0; f < frameCount; f++)
-            {
-                for (int l = 0; l < lifeCount; l++)
-                {
-                    data[writeOffset] = frames[f, l].Colour.R;
-                    writeOffset++;
-
-                    data[writeOffset] = frames[f, l].Colour.G;
-                    writeOffset++;
-
-                    data[writeOffset] = frames[f, l].Colour.B;
-                    writeOffset++;
-
-                    dataAdd = BitConverter.GetBytes(frames[f, l].Position.X);
-                    for (int i = 0; i < dataAdd.Length; i++)
-                    {
-                        data[writeOffset] = dataAdd[i];
-                        writeOffset++;
-                    }
-
-                    dataAdd = BitConverter.GetBytes(frames[f, l].Position.Y);
-                    for (int i = 0; i < dataAdd.Length; i++)
-                    {
-                        data[writeOffset] = dataAdd[i];
-                        writeOffset++;
-                    }
-                }
-            }
-
-            File.WriteAllBytes(path, data);
-        }
-        public static unsafe FramePart[,] ImportFrames_old(byte[] data, out int frameCount, out int lifeCount, out int worldSize)
-        {
-            int readOffset = 0;
-
-            worldSize = BitConverter.ToInt32(data, readOffset);
-            readOffset += 4;
-            frameCount = BitConverter.ToInt32(data, readOffset);
-            readOffset += 4;
-            lifeCount = BitConverter.ToInt32(data, readOffset);
-            readOffset += 4;
-
-            FramePart[,] frames = new FramePart[frameCount, lifeCount];
-
-            for (int f = 0; f < frameCount; f++)
-            {
-                for (int l = 0; l < lifeCount; l++)
-                {
-                    byte r = data[readOffset];
-                    readOffset++;
-                    byte g = data[readOffset];
-                    readOffset++;
-                    byte b = data[readOffset];
-                    readOffset++;
-
-                    int x = BitConverter.ToInt32(data, readOffset);
-                    readOffset += 4;
-                    int y = BitConverter.ToInt32(data, readOffset);
-                    readOffset += 4;
-
-                    frames[f, l] = new FramePart(r, g, b, x, y, true);
-                }
-            }
-
-            return frames;
-        }
-
-        public static void ExportLifeforms(string path, Lifeform[] lifeforms)
-        {
-            List<string> lines = new List<string>();
-
-            for (int i = 0; i < lifeforms.Length; i++)
-            {
-                StringBuilder str = new StringBuilder($"Lifeform {i}\n");
-
-                foreach (Neuron n in lifeforms[i].NeuralNetwork.Neurons)
-                {
-                    str.Append($"{n.Source.Name} - {n.Destination.Name} - {n.Scale}");
-                }
-
-                lines.Add(str.ToString());
-                lines.Add("");
-            }
-
-            File.WriteAllLines(path, lines);
-        }
-
         public static void SetupEnvironment()
         {
             // Inner Cells
@@ -445,6 +302,51 @@ namespace NeuralNetworkingTest
         }
 
 
+        public static void ExportLifeforms(string path, Lifeform[] lifeforms)
+        {
+            List<string> lines = new List<string>();
+
+            for (int i = 0; i < lifeforms.Length; i++)
+            {
+                StringBuilder str = new StringBuilder($"Lifeform {i}\n");
+
+                foreach (Neuron n in lifeforms[i].NeuralNetwork.Neurons)
+                {
+                    str.Append($"{n.Source.Name} - {n.Destination.Name} - {n.Scale}");
+                }
+
+                lines.Add(str.ToString());
+                lines.Add("");
+            }
+
+            File.WriteAllLines(path, lines);
+        }
+
+        public struct FramePart
+        {
+            public FramePart(Lifeform l)
+            {
+                Colour = l.Colour;
+                Position = l.Location;
+                Alive = l.Alive;
+            }
+            public FramePart(byte r, byte g, byte b, int x, int y, bool a)
+            {
+                Colour = new Colour(r, g, b);
+                Position = new Vector2I(x, y);
+                Alive = a;
+            }
+            public FramePart(Colour c, int x, int y, bool a)
+            {
+                Colour = c;
+                Position = new Vector2I(x, y);
+                Alive = a;
+            }
+
+            public Colour Colour { get; }
+            public Vector2I Position { get; }
+            public bool Alive { get; }
+        }
 
         public static unsafe FramePart[,] ImportFrames(byte[] data, out int frameCount, out int lifeCount, out int worldSize)
         {
@@ -538,6 +440,41 @@ namespace NeuralNetworkingTest
 
             zip.Dispose();
             mem.Dispose();
+
+            return frames;
+        }
+        public static unsafe FramePart[,] ImportFramesOld(byte[] data, out int frameCount, out int lifeCount, out int worldSize)
+        {
+            int readOffset = 0;
+
+            worldSize = BitConverter.ToInt32(data, readOffset);
+            readOffset += 4;
+            frameCount = BitConverter.ToInt32(data, readOffset);
+            readOffset += 4;
+            lifeCount = BitConverter.ToInt32(data, readOffset);
+            readOffset += 4;
+
+            FramePart[,] frames = new FramePart[frameCount, lifeCount];
+
+            for (int f = 0; f < frameCount; f++)
+            {
+                for (int l = 0; l < lifeCount; l++)
+                {
+                    byte r = data[readOffset];
+                    readOffset++;
+                    byte g = data[readOffset];
+                    readOffset++;
+                    byte b = data[readOffset];
+                    readOffset++;
+
+                    int x = BitConverter.ToInt32(data, readOffset);
+                    readOffset += 4;
+                    int y = BitConverter.ToInt32(data, readOffset);
+                    readOffset += 4;
+
+                    frames[f, l] = new FramePart(r, g, b, x, y, true);
+                }
+            }
 
             return frames;
         }

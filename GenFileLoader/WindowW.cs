@@ -47,7 +47,7 @@ namespace GenFileLoader
                 }
                 catch (Exception)
                 {
-                    _frames[i] = Program.ImportFrames_old(frameData[i], out _frameCount[i], out _lifeCount[i], out _worldSize[i]);
+                    _frames[i] = Program.ImportFramesOld(frameData[i], out _frameCount[i], out _lifeCount[i], out _worldSize[i]);
                 }
             }
 

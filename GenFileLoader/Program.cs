@@ -47,27 +47,7 @@ namespace GenFileLoader
 
             Core.Terminate();
         }
-        /*
-        public static void Window(string[] paths)
-        {
-            byte[][] data = new byte[paths.Length][];
-
-            string text = "";
-
-            for (int i = 0; i < paths.Length; i++)
-            {
-                text += paths[i] + " - ";
-
-                data[i] = File.ReadAllBytes(paths[i]);
-            }
-
-            text = text.Remove(text.Length - 3);
-
-            WindowW window = new WindowW(128 * 6, 128 * 6, text, data);
-
-            window.Run();
-        }
-        */
+        
         public static void Window(string[] paths)
         {
             FramePart[][,] frames = new FramePart[paths.Length][,];
@@ -91,7 +71,7 @@ namespace GenFileLoader
                 }
                 catch (Exception)
                 {
-                    frames[i] = ImportFrames_old(data, out frameCount[i], out lifeCount[i], out worldSize[i]);
+                    frames[i] = ImportFramesOld(data, out frameCount[i], out lifeCount[i], out worldSize[i]);
                 }
 
                 Console.WriteLine();
@@ -123,7 +103,7 @@ namespace GenFileLoader
             public bool Alive { get; }
         }
 
-        public static unsafe FramePart[,] ImportFrames_old(byte[] data, out int frameCount, out int lifeCount, out int worldSize)
+        public static unsafe FramePart[,] ImportFramesOld(byte[] data, out int frameCount, out int lifeCount, out int worldSize)
         {
             int readOffset = 0;
 
@@ -160,7 +140,6 @@ namespace GenFileLoader
 
             return frames;
         }
-
         public static unsafe FramePart[,] ImportFrames(byte[] data, out int frameCount, out int lifeCount, out int worldSize)
         {
             if (!ValidateGenFile(data))
@@ -276,7 +255,7 @@ namespace GenFileLoader
             Short = 1,
             Byte = 2
         }
-        public static unsafe byte[] ExportFrames2(FramePart[,] frameData, int worldSize, DataType type)
+        public static unsafe byte[] ExportFrames(FramePart[,] frameData, int worldSize, DataType type)
         {
             int dataSize = type switch
             {
