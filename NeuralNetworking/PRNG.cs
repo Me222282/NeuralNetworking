@@ -96,6 +96,8 @@ namespace Zene.NeuralNetworking
         /// </summary>
         private readonly ulong[] mt = new ulong[625];
 
+        private readonly object _lockMt = new object();
+
         /// <summary>
         /// mti==N+1 means mt[N] is not initialized 
         /// </summary>
@@ -111,11 +113,14 @@ namespace Zene.NeuralNetworking
         /// <param name="seed"></param>
         private void Sgenrand(ulong seed)
         {
-            mt[0] = seed & 0xffffffff;
-
-            for (mti = 1; mti < N; mti++)
+            lock (_lockMt)
             {
-                mt[mti] = (69069 * mt[mti - 1]) & 0xffffffff;
+                mt[0] = seed & 0xffffffff;
+
+                for (mti = 1; mti < N; mti++)
+                {
+                    mt[mti] = (69069 * mt[mti - 1]) & 0xffffffff;
+                }
             }
         }
 
@@ -125,36 +130,31 @@ namespace Zene.NeuralNetworking
             ulong[] mag01 = new ulong[2] { 0x0, MATRIX_A };
             /* mag01[x] = x * MATRIX_A  for x=0,1 */
 
-            if (mti >= N)
-            { /* generate N words at one time */
-                int kk;
-
-                if (mti == N + 1)   /* if sgenrand() has not been called, */
-                    Sgenrand(4357); /* a default initial seed is used   */
-
-                for (kk = 0; kk < N - M; kk++)
-                {
-                    y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
-                    mt[kk] = mt[kk + M] ^ (y >> 1) ^ mag01[y & 0x1];
-                }
-                for (; kk < N - 1; kk++)
-                {
-                    y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
-                    mt[kk] = mt[kk + (M - N)] ^ (y >> 1) ^ mag01[y & 0x1];
-                }
-                y = (mt[N - 1] & UPPER_MASK) | (mt[0] & LOWER_MASK);
-                mt[N - 1] = mt[M - 1] ^ (y >> 1) ^ mag01[y & 0x1];
-
-                mti = 0;
-            }
-
-            try
+            lock (_lockMt)
             {
-                y = mt[mti++];
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Stupid microsoft");
+                if (mti >= N)
+                { /* generate N words at one time */
+                    int kk;
+
+                    if (mti == N + 1)   /* if sgenrand() has not been called, */
+                        Sgenrand(4357); /* a default initial seed is used   */
+
+                    for (kk = 0; kk < N - M; kk++)
+                    {
+                        y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
+                        mt[kk] = mt[kk + M] ^ (y >> 1) ^ mag01[y & 0x1];
+                    }
+                    for (; kk < N - 1; kk++)
+                    {
+                        y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
+                        mt[kk] = mt[kk + (M - N)] ^ (y >> 1) ^ mag01[y & 0x1];
+                    }
+                    y = (mt[N - 1] & UPPER_MASK) | (mt[0] & LOWER_MASK);
+                    mt[N - 1] = mt[M - 1] ^ (y >> 1) ^ mag01[y & 0x1];
+
+                    mti = 0;
+                }
+
                 y = mt[mti++];
             }
             y ^= TEMPERING_SHIFT_U(y);
