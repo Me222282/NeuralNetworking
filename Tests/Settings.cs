@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json;
+using Zene.NeuralNetworking;
 
 namespace NeuralNetworkingTest
 {
@@ -27,40 +28,81 @@ namespace NeuralNetworkingTest
         public static Settings Parse(string json)
         {
             JsonElement decode = JsonDocument.Parse(json).RootElement;
-
+            JsonElement world;
+            JsonElement lifeform;
+            JsonElement exporting = default;
+            bool exportingExists = true;
+            JsonElement window;
+            
+            try
+            {
+                world = decode.GetProperty("world");
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Settings must contain the property \"world\".");
+                throw new Exception("Invalid settings file");
+            }
+            try
+            {
+                lifeform = decode.GetProperty("lifeform");
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Settings must contain the property \"lifeform\".");
+                throw new Exception("Invalid settings file");
+            }
+            try
+            {
+                exporting = decode.GetProperty("exporting");
+            }
+            catch (Exception)
+            {
+                exportingExists = false;
+            }
+            try
+            {
+                window = decode.GetProperty("window");
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Settings must contain the property \"window\".");
+                throw new Exception("Invalid settings file");
+            }
+            
             Settings values = new Settings();
 
             // World properties
             try
             {
-                values.Seed = decode.GetProperty("seed").GetInt32();
+                values.Seed = world.GetProperty("seed").GetInt32();
             }
             catch (Exception)
             {
-                Console.WriteLine("Settings must contain the integer \"seed\".");
+                Console.WriteLine("\"world\" must contain the integer \"seed\".");
                 throw new Exception("Invalid settings file");
             }
             try
             {
-                values.WorldSize = decode.GetProperty("worldSize").GetInt32();
+                values.WorldSize = world.GetProperty("size").GetInt32();
             }
             catch (Exception)
             {
-                Console.WriteLine("Settings must contain the integer \"worldSize\".");
+                Console.WriteLine("\"world\" must contain the integer \"worldSize\".");
                 throw new Exception("Invalid settings file");
             }
             try
             {
-                values.GenLength = decode.GetProperty("generationLength").GetInt32();
+                values.GenLength = world.GetProperty("generationLength").GetInt32();
             }
             catch (Exception)
             {
-                Console.WriteLine("Settings must contain the integer \"generationLength\".");
+                Console.WriteLine("\"world\" must contain the integer \"generationLength\".");
                 throw new Exception("Invalid settings file");
             }
             try
             {
-                values.Gens = decode.GetProperty("generationCount").GetInt32();
+                values.Gens = world.GetProperty("generationCount").GetInt32();
             }
             catch (Exception)
             {
@@ -70,40 +112,45 @@ namespace NeuralNetworkingTest
             // Lifeform properties
             try
             {
-                values.LifeForms = decode.GetProperty("lifeformCount").GetInt32();
+                values.LifeForms = lifeform.GetProperty("count").GetInt32();
             }
             catch (Exception)
             {
-                Console.WriteLine("Settings must contain the integer \"lifeformCount\".");
+                Console.WriteLine("\"lifeform\" must contain the integer \"lifeformCount\".");
                 throw new Exception("Invalid settings file");
             }
             try
             {
-                values.BrainSize = decode.GetProperty("brainSize").GetInt32();
+                values.BrainSize = lifeform.GetProperty("brainSize").GetInt32();
             }
             catch (Exception)
             {
-                Console.WriteLine("Settings must contain the integer \"brainSize\".");
+                Console.WriteLine("\"lifeform\" must contain the integer \"brainSize\".");
                 throw new Exception("Invalid settings file");
             }
             try
             {
-                values.InnerCells = decode.GetProperty("innerCells").GetInt32();
+                values.InnerCells = lifeform.GetProperty("innerCells").GetInt32();
             }
             catch (Exception)
             {
-                Console.WriteLine("Settings must contain the integer \"innerCells\".");
+                Console.WriteLine("\"lifeform\" must contain the integer \"innerCells\".");
                 throw new Exception("Invalid settings file");
             }
             try
             {
-                values.Mutation = decode.GetProperty("mutationChance").GetDouble();
+                values.Mutation = lifeform.GetProperty("mutationChance").GetDouble();
             }
             catch (Exception)
             {
-                Console.WriteLine("Settings must contain the double \"mutationChance\".");
+                Console.WriteLine("\"lifeform\" must contain the double \"mutationChance\".");
                 throw new Exception("Invalid settings file");
             }
+            try
+            {
+                Lifeform.ColourGrade = lifeform.GetProperty("colourGrade").GetByte();
+            }
+            catch (Exception) { }
 
             // Exporting properties
             try
@@ -115,36 +162,32 @@ namespace NeuralNetworkingTest
                 values.Dlls = Array.Empty<string>();
             }
 
-            bool exporting;
-            try
+            if (exportingExists)
             {
-                values.ExportGens = GetIntArray(decode, "exports");
-
-                exporting = values.ExportGens.Length > 0;
-            }
-            catch (Exception)
-            {
-                values.ExportGens = Array.Empty<int>();
-                exporting = false;
-            }
-            if (exporting)
-            {
-                try
+                 try
                 {
-                    values.ExportName = decode.GetProperty("exportName").GetString();
+                    values.ExportGens = GetIntArray(exporting, "exports");
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("Settings must contain the string \"exportName\" when \"exports\" is included.");
+                    values.ExportGens = Array.Empty<int>();
+                }
+                try
+                {
+                    values.ExportName = exporting.GetProperty("name").GetString();
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("\"exporting\" must contain the string \"name\"");
                     throw new Exception("Invalid settings file");
                 }
                 try
                 {
-                    values.ExportPath = decode.GetProperty("exportPath").GetString();
+                    values.ExportPath = exporting.GetProperty("path").GetString();
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("Settings must contain the string \"exportPath\" when \"exports\" is included.");
+                    Console.WriteLine("\"exporting\" must contain the string \"path\"");
                     throw new Exception("Invalid settings file");
                 }
             }
@@ -152,31 +195,31 @@ namespace NeuralNetworkingTest
             // Window properties
             try
             {
-                values.Windowed = decode.GetProperty("windowed").GetBoolean();
+                values.Windowed = window.GetProperty("render").GetBoolean();
             }
             catch (Exception)
             {
-                Console.WriteLine("Settings must contain the boolean \"windowed\".");
+                Console.WriteLine("\"window\" must contain the boolean \"render\".");
                 throw new Exception("Invalid settings file");
             }
             if (values.Windowed)
             {
                 try
                 {
-                    values.Delay = decode.GetProperty("frameDelay").GetInt32();
+                    values.Delay = window.GetProperty("frameDelay").GetInt32();
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("Settings must contain the string \"frameDelay\" when \"windowed\" is true.");
+                    Console.WriteLine("\"window\" must contain the string \"frameDelay\" when \"render\" is true.");
                     throw new Exception("Invalid settings file");
                 }
                 try
                 {
-                    values.VSync = decode.GetProperty("vSync").GetBoolean();
+                    values.VSync = window.GetProperty("vSync").GetBoolean();
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("Settings must contain the string \"vSync\" when \"windowed\" is true.");
+                    Console.WriteLine("\"window\" must contain the string \"vSync\" when \"render\" is true.");
                     throw new Exception("Invalid settings file");
                 }
             }

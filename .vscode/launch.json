@@ -10,13 +10,13 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/GenFileLoader/bin/Debug/net5.0/GenFileLoader.dll",
-            //"program": "${workspaceFolder}/Tests/bin/Debug/net5.0/NeuralNetworkingTest.dll",
+            //"program": "${workspaceFolder}/GenFileLoader/bin/Debug/net5.0/GenFileLoader.dll",
+            "program": "${workspaceFolder}/Tests/bin/Debug/net5.0/NeuralNetworkingTest.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/GenFileLoader",
-            //"cwd": "${workspaceFolder}/Tests",
+            //"cwd": "${workspaceFolder}/GenFileLoader",
+            "cwd": "${workspaceFolder}/Tests",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
-            "console": "internalConsole",
+            "console": "externalTerminal",
             "stopAtEntry": false
         },
         {

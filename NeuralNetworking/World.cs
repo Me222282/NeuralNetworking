@@ -242,9 +242,9 @@ namespace Zene.NeuralNetworking
             }
 
             Vector2I[] posHierarchy = NoiseMap(width, height, _random.Generate(0, int.MaxValue));
-            int childCount = (int)Math.Round((double)lifeCount / survivors.Count);
-            Console.WriteLine($"Generation {Generation} - {(((double)survivors.Count / Lifeforms.Length) * 100):F2}% survived - {childCount * survivors.Count} new lifeforms");
-            world.Lifeforms = new Lifeform[childCount * survivors.Count];
+            int childCount = (int)Math.Floor((double)lifeCount / survivors.Count);
+            Console.WriteLine($"Generation {Generation} - {(((double)survivors.Count / Lifeforms.Length) * 100):F2}% survived");
+            world.Lifeforms = new Lifeform[lifeCount];
             // Make sure there are no position overlaps
             int count = 0;
 
@@ -261,6 +261,19 @@ namespace Zene.NeuralNetworking
                     count++;
                 }
             }
+            
+            // Fill in missing lifeforms
+            int currentLifeform = 0;
+            while (count < lifeCount)
+            {
+                Vector2I pos = posHierarchy[count];
+
+                Lifeform life = survivors[currentLifeform].CreateChild(pos, world);
+                world.LifeformGrid[pos.X, pos.Y] = life;
+                world.Lifeforms[count] = life;
+
+                count++;
+            }
 
             return world;
         }
@@ -276,7 +289,7 @@ namespace Zene.NeuralNetworking
             return LifeformGrid[x, y];
         }
 
-        internal static Vector2I[] NoiseMap(int w, int h, int seed)
+        public static Vector2I[] NoiseMap(int w, int h, int seed)
         {
             static int Compare(NoiseValue x, NoiseValue y)
             {

@@ -12,7 +12,12 @@ namespace NeuralNetworkingTest
 {
     class Program
     {
+        #if (DEBUG)
         private const string SettingsPath = "settings.json";
+        #else
+        private const string SettingsPath = "../settings.json";
+        #endif
+        
         public static Settings Settings;
 
         private static void Main(string[] args)
@@ -38,8 +43,8 @@ namespace NeuralNetworkingTest
 
             if (Settings.Windowed)
             {
-                SimulateCustom();
-                //SimulateLive();
+                //SimulateCustom();
+                SimulateLive();
             }
             else
             {
@@ -71,7 +76,11 @@ namespace NeuralNetworkingTest
             object exportRef = new object();
 
             bool exportGen = exportGens.Contains(world.Generation);
-
+            if (exportGen)
+            {
+                frames = new FramePart[Settings.GenLength, world.Lifeforms.Length];
+            }
+            
             int counter = 0;
             while (world.Generation < Settings.Gens || Settings.Gens <= 0)
             {
@@ -131,7 +140,7 @@ namespace NeuralNetworkingTest
         private static void SimulateLive()
         {
             SetupEnvironment();
-
+            
             WindowL window = new WindowL(128 * 6, 128 * 6, "Work");
 
             window.Run();

@@ -237,11 +237,7 @@ namespace Zene.NeuralNetworking
                 double scale = Math.Round(Neuron.GetScale(gene.Strength));
 
                 // Value cannot be passed through % or /
-                if (scale == 0.0)
-                {
-                    b += gene.Strength;
-                    continue;
-                }
+                if (scale == 0.0) { continue; }
 
                 b += gene.Strength % (uint)scale;
             }

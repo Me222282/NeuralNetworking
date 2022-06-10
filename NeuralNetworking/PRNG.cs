@@ -154,6 +154,7 @@ namespace Zene.NeuralNetworking
             }
             catch (Exception)
             {
+                Console.WriteLine("Stupid microsoft");
                 y = mt[mti++];
             }
             y ^= TEMPERING_SHIFT_U(y);

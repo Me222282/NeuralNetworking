@@ -1,20 +1,34 @@
 ﻿{
-    "seed": 1,
-    "worldSize": 128,
-    "generationLength": 300,
-    "generationCount": 0,
-
-    "lifeformCount": 1000,
-    "brainSize": 4,
-    "innerCells": 4,
-    "mutationChance": 0.001,
-
+    "world":
+    {
+        "seed": 1,
+        "size": 128,
+        "generationLength": 300,
+        "generationCount": 0
+    },
+    
+    "lifeform":
+    {
+        "count": 1000,
+        "brainSize": 4,
+        "innerCells": 4,
+        "mutationChance": 0.001,
+        "colourGrade": 15
+    },
+    
     "dlls": [],
-    "exports": [],
-    "exportName": "export",
-    "exportPath": "./exports",
-
-    "windowed": true,
-    "frameDelay": 0,
-    "vSync": true
+    
+    "exporting":
+    {
+        "name": "export",
+        "path": "./exports",
+        "exports": []
+    },
+    
+    "window":
+    {
+        "render": true,
+        "frameDelay": 0,
+        "vSync": true
+    }
 }
