@@ -17,7 +17,8 @@ namespace Zene.NeuralNetworking
 
         public void ClearNeuronValues()
         {
-            NeuronValues = new double[NeuronValueNumber];
+            //NeuronValues = new double[NeuronValueNumber];
+            Array.Clear(NeuronValues, 0, NeuronValues.Length);
         }
 
         public override bool Equals(object obj)

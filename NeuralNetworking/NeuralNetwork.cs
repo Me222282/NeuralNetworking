@@ -7,11 +7,12 @@ namespace Zene.NeuralNetworking
     {
         private NeuralNetwork(Neuron[] neurons)
         {
-            List<Neuron> neuronList = new List<Neuron>(neurons);
+            //List<Neuron> neuronList = new List<Neuron>(neurons);
+            //neuronList.Sort(CompareNeuron);
 
-            neuronList.Sort(CompareNeuron);
+            Array.Sort(neurons, CompareNeuron);
 
-            Neurons = neuronList.ToArray();
+            Neurons = neurons;
         }
 
         private static int CompareNeuron(Neuron x, Neuron y)
