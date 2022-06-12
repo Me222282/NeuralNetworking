@@ -11,8 +11,8 @@ namespace NeuralNetworkingTest
 {
     public class WindowW : Window
     {
-        public WindowW(int width, int height, string title, string[] paths)
-            : base(width, height, title, 4.3, new WindowInitProperties()
+        public WindowW(int width, int height, string[] titles, FramePart[][,] frames, int[] counts, int[] lives, int[] size, int[] gens)
+            : base(width, height, titles[0], 4.3, new WindowInitProperties()
             {
                 // Anti aliasing
                 Samples = 4
@@ -40,35 +40,12 @@ namespace NeuralNetworkingTest
                     4, 6, 7
                 }, 1, 0, AttributeSize.D2, BufferUsage.DrawFrequent);
 
-            _frames = new FramePart[paths.Length][,];
-            _frameCount = new int[paths.Length];
-            _lifeCount = new int[paths.Length];
-            _worldSize = new int[paths.Length];
-            _generation = new int[paths.Length];
-
-            for (int i = 0; i < paths.Length; i++)
-            {
-                FileStream stream;
-                try
-                {
-                    stream = new FileStream(paths[i], FileMode.Open);
-                }
-                catch (Exception)
-                {
-                    throw new Exception($"{paths[i]} is an invalid path.");
-                }
-
-                Console.WriteLine($"Opened file {i} at {paths[i]}");
-
-                try
-                {
-                    _frames[i] = Gen.ImportFrames(stream, out _frameCount[i], out _lifeCount[i], out _worldSize[i], out _generation[i], out _, out _, out _);
-                }
-                catch (Exception)
-                {
-                    throw new Exception($"{paths[i]} is an invalid gen file.");
-                }
-            }
+            _frames = frames;
+            _frameCount = counts;
+            _lifeCount = lives;
+            _worldSize = size;
+            _generation = gens;
+            _titles = titles;
 
             // Set Framebuffer's clear colour to light-grey
             BaseFramebuffer.ClearColour = new Colour(225, 225, 225);
@@ -95,7 +72,7 @@ namespace NeuralNetworkingTest
             int frameCounter = 0;
             _vidCounter = 0;
 
-            Console.WriteLine(_vidCounter);
+            Console.WriteLine($"Generation {_generation[_vidCounter]}");
 
             while (GLFW.WindowShouldClose(Handle) == 0) // While window shouldn't close
             {
@@ -110,6 +87,8 @@ namespace NeuralNetworkingTest
                     }
 
                     Console.WriteLine($"Generation {_generation[_vidCounter]}");
+
+                    Title = _titles[_vidCounter];
                 }
 
                 DrawFrame(frameCounter);
@@ -145,6 +124,7 @@ namespace NeuralNetworkingTest
         private readonly int[] _lifeCount;
         private readonly int[] _generation;
         private readonly FramePart[][,] _frames;
+        private readonly string[] _titles;
 
         private void DrawFrame(int frame)
         {

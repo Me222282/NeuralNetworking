@@ -7,6 +7,27 @@ namespace NeuralNetworkingTest
 {
     public struct Settings
     {
+        public Settings(string path)
+        {
+            Path = path;
+
+            Seed = default;
+            WorldSize = default;
+            GenLength = default;
+            Gens = default;
+            LifeForms = default;
+            BrainSize = default;
+            InnerCells = default;
+            Mutation = default;
+            Dlls = default;
+            ExportGens = default;
+            ExportName = default;
+            ExportPath = default;
+            Windowed = default;
+            Delay = default;
+            VSync = default;
+        }
+
         public int Seed { get; private set; }
         public int WorldSize { get; private set; }
         public int GenLength { get; private set; }
@@ -26,7 +47,17 @@ namespace NeuralNetworkingTest
         public int Delay { get; private set; }
         public bool VSync { get; private set; }
 
-        public static Settings Parse(string json)
+        public string Path { get; }
+
+        /// <summary>
+        /// Makes sure export path exists
+        /// </summary>
+        public void CreateExport()
+        {
+            Directory.CreateDirectory(ExportPath);
+        }
+
+        public static Settings Parse(string json, string path)
         {
             JsonElement decode = JsonDocument.Parse(json).RootElement;
             JsonElement world;
@@ -71,7 +102,7 @@ namespace NeuralNetworkingTest
                 throw new Exception("Invalid settings file");
             }
             
-            Settings values = new Settings();
+            Settings values = new Settings(path);
 
             // World properties
             try
@@ -193,9 +224,6 @@ namespace NeuralNetworkingTest
                 }
             }
 
-            // Makes sure export path exists
-            Directory.CreateDirectory(values.ExportPath);
-
             // Window properties
             try
             {
@@ -226,6 +254,20 @@ namespace NeuralNetworkingTest
                     Console.WriteLine("\"window\" must contain the string \"vSync\" when \"render\" is true.");
                     throw new Exception("Invalid settings file");
                 }
+            }
+            else
+            {
+                // If loading files - these properties need to be loaded
+                try
+                {
+                    values.Delay = window.GetProperty("frameDelay").GetInt32();
+                }
+                catch (Exception) { }
+                try
+                {
+                    values.VSync = window.GetProperty("vSync").GetBoolean();
+                }
+                catch (Exception) { }
             }
 
             return values;

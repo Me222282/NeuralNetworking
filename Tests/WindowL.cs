@@ -201,14 +201,18 @@ namespace NeuralNetworkingTest
 
                         Task.Run(() =>
                         {
+                            FileStream stream = new FileStream($"{Program.Settings.ExportPath}/{Program.Settings.ExportName}{generation}.gen", FileMode.Create);
+
                             Gen.ExportFrames(
-                                new FileStream($"{Program.Settings.ExportPath}/{Program.Settings.ExportName}{generation}.gen", FileMode.Create),
+                                stream,
                                 frames,
                                 Program.Settings.WorldSize,
                                 generation,
                                 Program.Settings.BrainSize,
                                 Program.Settings.InnerCells,
                                 Lifeform.ColourGrade);
+
+                            stream.Close();
 
                             Network.ExportLifeforms($"{Program.Settings.ExportPath}/{Program.Settings.ExportName}-lf{generation}.txt", _world.Lifeforms);
 

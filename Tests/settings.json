@@ -22,12 +22,12 @@
     {
         "name": "export",
         "path": "./exports",
-        "exports": [0, 10, 20, 50, 100]
+        "exports": []
     },
     
     "window":
     {
-        "render": false,
+        "render": true,
         "frameDelay": 0,
         "vSync": true
     }

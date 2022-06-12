@@ -167,11 +167,7 @@ namespace FileEncoding
             Span<Colour> colours = stackalloc Colour[lifeCount];
             for (int i = 0; i < lifeCount; i++)
             {
-                int r = zip.ReadByte();
-                int g = zip.ReadByte();
-                int b = zip.ReadByte();
-
-                colours[i] = new Colour((byte)r, (byte)g, (byte)b);
+                colours[i] = (Colour)zip.Read<Colour3>();
             }
 
             FramePart[,] frames = new FramePart[frameCount, lifeCount];
@@ -322,6 +318,8 @@ namespace FileEncoding
 
                     frames[f, l] = new FramePart(colours[l], x, y, alive);
                 }
+
+                Console.WriteLine($"Loaded frame {f}");
             }
 
             zip.Dispose();

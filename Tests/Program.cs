@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using Zene.NeuralNetworking;
 using Zene.Structs;
 using Zene.Windowing;
-using System.Text;
 using System.Threading.Tasks;
 using FileEncoding;
+using System.Reflection;
 
 namespace NeuralNetworkingTest
 {
@@ -24,11 +24,19 @@ namespace NeuralNetworkingTest
 
         private static void Main(string[] args)
         {
+            //ConvertFromOld(args);
+            //return;
+
             Core.Init();
 
-            if (!File.Exists(SettingsPath))
+            string settingsPath = Path.Combine(
+                Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+                SettingsPath);
+
+            if (!File.Exists(settingsPath))
             {
                 Console.WriteLine("No settings file.");
+                Console.WriteLine($"Path: {settingsPath}");
                 Console.ReadLine();
 
                 Core.Terminate();
@@ -37,7 +45,7 @@ namespace NeuralNetworkingTest
 
             try
             {
-                Settings = Settings.Parse(File.ReadAllText(SettingsPath));
+                Settings = Settings.Parse(File.ReadAllText(settingsPath), settingsPath);
             }
             catch (Exception)
             {
@@ -54,6 +62,8 @@ namespace NeuralNetworkingTest
                 Core.Terminate();
                 return;
             }
+
+            Settings.CreateExport();
 
             if (Settings.Windowed)
             {
@@ -102,14 +112,18 @@ namespace NeuralNetworkingTest
 
                         Task.Run(() =>
                         {
+                            FileStream stream = new FileStream($"{Settings.ExportPath}/{Settings.ExportName}{generation}.gen", FileMode.Create);
+
                             Gen.ExportFrames(
-                                new FileStream($"{Settings.ExportPath}/{Settings.ExportName}{generation}.gen", FileMode.Create),
+                                stream,
                                 frames,
                                 Settings.WorldSize,
                                 generation,
                                 Settings.BrainSize,
                                 Settings.InnerCells,
                                 Lifeform.ColourGrade);
+
+                            stream.Close();
 
                             Network.ExportLifeforms($"{Settings.ExportPath}/{Settings.ExportName}-lf{generation}.txt", world.Lifeforms);
 
@@ -161,30 +175,43 @@ namespace NeuralNetworkingTest
         }
         private static void RunGeneration(string[] paths)
         {
-            StringBuilder text = new StringBuilder();
+            FramePart[][,] frames = new FramePart[paths.Length][,];
+            int[] frameCount = new int[paths.Length];
+            int[] lifeCount = new int[paths.Length];
+            int[] worldSize = new int[paths.Length];
+            int[] generation = new int[paths.Length];
 
             for (int i = 0; i < paths.Length; i++)
             {
-                text.Append(paths[i]);
-
-                if (i + 1 != paths.Length)
+                FileStream stream;
+                try
                 {
-                    text.Append(" - ");
+                    stream = new FileStream(paths[i], FileMode.Open);
                 }
+                catch (Exception)
+                {
+                    Console.WriteLine($"{paths[i]} is an invalid path.");
+                    Console.ReadLine();
+                    return;
+                }
+
+                Console.WriteLine($"Opened file {i} at {paths[i]}");
+
+                try
+                {
+                    frames[i] = Gen.ImportFrames(stream, out frameCount[i], out lifeCount[i], out worldSize[i], out generation[i], out _, out _, out _);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine($"{paths[i]} is an invalid gen file.");
+                    Console.ReadLine();
+                    return;
+                }
+
+                stream.Close();
             }
 
-            WindowW window;
-
-            try
-            {
-                window = new WindowW(128 * 6, 128 * 6, text.ToString(), paths);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                Console.ReadLine();
-                return;
-            }
+            WindowW window = new WindowW(128 * 6, 128 * 6, paths, frames, frameCount, lifeCount, worldSize, generation);
 
             window.Run();
         }
@@ -235,10 +262,7 @@ namespace NeuralNetworkingTest
 
                 FramePart[,] frameData = Gen.ImportFramesOld(data, out _, out _, out int ws);
 
-                // Rename path to add " - New" to end of file name
-                string newS = s;
-                int dot = s.IndexOf('.');
-                newS = newS.Insert(dot, " - New");
+                Console.WriteLine(s);
 
                 Console.WriteLine("Enter generation");
                 int g = int.Parse(Console.ReadLine());
@@ -249,7 +273,9 @@ namespace NeuralNetworkingTest
                 Console.WriteLine("Enter inner cell count");
                 int i = int.Parse(Console.ReadLine());
 
-                Gen.ExportFrames(new FileStream(newS, FileMode.Create), frameData, ws, g, b, i, 15);
+                Console.WriteLine();
+
+                Gen.ExportFrames(new FileStream(s, FileMode.Create), frameData, ws, g, b, i, 15);
             }
         }
 
