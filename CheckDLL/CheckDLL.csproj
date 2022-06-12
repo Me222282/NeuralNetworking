@@ -5,7 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tests\NeuralNetworkingTest.csproj" />
+    <ProjectReference Include="..\NeuralNetworking\NeuralNetworking.csproj" />
+    <ProjectReference Include="..\Tests\Program.csproj" />
+    <ProjectReference Include="..\Zene\Structs\src\Structs.csproj" />
   </ItemGroup>
 
 </Project>

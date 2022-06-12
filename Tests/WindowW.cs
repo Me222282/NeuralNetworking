@@ -4,12 +4,14 @@ using Zene.Windowing.Base;
 using Zene.Graphics.Shaders;
 using Zene.Structs;
 using System;
+using System.IO;
+using FileEncoding;
 
 namespace NeuralNetworkingTest
 {
     public class WindowW : Window
     {
-        public WindowW(int width, int height, string title, byte[][] frameData)
+        public WindowW(int width, int height, string title, string[] paths)
             : base(width, height, title, 4.3, new WindowInitProperties()
             {
                 // Anti aliasing
@@ -38,14 +40,34 @@ namespace NeuralNetworkingTest
                     4, 6, 7
                 }, 1, 0, AttributeSize.D2, BufferUsage.DrawFrequent);
 
-            _frames = new Program.FramePart[frameData.Length][,];
-            _frameCount = new int[frameData.Length];
-            _lifeCount = new int[frameData.Length];
-            _worldSize = new int[frameData.Length];
+            _frames = new FramePart[paths.Length][,];
+            _frameCount = new int[paths.Length];
+            _lifeCount = new int[paths.Length];
+            _worldSize = new int[paths.Length];
+            _generation = new int[paths.Length];
 
-            for (int i = 0; i < frameData.Length; i++)
+            for (int i = 0; i < paths.Length; i++)
             {
-                _frames[i] = Program.ImportFrames(frameData[i], out _frameCount[i], out _lifeCount[i], out _worldSize[i]);
+                FileStream stream;
+                try
+                {
+                    stream = new FileStream(paths[i], FileMode.Open);
+                }
+                catch (Exception)
+                {
+                    throw new Exception($"{paths[i]} is an invalid path.");
+                }
+
+                Console.WriteLine($"Opened file {i} at {paths[i]}");
+
+                try
+                {
+                    _frames[i] = Gen.ImportFrames(stream, out _frameCount[i], out _lifeCount[i], out _worldSize[i], out _generation[i], out _, out _, out _);
+                }
+                catch (Exception)
+                {
+                    throw new Exception($"{paths[i]} is an invalid gen file.");
+                }
             }
 
             // Set Framebuffer's clear colour to light-grey
@@ -61,7 +83,14 @@ namespace NeuralNetworkingTest
 
         public void Run()
         {
-            GLFW.SwapInterval(1);
+            if (Program.Settings.VSync)
+            {
+                GLFW.SwapInterval(1);
+            }
+            else
+            {
+                GLFW.SwapInterval(0);
+            }
 
             int frameCounter = 0;
             _vidCounter = 0;
@@ -80,7 +109,7 @@ namespace NeuralNetworkingTest
                         _vidCounter = 0;
                     }
 
-                    Console.WriteLine(_vidCounter);
+                    Console.WriteLine($"Generation {_generation[_vidCounter]}");
                 }
 
                 DrawFrame(frameCounter);
@@ -89,7 +118,10 @@ namespace NeuralNetworkingTest
                 GLFW.SwapBuffers(Handle);
                 GLFW.PollEvents();
 
-                //System.Threading.Thread.Sleep(25);
+                if (Program.Settings.Delay != 0)
+                {
+                    System.Threading.Thread.Sleep(Program.Settings.Delay);
+                }
 
                 frameCounter++;
             }
@@ -111,7 +143,8 @@ namespace NeuralNetworkingTest
         private readonly int[] _worldSize;
         private readonly int[] _frameCount;
         private readonly int[] _lifeCount;
-        private readonly Program.FramePart[][,] _frames;
+        private readonly int[] _generation;
+        private readonly FramePart[][,] _frames;
 
         private void DrawFrame(int frame)
         {
@@ -130,9 +163,9 @@ namespace NeuralNetworkingTest
             }
         }
 
-        private void DrawLifeform(Program.FramePart lifeform)
+        private void DrawLifeform(FramePart lifeform)
         {
-            _shader.SetDrawColour(lifeform.Colour);
+            _shader.SetDrawColour((Colour)lifeform.Colour);
             _shader.Matrix1 = Matrix4.CreateTranslation(lifeform.Position.X, lifeform.Position.Y, 0);
             _lifeGraphics.Draw();
         }

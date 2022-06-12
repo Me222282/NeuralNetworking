@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text.Json;
 using Zene.NeuralNetworking;
 
@@ -191,6 +192,9 @@ namespace NeuralNetworkingTest
                     throw new Exception("Invalid settings file");
                 }
             }
+
+            // Makes sure export path exists
+            Directory.CreateDirectory(values.ExportPath);
 
             // Window properties
             try

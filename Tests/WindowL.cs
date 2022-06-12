@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.IO;
+using FileEncoding;
 
 namespace NeuralNetworkingTest
 {
@@ -171,10 +172,14 @@ namespace NeuralNetworkingTest
                 GLFW.SwapInterval(0);
             }
 
-            Program.FramePart[,] frames = null;
+            FramePart[,] frames = null;
 
             List<int> exportGens = new List<int>(Program.Settings.ExportGens);
             bool exportGen = exportGens.Contains(_world.Generation);
+            if (exportGen)
+            {
+                frames = new FramePart[Program.Settings.GenLength, _world.Lifeforms.Length];
+            }
 
             int exporting = 0;
             object exportRef = new object();
@@ -196,10 +201,16 @@ namespace NeuralNetworkingTest
 
                         Task.Run(() =>
                         {
-                            byte[] export = Program.ExportFrames(frames, Program.Settings.WorldSize);
-                            File.WriteAllBytes($"{Program.Settings.ExportPath}/{Program.Settings.ExportName}{generation}.gen", export);
+                            Gen.ExportFrames(
+                                new FileStream($"{Program.Settings.ExportPath}/{Program.Settings.ExportName}{generation}.gen", FileMode.Create),
+                                frames,
+                                Program.Settings.WorldSize,
+                                generation,
+                                Program.Settings.BrainSize,
+                                Program.Settings.InnerCells,
+                                Lifeform.ColourGrade);
 
-                            Program.ExportLifeforms($"{Program.Settings.ExportPath}/{Program.Settings.ExportName}-lf{generation}.txt", _world.Lifeforms);
+                            Network.ExportLifeforms($"{Program.Settings.ExportPath}/{Program.Settings.ExportName}-lf{generation}.txt", _world.Lifeforms);
 
                             lock (exportRef) { exporting--; }
                         });
@@ -212,7 +223,7 @@ namespace NeuralNetworkingTest
 
                     if (exportGen)
                     {
-                        frames = new Program.FramePart[Program.Settings.GenLength, _world.Lifeforms.Length];
+                        frames = new FramePart[Program.Settings.GenLength, _world.Lifeforms.Length];
                     }
                 }
 
@@ -222,7 +233,7 @@ namespace NeuralNetworkingTest
                 {
                     for (int i = 0; i < _world.Lifeforms.Length; i++)
                     {
-                        frames[counter, i] = new Program.FramePart(_world.Lifeforms[i]);
+                        frames[counter, i] = new FramePart(_world.Lifeforms[i]);
                     }
                 }
 

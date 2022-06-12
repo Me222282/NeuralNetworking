@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;IDE0090</NoWarn>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FileEncoding\FileEncoding.csproj" />
+    <ProjectReference Include="..\Zene\Graphics\src\Graphics.csproj" />
+    <ProjectReference Include="..\Zene\Structs\src\Structs.csproj" />
+    <ProjectReference Include="..\Zene\Windowing\src\Windowing.csproj" />
+    <ProjectReference Include="..\NeuralNetworking\NeuralNetworking.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
