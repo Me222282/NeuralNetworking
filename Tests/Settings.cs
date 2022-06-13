@@ -2,8 +2,9 @@
 using System.IO;
 using System.Text.Json;
 using Zene.NeuralNetworking;
+using Zene.Structs;
 
-namespace NeuralNetworkingTest
+namespace NetworkProgram
 {
     public struct Settings
     {
@@ -26,6 +27,9 @@ namespace NeuralNetworkingTest
             Windowed = default;
             Delay = default;
             VSync = default;
+            LowPoly = default;
+            BorderSize = default;
+            BorderColour = default;
         }
 
         public int Seed { get; private set; }
@@ -46,6 +50,9 @@ namespace NeuralNetworkingTest
         public bool Windowed { get; private set; }
         public int Delay { get; private set; }
         public bool VSync { get; private set; }
+        public bool LowPoly { get; private set; }
+        public double BorderSize { get; private set; }
+        public Colour BorderColour { get; private set; }
 
         public string Path { get; }
 
@@ -57,15 +64,18 @@ namespace NeuralNetworkingTest
             Directory.CreateDirectory(ExportPath);
         }
 
-        public static Settings Parse(string json, string path)
+        public static Settings Parse(string json, string path, bool forceWindow = false)
         {
             JsonElement decode = JsonDocument.Parse(json).RootElement;
             JsonElement world;
             JsonElement lifeform;
             JsonElement exporting = default;
             bool exportingExists = true;
-            JsonElement window;
-            
+            JsonElement window = default;
+            bool windowProps = true;
+
+            Settings values = new Settings(path);
+
             try
             {
                 world = decode.GetProperty("world");
@@ -98,11 +108,17 @@ namespace NeuralNetworkingTest
             }
             catch (Exception)
             {
-                Console.WriteLine("Settings must contain the property \"window\".");
-                throw new Exception("Invalid settings file");
+                if (forceWindow)
+                {
+                    Console.WriteLine("Settings must contain the property \"window\".");
+                    throw new Exception("Invalid settings file");
+                }
+                else
+                {
+                    values.Windowed = false;
+                    windowProps = false;
+                }
             }
-            
-            Settings values = new Settings(path);
 
             // World properties
             try
@@ -224,6 +240,8 @@ namespace NeuralNetworkingTest
                 }
             }
 
+            if (!windowProps) { return values; }
+
             // Window properties
             try
             {
@@ -234,40 +252,52 @@ namespace NeuralNetworkingTest
                 Console.WriteLine("\"window\" must contain the boolean \"render\".");
                 throw new Exception("Invalid settings file");
             }
-            if (values.Windowed)
+            values.Windowed |= forceWindow;
+
+            try
             {
-                try
+                values.Delay = window.GetProperty("frameDelay").GetInt32();
+            }
+            catch (Exception)
+            {
+                if (values.Windowed)
                 {
-                    values.Delay = window.GetProperty("frameDelay").GetInt32();
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("\"window\" must contain the string \"frameDelay\" when \"render\" is true.");
-                    throw new Exception("Invalid settings file");
-                }
-                try
-                {
-                    values.VSync = window.GetProperty("vSync").GetBoolean();
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("\"window\" must contain the string \"vSync\" when \"render\" is true.");
+                    Console.WriteLine("\"window\" must contain the integer \"frameDelay\" when \"render\" is true.");
                     throw new Exception("Invalid settings file");
                 }
             }
-            else
+            try
             {
-                // If loading files - these properties need to be loaded
-                try
+                values.VSync = window.GetProperty("vSync").GetBoolean();
+            }
+            catch (Exception)
+            {
+                if (values.Windowed)
                 {
-                    values.Delay = window.GetProperty("frameDelay").GetInt32();
+                    Console.WriteLine("\"window\" must contain the boolean \"vSync\" when \"render\" is true.");
+                    throw new Exception("Invalid settings file");
                 }
-                catch (Exception) { }
-                try
-                {
-                    values.VSync = window.GetProperty("vSync").GetBoolean();
-                }
-                catch (Exception) { }
+            }
+            try
+            {
+                values.LowPoly = window.GetProperty("lowPoly").GetBoolean();
+            }
+            catch (Exception) { }
+            try
+            {
+                values.BorderSize = window.GetProperty("borderSize").GetDouble();
+            }
+            catch (Exception)
+            {
+                values.BorderSize = 0.5;
+            }
+            try
+            {
+                values.BorderColour = GetColour(window, "borderColour");
+            }
+            catch (Exception)
+            {
+                values.BorderColour = new Colour(128, 128, 128);
             }
 
             return values;
@@ -298,6 +328,28 @@ namespace NeuralNetworkingTest
             }
 
             return value;
+        }
+        private static Colour GetColour(JsonElement json, string name)
+        {
+            JsonElement array = json.GetProperty(name);
+
+            int length = array.GetArrayLength();
+
+            if (length != 3 ||
+                length != 4)
+            {
+                throw new Exception("Invalid colour.");
+            }
+
+            byte[] value = new byte[4];
+            value[3] = 255;
+
+            for (int i = 0; i < length; i++)
+            {
+                value[i] = array[i].GetByte();
+            }
+
+            return new Colour(value[0], value[1], value[2], value[3]);
         }
     }
 }

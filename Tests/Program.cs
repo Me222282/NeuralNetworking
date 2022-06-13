@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using FileEncoding;
 using System.Reflection;
 
-namespace NeuralNetworkingTest
+namespace NetworkProgram
 {
     class Program
     {
@@ -45,7 +45,7 @@ namespace NeuralNetworkingTest
 
             try
             {
-                Settings = Settings.Parse(File.ReadAllText(settingsPath), settingsPath);
+                Settings = Settings.Parse(File.ReadAllText(settingsPath), settingsPath, args.Length > 0);
             }
             catch (Exception)
             {
@@ -169,7 +169,7 @@ namespace NeuralNetworkingTest
         {
             SetupEnvironment();
             
-            WindowL window = new WindowL(128 * 6, 128 * 6, "Work");
+            WindowLive window = new WindowLive(128 * 6, 128 * 6, "Work");
 
             window.Run();
         }
@@ -211,7 +211,7 @@ namespace NeuralNetworkingTest
                 stream.Close();
             }
 
-            WindowW window = new WindowW(128 * 6, 128 * 6, paths, frames, frameCount, lifeCount, worldSize, generation);
+            WindowOpen window = new WindowOpen(128 * 6, 128 * 6, paths, frames, frameCount, lifeCount, worldSize, generation);
 
             window.Run();
         }
@@ -242,7 +242,7 @@ namespace NeuralNetworkingTest
                 new Gene(12, 4, 2.0)
             };
 
-            WindowL window = new WindowL(128 * 6, 128 * 6, "Work",
+            WindowLive window = new WindowLive(128 * 6, 128 * 6, "Work",
                 new Gene[][]
                 {
                     genes1,

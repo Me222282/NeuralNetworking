@@ -2,7 +2,7 @@
 using Zene.NeuralNetworking;
 using Zene.Structs;
 
-namespace NeuralNetworkingTest
+namespace NetworkProgram
 {
     public struct PLCell : INeuronCell
     {

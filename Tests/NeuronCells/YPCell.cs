@@ -1,7 +1,7 @@
 ﻿using System;
 using Zene.NeuralNetworking;
 
-namespace NeuralNetworkingTest
+namespace NetworkProgram
 {
     public struct YPCell : INeuronCell
     {

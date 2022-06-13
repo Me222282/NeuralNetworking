@@ -1,6 +1,6 @@
 ﻿using Zene.NeuralNetworking;
 
-namespace NeuralNetworkingTest
+namespace NetworkProgram
 {
     public interface ICheckLifeform
     {

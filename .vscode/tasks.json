@@ -7,8 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                //"${workspaceFolder}/GenFileLoader/GenFileLoader.csproj",
-                "${workspaceFolder}/Tests/NeuralNetworkingTest.csproj",
+                "${workspaceFolder}/Tests/Program.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -20,8 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                //"${workspaceFolder}/GenFileLoader/GenFileLoader.csproj",
-                "${workspaceFolder}/Tests/NeuralNetworkingTest.csproj",
+                "${workspaceFolder}/Tests/Program.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -34,8 +32,7 @@
             "args": [
                 "watch",
                 "run",
-                //"${workspaceFolder}/GenFileLoader/GenFileLoader.csproj",
-                "${workspaceFolder}/Tests/NeuralNetworkingTest.csproj",
+                "${workspaceFolder}/Tests/Program.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
