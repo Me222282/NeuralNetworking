@@ -8,6 +8,8 @@ namespace FileEncoding
 {
     public static class Gen
     {
+        private const string _v = "ZeneGen3";
+
         private struct Validation
         {
             public Validation(string str)
@@ -65,7 +67,7 @@ namespace FileEncoding
             int lifeCount = frameData.GetLength(1);
             int frameCount = frameData.GetLength(0);
 
-            stream.Write(new Validation("ZeneGen3"));
+            stream.Write(new Validation(_v));
 
             DataType type;
             // Determine smallest type that can fit world
@@ -141,7 +143,7 @@ namespace FileEncoding
         {
             Validation v = stream.Read<Validation>();
 
-            if (!v.Equals(new Validation("ZeneGen3")))
+            if (!v.Equals(new Validation(_v)))
             {
                 throw new Exception($"{nameof(stream)} doesn't contain a gen file.");
             }
@@ -326,6 +328,17 @@ namespace FileEncoding
             mem.Dispose();
 
             return frames;
+        }
+
+        public static bool IsGenFile(string path)
+        {
+            Stream stream = new FileStream(path, FileMode.Open);
+
+            Validation v = stream.Read<Validation>();
+
+            stream.Close();
+
+            return v.Equals(new Validation(_v));
         }
     }
 }

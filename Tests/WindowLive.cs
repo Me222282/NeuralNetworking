@@ -20,7 +20,7 @@ namespace NetworkProgram
                 Settings.WorldSize,
                 Settings.GenLength);
         }
-        public WindowLive(int width, int height, string title, Settings settings, Lifeform[] lifeforms)
+        public WindowLive(int width, int height, string title, Settings settings, Lifeform[] lifeforms, int genStart = 0)
             : base(width, height, title, settings)
         {
             if (lifeforms.Length != Settings.LifeForms)
@@ -34,9 +34,10 @@ namespace NetworkProgram
                 Settings.WorldSize,
                 Settings.WorldSize,
                 lifeforms,
-                Settings.GenLength);
+                Settings.GenLength,
+                genStart);
         }
-        public WindowLive(int width, int height, string title, Settings settings, Gene[][] genes)
+        public WindowLive(int width, int height, string title, Settings settings, Gene[][] genes, int genStart = 0)
             : base(width, height, title, settings)
         {
             _exportGens = new List<int>(Settings.ExportGens);
@@ -48,7 +49,8 @@ namespace NetworkProgram
                     Settings.LifeForms,
                     Settings.WorldSize,
                     Settings.WorldSize),
-                Settings.GenLength);
+                Settings.GenLength,
+                genStart);
         }
 
         private int _exporting = 0;

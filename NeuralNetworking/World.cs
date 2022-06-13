@@ -64,12 +64,12 @@ namespace Zene.NeuralNetworking
             }
         }
 
-        public World(int seed, int width, int height, Lifeform[] lifeforms, int genLength)
+        public World(int seed, int width, int height, Lifeform[] lifeforms, int genLength, int genStart = 0)
         {
             Width = width;
             Height = height;
 
-            Generation = 0;
+            Generation = genStart;
             GenerationLength = genLength;
 
             _rect = new Rectangle(0, height - 1, width - 1, height - 1);
@@ -92,12 +92,12 @@ namespace Zene.NeuralNetworking
                 LifeformGrid[pos.X, pos.Y] = lifeforms[i];
             }
         }
-        public World(int width, int height, Lifeform[] lifeforms, int genLength)
+        public World(int width, int height, Lifeform[] lifeforms, int genLength, int genStart = 0)
         {
             Width = width;
             Height = height;
 
-            Generation = 0;
+            Generation = genStart;
             GenerationLength = genLength;
 
             _rect = new Rectangle(0, height - 1, width - 1, height - 1);

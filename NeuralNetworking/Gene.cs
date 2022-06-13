@@ -73,7 +73,6 @@
                 (ushort)random.Generate(0, ushort.MaxValue),
                 (uint)random.Generate(0, uint.MaxValue));
         }
-
         public static Gene Generate()
         {
             ushort a;
