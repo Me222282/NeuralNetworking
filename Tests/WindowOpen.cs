@@ -6,8 +6,8 @@ namespace NetworkProgram
 {
     public class WindowOpen : BaseWindow
     {
-        public WindowOpen(int width, int height, string[] titles, FramePart[][,] frames, int[] counts, int[] lives, int[] size, int[] gens)
-            : base(width, height, titles[0], new Vector2I(size[0]))
+        public WindowOpen(int width, int height, string[] titles, Settings settings, FramePart[][,] frames, int[] counts, int[] lives, int[] size, int[] gens)
+            : base(width, height, titles[0], settings, new Vector2I(size[0]))
         {
             _frames = frames;
             _frameCount = counts;

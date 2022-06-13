@@ -6,30 +6,11 @@ using Zene.Structs;
 
 namespace NetworkProgram
 {
-    public struct Settings
+    public class Settings
     {
         public Settings(string path)
         {
             Path = path;
-
-            Seed = default;
-            WorldSize = default;
-            GenLength = default;
-            Gens = default;
-            LifeForms = default;
-            BrainSize = default;
-            InnerCells = default;
-            Mutation = default;
-            Dlls = default;
-            ExportGens = default;
-            ExportName = default;
-            ExportPath = default;
-            Windowed = default;
-            Delay = default;
-            VSync = default;
-            LowPoly = default;
-            BorderSize = default;
-            BorderColour = default;
         }
 
         public int Seed { get; private set; }

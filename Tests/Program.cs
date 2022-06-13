@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace NetworkProgram
 {
-    class Program
+    internal sealed class Program
     {
         #if (DEBUG)
         private const string SettingsPath = "settings.json";
@@ -18,17 +18,17 @@ namespace NetworkProgram
         private const string SettingsPath = "../settings.json";
         #endif
         
-        public static Settings Settings;
+        private Program(Settings settings)
+        {
+            Settings = settings;
+        }
+
+        public Settings Settings { get; set; }
 
         //private const double Googol = 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d;
 
         private static void Main(string[] args)
         {
-            //ConvertFromOld(args);
-            //return;
-
-            Core.Init();
-
             string settingsPath = Path.Combine(
                 Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
                 SettingsPath);
@@ -38,30 +38,38 @@ namespace NetworkProgram
                 Console.WriteLine("No settings file.");
                 Console.WriteLine($"Path: {settingsPath}");
                 Console.ReadLine();
-
-                Core.Terminate();
                 return;
             }
 
+            Settings settings;
+
             try
             {
-                Settings = Settings.Parse(File.ReadAllText(settingsPath), settingsPath, args.Length > 0);
+                settings = Settings.Parse(File.ReadAllText(settingsPath), settingsPath, args.Length > 0);
             }
             catch (Exception)
             {
                 Console.ReadLine();
-
-                Core.Terminate();
                 return;
             }
-            
+
+            Core.Init();
+
+            Program program = new Program(settings);
+            program.Run(args);
+
+            Core.Terminate();
+        }
+
+        private void Run(string[] args)
+        {
             if (args.Length > 0)
             {
                 RunGeneration(args);
-
-                Core.Terminate();
                 return;
             }
+
+            SetupEnvironment();
 
             Settings.CreateExport();
 
@@ -71,14 +79,10 @@ namespace NetworkProgram
                 SimulateLive();
             }
             else { Simulate(); }
-
-            Core.Terminate();
         }
 
-        private static void Simulate()
+        private void Simulate()
         {
-            SetupEnvironment();
-
             List<int> exportGens = new List<int>(Settings.ExportGens);
 
             World world = new World(
@@ -112,20 +116,7 @@ namespace NetworkProgram
 
                         Task.Run(() =>
                         {
-                            FileStream stream = new FileStream($"{Settings.ExportPath}/{Settings.ExportName}{generation}.gen", FileMode.Create);
-
-                            Gen.ExportFrames(
-                                stream,
-                                frames,
-                                Settings.WorldSize,
-                                generation,
-                                Settings.BrainSize,
-                                Settings.InnerCells,
-                                Lifeform.ColourGrade);
-
-                            stream.Close();
-
-                            Network.ExportLifeforms($"{Settings.ExportPath}/{Settings.ExportName}-lf{generation}.txt", world.Lifeforms);
+                            Export(generation, frames, world.Lifeforms, Settings);
 
                             lock (exportRef) { exporting--; }
                         });
@@ -165,15 +156,13 @@ namespace NetworkProgram
                 // Do nothing to let exporting finish
             }
         }
-        private static void SimulateLive()
+        private void SimulateLive()
         {
-            SetupEnvironment();
-            
-            WindowLive window = new WindowLive(128 * 6, 128 * 6, "Work");
+            WindowLive window = new WindowLive(128 * 6, 128 * 6, "Work", Settings);
 
             window.Run();
         }
-        private static void RunGeneration(string[] paths)
+        private void RunGeneration(string[] paths)
         {
             FramePart[][,] frames = new FramePart[paths.Length][,];
             int[] frameCount = new int[paths.Length];
@@ -211,15 +200,13 @@ namespace NetworkProgram
                 stream.Close();
             }
 
-            WindowOpen window = new WindowOpen(128 * 6, 128 * 6, paths, frames, frameCount, lifeCount, worldSize, generation);
+            WindowOpen window = new WindowOpen(128 * 6, 128 * 6, paths, Settings, frames, frameCount, lifeCount, worldSize, generation);
 
             window.Run();
         }
 
-        private static void SimulateCustom()
+        private void SimulateCustom()
         {
-            SetupEnvironment();
-
             Gene[] genes1 = new Gene[]
             {
                 new Gene(4, 4, -5.0),
@@ -242,7 +229,7 @@ namespace NetworkProgram
                 new Gene(12, 4, 2.0)
             };
 
-            WindowLive window = new WindowLive(128 * 6, 128 * 6, "Work",
+            WindowLive window = new WindowLive(128 * 6, 128 * 6, "Work", Settings,
                 new Gene[][]
                 {
                     genes1,
@@ -304,7 +291,7 @@ namespace NetworkProgram
                 (lifeform.Location.Y > (lifeform.CurrentWorld.Height / 4)) &&
                 (lifeform.Location.Y < (lifeform.CurrentWorld.Height - (lifeform.CurrentWorld.Height / 4)));
         }
-        public static void SetupEnvironment()
+        public void SetupEnvironment()
         {
             // Inner Cells
             for (int i = 0; i < Settings.InnerCells; i++)
@@ -334,6 +321,24 @@ namespace NetworkProgram
 
             Gene.MutationChance = Settings.Mutation;
             Lifeform.Random = new PRNG((ulong)Settings.Seed);
+        }
+
+        public static void Export(int generation, FramePart[,] frames, Lifeform[] lifeforms, Settings settings)
+        {
+            FileStream stream = new FileStream($"{settings.ExportPath}/{settings.ExportName}{generation}.gen", FileMode.Create);
+
+            Gen.ExportFrames(
+                stream,
+                frames,
+                settings.WorldSize,
+                generation,
+                settings.BrainSize,
+                settings.InnerCells,
+                Lifeform.ColourGrade);
+
+            stream.Close();
+
+            Network.ExportLifeforms($"{settings.ExportPath}/{settings.ExportName}-lf{generation}.txt", lifeforms);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace NetworkProgram
 {
     public abstract class BaseWindow : Window
     {
-        public BaseWindow(int width, int height, string title)
+        public BaseWindow(int width, int height, string title, Settings settings)
             : base(width, height, title, 4.3, new WindowInitProperties()
             {
                 // Anti aliasing
@@ -50,18 +50,21 @@ namespace NetworkProgram
                     2, 3, 0
                 }, 1, 0, AttributeSize.D2, BufferUsage.DrawFrequent);
 
-            ReferenceSize = new Vector2I(Program.Settings.WorldSize);
+            Settings = settings;
+            ReferenceSize = new Vector2I(settings.WorldSize);
 
             // Set Framebuffer's clear colour to light-grey
             BaseFramebuffer.ClearColour = new Colour(225, 225, 225);
 
             OnSizePixelChange(new SizeChangeEventArgs(width, height));
         }
-        public BaseWindow(int width, int height, string title, Vector2I refSize)
-            : this(width, height, title)
+        public BaseWindow(int width, int height, string title, Settings settings, Vector2I refSize)
+            : this(width, height, title, settings)
         {
             ReferenceSize = refSize;
         }
+
+        protected Settings Settings { get; }
 
         private readonly BasicShader _shader;
         private readonly DrawObject<Vector2, byte> _drawBox;
@@ -82,7 +85,7 @@ namespace NetworkProgram
 
         public void Run()
         {
-            if (Program.Settings.VSync)
+            if (Settings.VSync)
             {
                 GLFW.SwapInterval(1);
             }
@@ -101,9 +104,9 @@ namespace NetworkProgram
                 GLFW.SwapBuffers(Handle);
                 GLFW.PollEvents();
 
-                if (Program.Settings.Delay != 0 && _running)
+                if (Settings.Delay != 0 && _running)
                 {
-                    System.Threading.Thread.Sleep(Program.Settings.Delay);
+                    System.Threading.Thread.Sleep(Settings.Delay);
                 }
 
                 if (_running) { Counter++; }
@@ -145,14 +148,17 @@ namespace NetworkProgram
 
             DrawBorder();
 
-            _lifeGraphics = Program.Settings.LowPoly ? _drawBox : _drawOctagon;
+            _lifeGraphics = Settings.LowPoly ? _drawBox : _drawOctagon;
         }
 
         private void DrawBorder()
         {
-            _shader.SetDrawColour(Program.Settings.BorderColour);
+            // Border too small to draw
+            if (Settings.BorderSize <= 0) { return; }
 
-            double border = Program.Settings.BorderSize;
+            _shader.SetDrawColour(Settings.BorderColour);
+
+            double border = Settings.BorderSize;
 
             double halfHeight = (ReferenceSize.Y * 0.5) - 0.5;
             double halfWidth = (ReferenceSize.X * 0.5) - 0.5;
