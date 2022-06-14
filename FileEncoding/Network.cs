@@ -2,7 +2,6 @@
 using System.IO;
 using Zene.NeuralNetworking;
 using K4os.Compression.LZ4.Streams;
-using System.Collections.Generic;
 
 namespace FileEncoding
 {
@@ -107,24 +106,24 @@ namespace FileEncoding
 
             for (int l = 0; l < lifeforms.Length; l++)
             {
-                Neuron[] neurons = lifeforms[l].NeuralNetwork.Neurons;
+                Gene[] genes = lifeforms[l].Genes;
 
-                // Number of neurons
-                stream.Write(neurons.Length);
+                // Number of genes
+                stream.Write(genes.Length);
 
                 // Write network
-                for (int n = 0; n < neurons.Length; n++)
+                for (int g = 0; g < genes.Length; g++)
                 {
-                    stream.Write(neurons[n].Source.Name.GetHashCode());
-                    stream.Write(neurons[n].Destination.Name.GetHashCode());
+                    stream.Write(genes[g].Source);
+                    stream.Write(genes[g].Destination);
 
-                    stream.Write(neurons[n].Scale);
+                    stream.Write(genes[g].Strength);
                 }
             }
 
             zip.Dispose();
         }
-        public static Gene[][] Import(Stream stream, Dictionary<int, int> neuronMap, out int generation, out string[] dlls)
+        public static Gene[][] Import(Stream stream, out int generation, out string[] dlls)
         {
             Validation v = stream.Read<Validation>();
 
@@ -161,28 +160,20 @@ namespace FileEncoding
 
             for (int l = 0; l < lifeformLength; l++)
             {
-                // Number of neurons
-                int neuronLength = stream.Read<int>();
+                // Number of genes
+                int geneLength = stream.Read<int>();
 
-                genes[l] = new Gene[neuronLength];
+                genes[l] = new Gene[geneLength];
 
                 // Write network
-                for (int g = 0; g < neuronLength; g++)
+                for (int g = 0; g < geneLength; g++)
                 {
-                    int source = stream.Read<int>();
-                    int destination = stream.Read<int>();
+                    ushort source = stream.Read<ushort>();
+                    ushort destination = stream.Read<ushort>();
 
-                    double scale = stream.Read<double>();
+                    uint strength = stream.Read<uint>();
 
-                    bool success = neuronMap.TryGetValue(source, out int sourceLocation) &
-                        neuronMap.TryGetValue(destination, out int destinationLocation);
-
-                    if (!success)
-                    {
-                        throw new Exception("File contains unmapped or unknown neuron cell.");
-                    }
-
-                    genes[l][g] = new Gene((ushort)sourceLocation, (ushort)destinationLocation, scale);
+                    genes[l][g] = new Gene(source, destination, strength);
                 }
             }
 

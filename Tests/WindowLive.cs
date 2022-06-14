@@ -63,6 +63,12 @@ namespace NetworkProgram
 
         protected override void Update()
         {
+            if (_world.Generation >= Settings.Gens && Settings.Gens > 0)
+            {
+                Close();
+                return;
+            }
+
             // End of generation
             if (Counter >= Settings.GenLength)
             {
