@@ -267,7 +267,7 @@ namespace NetworkProgram
         }
 
         //public static ICheckLifeform CheckLifeformFunc;
-        public static bool CheckLifeform(Lifeform lifeform)
+        public static bool CheckLifeform(Lifeform lifeform, World world)
         {
             // Get to left
             //return lifeform.Location.X > (lifeform.CurrentWorld.Width / 2);

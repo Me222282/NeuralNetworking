@@ -5,11 +5,9 @@ using Zene.NeuralNetworking;
 
 namespace NetworkProgram
 {
-    public delegate bool CheckLifeform(Lifeform lifeform, World world);
-
     public class DllLoad
     {
-        private DllLoad(CheckLifeform checkLF, Dictionary<string, Action> addCells)
+        private DllLoad(LifeformCondition checkLF, Dictionary<string, Action> addCells)
         {
             CanCheckLifeform = checkLF is not null;
             CheckLifeform = checkLF;
@@ -19,7 +17,7 @@ namespace NetworkProgram
         }
 
         public bool CanCheckLifeform { get; }
-        public CheckLifeform CheckLifeform { get; }
+        public LifeformCondition CheckLifeform { get; }
 
         public bool CanAddCell { get; }
         private readonly Dictionary<string, Action> _addCells;
@@ -51,7 +49,7 @@ namespace NetworkProgram
                 throw new Exception("Assembly must contain Type \"Core\".");
             }
 
-            CheckLifeform checkLF = LoadCheckLF(coreT);
+            LifeformCondition checkLF = LoadCheckLF(coreT);
 
             string[] cells = GetCellNames(coreT);
             Dictionary<string, Action> cellAdds = null;
@@ -70,7 +68,7 @@ namespace NetworkProgram
 
             return new DllLoad(checkLF, cellAdds);
         }
-        private static CheckLifeform LoadCheckLF(Type core)
+        private static LifeformCondition LoadCheckLF(Type core)
         {
             if (core is null)
             {
@@ -95,7 +93,7 @@ namespace NetworkProgram
                 throw new Exception($"\"CheckLifeform\" method must have {nameof(Lifeform)} and {nameof(World)} as the arguments.");
             }
 
-            return mi.CreateDelegate<CheckLifeform>();
+            return mi.CreateDelegate<LifeformCondition>();
         }
         private static string[] GetCellNames(Type core)
         {

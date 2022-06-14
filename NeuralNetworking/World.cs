@@ -5,6 +5,8 @@ using Zene.Structs;
 
 namespace Zene.NeuralNetworking
 {
+    public delegate bool LifeformCondition(Lifeform lifeform, World world);
+
     public class World
     {
         public static bool Multithreading { get; set; } = true;
@@ -217,7 +219,6 @@ namespace Zene.NeuralNetworking
             return true;
         }
 
-        public delegate bool LifeformCondition(Lifeform lifeform);
         public World NextGeneration(int width, int height, int lifeCount, LifeformCondition lifeformCondition)
         {
             World world = new World(width, height, Generation + 1, GenerationLength, _random);
@@ -229,7 +230,7 @@ namespace Zene.NeuralNetworking
             {
                 // Lifeform died in generation
                 if (!lifeform.Alive) { continue; }
-                if (!lifeformCondition.Invoke(lifeform)) { continue; }
+                if (!lifeformCondition.Invoke(lifeform, this)) { continue; }
 
                 survivors.Add(lifeform);
             }
