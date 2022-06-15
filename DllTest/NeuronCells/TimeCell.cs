@@ -1,7 +1,7 @@
 ﻿using System;
 using Zene.NeuralNetworking;
 
-namespace NetworkProgram
+namespace DllPreset
 {
     public struct TimeCell : INeuronCell
     {
@@ -14,5 +14,10 @@ namespace NetworkProgram
 
         public void SetValue(Lifeform lifeform, double value) => throw new NotSupportedException();
         public void Activate(Lifeform lifeform) => throw new NotSupportedException();
+
+        public static void Add()
+        {
+            NeuralNetwork.PosibleGetCells.Add(new TimeCell());
+        }
     }
 }

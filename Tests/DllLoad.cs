@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 using Zene.NeuralNetworking;
 
@@ -7,42 +6,54 @@ namespace NetworkProgram
 {
     public class DllLoad
     {
-        private DllLoad(LifeformCondition checkLF, Dictionary<string, Action> addCells)
+        private DllLoad(LifeformCondition checkLF, Assembly asm, string[] cellNames, Action[] cellAdds)
         {
+            _assembly = asm;
+
             CanCheckLifeform = checkLF is not null;
             CheckLifeform = checkLF;
 
-            CanAddCell = addCells is not null;
-            _addCells = addCells;
+            ContainsCells = cellNames is not null && cellAdds is not null;
+            if (ContainsCells &&
+                cellAdds.Length != cellNames.Length)
+            {
+                throw new ArgumentException($"The length of {nameof(cellNames)} must be equal to the length of {nameof(cellAdds)}.");
+            }
+
+            _cellAdds = cellAdds;
+            CellNames = cellNames;
         }
+
+        private readonly Assembly _assembly;
+
+        public string Path => _assembly.Location;
 
         public bool CanCheckLifeform { get; }
         public LifeformCondition CheckLifeform { get; }
 
-        public bool CanAddCell { get; }
-        private readonly Dictionary<string, Action> _addCells;
+        public bool ContainsCells { get; }
+        private readonly Action[] _cellAdds;
 
-        public void AddCell(string typeName)
+        public string[] CellNames { get; }
+
+        public void AddCell(int index)
         {
-            if (!CanAddCell)
+            if (!ContainsCells)
             {
                 throw new Exception($"This assembly doesn't contain an {nameof(INeuronCell)}.");
             }
-
-            bool exists = _addCells.TryGetValue(typeName, out Action method);
-
-            if (!exists)
+            if (index >= _cellAdds.Length)
             {
-                throw new ArgumentException($"No cell named {nameof(typeName)} exists in this assembly.");
+                throw new IndexOutOfRangeException();
             }
 
-            method.Invoke();
+            _cellAdds[index].Invoke();
         }
 
         public static DllLoad LoadDll(string path)
         {
             Assembly assembly = Assembly.LoadFrom(path);
-            Type coreT = assembly.GetType("Core");
+            Type coreT = Extensions.GetType(assembly,"Core");
 
             if (coreT is null)
             {
@@ -52,21 +63,19 @@ namespace NetworkProgram
             LifeformCondition checkLF = LoadCheckLF(coreT);
 
             string[] cells = GetCellNames(coreT);
-            Dictionary<string, Action> cellAdds = null;
+            Action[] cellAdds = null;
 
             if (cells is not null)
             {
-                KeyValuePair<string, Action>[] cellsArray = new KeyValuePair<string, Action>[cells.Length];
+                cellAdds = new Action[cells.Length];
 
                 for (int i = 0; i < cells.Length; i++)
                 {
-                    cellsArray[i] = GetCellAddMethod(assembly.GetType(cells[i]));
+                    cellAdds[i] = GetCellAddMethod(assembly.GetType(cells[i]));
                 }
-
-                cellAdds = new Dictionary<string, Action>(cellsArray);
             }
 
-            return new DllLoad(checkLF, cellAdds);
+            return new DllLoad(checkLF, assembly, cells, cellAdds);
         }
         private static LifeformCondition LoadCheckLF(Type core)
         {
@@ -84,13 +93,12 @@ namespace NetworkProgram
                 throw new Exception("Invalid \"CheckLifeform\" method. It must return a boolean.");
             }
 
-            Type[] args = mi.GetGenericArguments();
+            ParameterInfo[] args = mi.GetParameters();
 
-            if (args.Length != 2 ||
-                args[0] != typeof(Lifeform) ||
-                args[1] != typeof(World))
+            if (args.Length != 1 ||
+                args[0].ParameterType != typeof(Lifeform))
             {
-                throw new Exception($"\"CheckLifeform\" method must have {nameof(Lifeform)} and {nameof(World)} as the arguments.");
+                throw new Exception($"\"CheckLifeform\" method must have {typeof(Lifeform).FullName} as the only argument.");
             }
 
             return mi.CreateDelegate<LifeformCondition>();
@@ -118,7 +126,7 @@ namespace NetworkProgram
 
             return (string[])mi.Invoke(null, null);
         }
-        private static KeyValuePair<string, Action> GetCellAddMethod(Type type)
+        private static Action GetCellAddMethod(Type type)
         {
             if (type is null)
             {
@@ -142,7 +150,7 @@ namespace NetworkProgram
                 throw new Exception($"\"Add\" method must not have any arguments.");
             }
 
-            return new KeyValuePair<string, Action>(type.Name, mi.CreateDelegate<Action>());
+            return mi.CreateDelegate<Action>();
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using System;
 using Zene.NeuralNetworking;
-using Zene.Structs;
 
-namespace NetworkProgram
+namespace DllPreset
 {
     public struct CosCell : INeuronCell
     {
@@ -21,6 +20,11 @@ namespace NetworkProgram
         public void Activate(Lifeform lifeform)
         {
             throw new NotSupportedException();
+        }
+
+        public static void Add()
+        {
+            NeuralNetwork.PosibleGetCells.Add(new CosCell());
         }
     }
 }

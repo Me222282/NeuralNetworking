@@ -5,7 +5,7 @@ using Zene.Structs;
 
 namespace Zene.NeuralNetworking
 {
-    public delegate bool LifeformCondition(Lifeform lifeform, World world);
+    public delegate bool LifeformCondition(Lifeform lifeform);
 
     public class World
     {
@@ -230,7 +230,7 @@ namespace Zene.NeuralNetworking
             {
                 // Lifeform died in generation
                 if (!lifeform.Alive) { continue; }
-                if (!lifeformCondition.Invoke(lifeform, this)) { continue; }
+                if (!lifeformCondition.Invoke(lifeform)) { continue; }
 
                 survivors.Add(lifeform);
             }

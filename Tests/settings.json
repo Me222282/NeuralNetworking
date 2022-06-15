@@ -16,7 +16,7 @@
         "colourGrade": 15
     },
     
-    "dlls": [],
+    "dlls": ["./DllPreset.dll"],
     
     "exporting":
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using Zene.NeuralNetworking;
 
-namespace NetworkProgram
+namespace DllPreset
 {
     public struct RandCell : INeuronCell
     {
@@ -20,6 +20,11 @@ namespace NetworkProgram
         public void Activate(Lifeform lifeform)
         {
             throw new NotSupportedException();
+        }
+
+        public static void Add()
+        {
+            NeuralNetwork.PosibleGetCells.Add(new RandCell());
         }
     }
 }

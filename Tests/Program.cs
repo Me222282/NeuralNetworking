@@ -49,6 +49,19 @@ namespace NetworkProgram
             }
             catch (Exception)
             {
+                Console.WriteLine("Invalid settings file.");
+                Console.WriteLine($"Path: {settingsPath}");
+                Console.ReadLine();
+                return;
+            }
+
+            try
+            {
+                settings.LoadDlls();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
                 Console.ReadLine();
                 return;
             }
@@ -267,7 +280,7 @@ namespace NetworkProgram
         }
 
         //public static ICheckLifeform CheckLifeformFunc;
-        public static bool CheckLifeform(Lifeform lifeform, World world)
+        public static bool CheckLifeform(Lifeform lifeform)
         {
             // Get to left
             //return lifeform.Location.X > (lifeform.CurrentWorld.Width / 2);
@@ -299,25 +312,19 @@ namespace NetworkProgram
                 InnerCell.Add();
             }
 
-            // Position Cells
-            NeuralNetwork.PosibleGetCells.Add(new XPCell());
-            NeuralNetwork.PosibleGetCells.Add(new YPCell());
-            // Specific
-            NeuralNetwork.PosibleGetCells.Add(new PUCell());
-            NeuralNetwork.PosibleGetCells.Add(new PDCell());
-            NeuralNetwork.PosibleGetCells.Add(new PLCell());
-            NeuralNetwork.PosibleGetCells.Add(new PRCell());
+            // Load all possible Cells
+            for (int d = 0; d < Settings.LoadedDlls.Length; d++)
+            {
+                if (!Settings.LoadedDlls[d].ContainsCells)
+                {
+                    continue;
+                }
 
-            // New
-            NeuralNetwork.PosibleGetCells.Add(new RandCell());
-            NeuralNetwork.PosibleGetCells.Add(new SinCell());
-            NeuralNetwork.PosibleGetCells.Add(new CosCell());
-            NeuralNetwork.PosibleGetCells.Add(new TimeCell());
-
-            XMCell.Add();
-            YMCell.Add();
-
-            LifeProperties.NeuronValueNumber = NeuralNetwork.PosibleSetCells.Count;
+                for (int c = 0; c < Settings.LoadedDlls[d].CellNames.Length; c++)
+                {
+                    Settings.LoadedDlls[d].AddCell(c);
+                }
+            }
 
             Gene.MutationChance = Settings.Mutation;
             Lifeform.Random = new PRNG((ulong)Settings.Seed);

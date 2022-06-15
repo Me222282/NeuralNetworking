@@ -24,9 +24,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="DllPreset.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="settings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
+  
 </Project>

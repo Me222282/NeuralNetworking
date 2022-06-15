@@ -45,6 +45,66 @@ namespace NetworkProgram
             Directory.CreateDirectory(ExportPath);
         }
 
+        public DllLoad[] LoadedDlls { get; private set; }
+        private int _selectedDll = 0;
+        /// <summary>
+        /// The <see cref="DllLoad"/> from <see cref="LoadedDlls"/> used by <see cref="CheckLifeform(Lifeform)"/>.
+        /// </summary>
+        public int SelectedDll
+        {
+            get => _selectedDll;
+            set
+            {
+                if (LoadedDlls.Length <= value)
+                {
+                    throw new IndexOutOfRangeException();
+                }
+                if (!LoadedDlls[value].CanCheckLifeform)
+                {
+                    throw new Exception("Selected dll doesn't contain a \"CheckLifeform\" method.");
+                }
+
+                _selectedDll = value;
+            }
+        }
+
+        public void LoadDlls()
+        {
+            LoadedDlls = new DllLoad[Dlls.Length];
+
+            for (int i = 0; i < Dlls.Length; i++)
+            {
+                DllLoad value;
+
+                try
+                {
+                    value = DllLoad.LoadDll(Dlls[i]);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Failed to load {Dlls[i]}. {e.Message}");
+                }
+                
+                LoadedDlls[i] = value;
+            }
+        }
+
+        public bool CheckLifeform(Lifeform lifeform)
+        {
+            bool value;
+
+            try
+            {
+                value = LoadedDlls[_selectedDll].CheckLifeform(lifeform);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"{LoadedDlls[_selectedDll].Path} threw {e.GetType().FullName} with message: {e.Message}");
+            }
+
+            return value;
+        }
+
         public static Settings Parse(string json, string path, bool forceWindow = false)
         {
             JsonElement decode = JsonDocument.Parse(json).RootElement;

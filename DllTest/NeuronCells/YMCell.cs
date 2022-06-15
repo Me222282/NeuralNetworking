@@ -2,7 +2,7 @@
 using Zene.NeuralNetworking;
 using Zene.Structs;
 
-namespace NetworkProgram
+namespace DllPreset
 {
     public struct YMCell : INeuronCell
     {
@@ -49,7 +49,8 @@ namespace NetworkProgram
 
         public static void Add()
         {
-            NeuralNetwork.PosibleSetCells.Add(new YMCell(NeuralNetwork.PosibleSetCells.Count));
+            NeuralNetwork.PosibleSetCells.Add(new YMCell(LifeProperties.NeuronValueNumber));
+            LifeProperties.NeuronValueNumber++;
         }
     }
 }

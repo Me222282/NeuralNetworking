@@ -11,11 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Structs", "Zene\Structs\src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Graphics", "Zene\Graphics\src\Graphics.csproj", "{5F17699C-8DC9-4360-B7AB-6B33F964332D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckDLL", "CheckDLL\CheckDLL.csproj", "{86F50D88-6E12-443E-A433-265F72185040}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DllPreset", "DllTest\DllPreset.csproj", "{86F50D88-6E12-443E-A433-265F72185040}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windowing", "Zene\Windowing\src\Windowing.csproj", "{4A794562-2729-4786-B5EE-E9EBDAB8A481}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileEncoding", "FileEncoding\FileEncoding.csproj", "{0DD23050-A742-4D4A-81AD-9F8CAF18ABE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileEncoding", "FileEncoding\FileEncoding.csproj", "{0DD23050-A742-4D4A-81AD-9F8CAF18ABE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

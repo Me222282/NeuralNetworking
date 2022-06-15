@@ -31,8 +31,9 @@ namespace NetworkProgram
 
         public static void Add()
         {
-            NeuralNetwork.PosibleGetCells.Add(new InnerCell(NeuralNetwork.PosibleSetCells.Count));
-            NeuralNetwork.PosibleSetCells.Add(new InnerCell(NeuralNetwork.PosibleSetCells.Count));
+            NeuralNetwork.PosibleGetCells.Add(new InnerCell(LifeProperties.NeuronValueNumber));
+            NeuralNetwork.PosibleSetCells.Add(new InnerCell(LifeProperties.NeuronValueNumber));
+            LifeProperties.NeuronValueNumber++;
         }
     }
 }
