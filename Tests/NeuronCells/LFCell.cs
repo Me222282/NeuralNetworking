@@ -18,7 +18,7 @@ namespace NetworkProgram
             World w = lifeform.CurrentWorld;
             Vector2I pos = lifeform.Location;
 
-            int count = 0;
+            int count = SenseDistance;
             int stop = pos.X - SenseDistance;
             // Doesn't go out of bounds
             if (stop < 0)
@@ -29,7 +29,7 @@ namespace NetworkProgram
             {
                 if (ContainsLifeform(w, x, pos.Y)) { break; }
 
-                count++;
+                count--;
             }
 
             return (double)count / SenseDistance;
@@ -67,18 +67,18 @@ namespace NetworkProgram
             World w = lifeform.CurrentWorld;
             Vector2I pos = lifeform.Location;
 
-            int count = 0;
+            int count = LFLCell.SenseDistance;
             int stop = pos.X + LFLCell.SenseDistance;
             // Doesn't go out of bounds
             if (stop >= w.Width)
             {
                 stop = w.Width - 1;
             }
-            for (int x = pos.X - 1; x <= stop; x++)
+            for (int x = pos.X + 1; x <= stop; x++)
             {
                 if (LFLCell.ContainsLifeform(w, x, pos.Y)) { break; }
 
-                count++;
+                count--;
             }
 
             return (double)count / LFLCell.SenseDistance;
@@ -105,18 +105,18 @@ namespace NetworkProgram
             World w = lifeform.CurrentWorld;
             Vector2I pos = lifeform.Location;
 
-            int count = 0;
+            int count = LFLCell.SenseDistance;
             int stop = pos.Y + LFLCell.SenseDistance;
             // Doesn't go out of bounds
             if (stop >= w.Height)
             {
                 stop = w.Height - 1;
             }
-            for (int y = pos.Y - 1; y <= stop; y++)
+            for (int y = pos.Y + 1; y <= stop; y++)
             {
                 if (LFLCell.ContainsLifeform(w, pos.X, y)) { break; }
 
-                count++;
+                count--;
             }
 
             return (double)count / LFLCell.SenseDistance;
@@ -143,7 +143,7 @@ namespace NetworkProgram
             World w = lifeform.CurrentWorld;
             Vector2I pos = lifeform.Location;
 
-            int count = 0;
+            int count = LFLCell.SenseDistance;
             int stop = pos.Y - LFLCell.SenseDistance;
             // Doesn't go out of bounds
             if (stop < 0)
@@ -154,7 +154,7 @@ namespace NetworkProgram
             {
                 if (LFLCell.ContainsLifeform(w, pos.X, y)) { break; }
 
-                count++;
+                count--;
             }
 
             return (double)count / LFLCell.SenseDistance;

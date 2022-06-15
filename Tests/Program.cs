@@ -224,10 +224,10 @@ namespace NetworkProgram
         {
             Gene[] genes1 = new Gene[]
             {
-                new Gene(10, 10, -0.5),
-                new Gene(11, 10, 0.5),
-                new Gene(12, 11, 0.5),
-                new Gene(13, 11, -0.5)
+                new Gene(10, 10, -1d),
+                new Gene(11, 10, 1d),
+                new Gene(12, 11, 1d),
+                new Gene(13, 11, -1d),
             };
 
             Lifeform l = new Lifeform(genes1, Vector2I.Zero, null);
@@ -240,7 +240,7 @@ namespace NetworkProgram
             WindowLive window = new WindowLive(128 * 6, 128 * 6, "Work", Settings,
                 new Gene[][]
                 {
-                    genes1
+                    genes1,
                 });
 
             window.Run();

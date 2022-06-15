@@ -9,7 +9,7 @@
     
     "lifeform":
     {
-        "count": 10,
+        "count": 1000,
         "brainSize": 20,
         "innerCells": 10,
         "mutationChance": 0.001,
