@@ -27,11 +27,13 @@ namespace NetworkProgram
 
         //private const double Googol = 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000d;
 
+        internal static string ExecutablePath;
+
         private static void Main(string[] args)
         {
-            string settingsPath = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
-                SettingsPath);
+            ExecutablePath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+
+            string settingsPath = Path.Combine(ExecutablePath, SettingsPath);
 
             if (!File.Exists(settingsPath))
             {
@@ -55,17 +57,6 @@ namespace NetworkProgram
                 return;
             }
 
-            try
-            {
-                settings.LoadDlls();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                Console.ReadLine();
-                return;
-            }
-
             Core.Init();
 
             Program program = new Program(settings);
@@ -82,14 +73,25 @@ namespace NetworkProgram
                 return;
             }
 
+            try
+            {
+                Settings.LoadDlls();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.ReadLine();
+                return;
+            }
+
             SetupEnvironment();
 
             Settings.CreateExport();
 
             if (Settings.Windowed)
             {
-                //SimulateCustom();
-                SimulateLive();
+                SimulateCustom();
+                //SimulateLive();
             }
             else { Simulate(); }
         }
@@ -222,33 +224,23 @@ namespace NetworkProgram
         {
             Gene[] genes1 = new Gene[]
             {
-                new Gene(4, 4, -5.0),
-                new Gene(5, 5, -5.0)
+                new Gene(10, 10, -0.5),
+                new Gene(11, 10, 0.5),
+                new Gene(12, 11, 0.5),
+                new Gene(13, 11, -0.5)
             };
 
-            Gene[] genes2 = new Gene[]
-            {
-                new Gene(10, 4, 1.0),
-                new Gene(10, 5, 1.0)
-            };
+            Lifeform l = new Lifeform(genes1, Vector2I.Zero, null);
 
-            Gene[] genes3 = new Gene[]
+            foreach (Neuron n in l.NeuralNetwork.Neurons)
             {
-                new Gene(13, 4, 1.0)
-            };
-
-            Gene[] genes4 = new Gene[]
-            {
-                new Gene(12, 4, 2.0)
-            };
+                Console.WriteLine($"Src: {n.Source.Name}, Dest: {n.Destination.Name}, Scale: {n.Scale}");
+            }
 
             WindowLive window = new WindowLive(128 * 6, 128 * 6, "Work", Settings,
                 new Gene[][]
                 {
-                    genes1,
-                    genes2,
-                    genes3,
-                    genes4
+                    genes1
                 });
 
             window.Run();
@@ -284,25 +276,44 @@ namespace NetworkProgram
         {
             // Get to left
             //return lifeform.Location.X > (lifeform.CurrentWorld.Width / 2);
-            
+
             // Get to centre X
             //return lifeform.Location.X > (lifeform.CurrentWorld.Width / 4) &&
             //    lifeform.Location.X < (lifeform.CurrentWorld.Width - (lifeform.CurrentWorld.Width / 4));
-            
+
             // Get to corners
             //return (lifeform.Location.X < (lifeform.CurrentWorld.Width / 4) && (lifeform.Location.Y < (lifeform.CurrentWorld.Height / 4))) ||
             //    (lifeform.Location.X > (lifeform.CurrentWorld.Width - (lifeform.CurrentWorld.Width / 4)) && (lifeform.Location.Y > (lifeform.CurrentWorld.Height - (lifeform.CurrentWorld.Height / 4)))) ||
             //    (lifeform.Location.X > (lifeform.CurrentWorld.Width - (lifeform.CurrentWorld.Width / 4)) && (lifeform.Location.Y < (lifeform.CurrentWorld.Height / 4))) ||
             //    (lifeform.Location.X < (lifeform.CurrentWorld.Width / 4) && (lifeform.Location.Y > (lifeform.CurrentWorld.Height - (lifeform.CurrentWorld.Height / 4))));
-            
+
             // Get to checkered patern location
             //return ((lifeform.Location.X + lifeform.Location.Y) % 2) == 0;
-            
-            // Get to the centre
-            return (lifeform.Location.X > (lifeform.CurrentWorld.Width / 4)) &&
-                (lifeform.Location.X < (lifeform.CurrentWorld.Width - (lifeform.CurrentWorld.Width / 4))) &&
-                (lifeform.Location.Y > (lifeform.CurrentWorld.Height / 4)) &&
-                (lifeform.Location.Y < (lifeform.CurrentWorld.Height - (lifeform.CurrentWorld.Height / 4)));
+
+            // Have an odd number of neighbours
+            World world = lifeform.CurrentWorld;
+            Vector2I pos = lifeform.Location;
+
+            int neighbours = 0;
+
+            if (pos.X + 1 < world.Width)
+            {
+                neighbours += world.LifeformGrid[pos.X + 1, pos.Y] is null ? 0 : 1;
+            }
+            if (pos.Y + 1 < world.Height)
+            {
+                neighbours += world.LifeformGrid[pos.X, pos.Y + 1] is null ? 0 : 1;
+            }
+            if (pos.X - 1 >= 0)
+            {
+                neighbours += world.LifeformGrid[pos.X - 1, pos.Y] is null ? 0 : 1;
+            }
+            if (pos.Y - 1 >= 0)
+            {
+                neighbours += world.LifeformGrid[pos.X, pos.Y - 1] is null ? 0 : 1;
+            }
+
+            return neighbours % 2 == 1;
         }
         public void SetupEnvironment()
         {
@@ -311,6 +322,11 @@ namespace NetworkProgram
             {
                 InnerCell.Add();
             }
+
+            LFLCell.Add();
+            LFRCell.Add();
+            LFUCell.Add();
+            LFDCell.Add();
 
             // Load all possible Cells
             for (int d = 0; d < Settings.LoadedDlls.Length; d++)

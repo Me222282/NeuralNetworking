@@ -88,7 +88,7 @@ namespace NetworkProgram
                 }
 
                 Counter = 0;
-                _world = _world.NextGeneration(Settings.LifeForms, Settings.CheckLifeform);
+                _world = _world.NextGeneration(Settings.LifeForms, Program.CheckLifeform);
 
                 _exportGen = _exportGens.Contains(_world.Generation);
 

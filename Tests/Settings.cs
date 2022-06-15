@@ -244,7 +244,7 @@ namespace NetworkProgram
             // Exporting properties
             try
             {
-                values.Dlls = GetStringArray(decode, "dlls");
+                values.Dlls = GetPathArray(decode, "dlls");
             }
             catch (Exception)
             {
@@ -344,7 +344,7 @@ namespace NetworkProgram
             return values;
         }
 
-        private static string[] GetStringArray(JsonElement json, string name)
+        private static string[] GetPathArray(JsonElement json, string name)
         {
             JsonElement array = json.GetProperty(name);
 
@@ -352,7 +352,7 @@ namespace NetworkProgram
 
             for (int i = 0; i < value.Length; i++)
             {
-                value[i] = array[i].GetString();
+                value[i] = System.IO.Path.Combine(Program.ExecutablePath, array[i].GetString());
             }
 
             return value;

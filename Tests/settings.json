@@ -9,9 +9,9 @@
     
     "lifeform":
     {
-        "count": 1000,
-        "brainSize": 4,
-        "innerCells": 4,
+        "count": 10,
+        "brainSize": 20,
+        "innerCells": 10,
         "mutationChance": 0.001,
         "colourGrade": 15
     },
