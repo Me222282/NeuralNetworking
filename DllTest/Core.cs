@@ -21,7 +21,7 @@ namespace DllPreset
         };
 
         public static string[] GetCellNames() => _cellNames;
-
+        /*
         public static bool CheckLifeform(Lifeform lifeform)
         {
             // Get to the centre
@@ -29,6 +29,6 @@ namespace DllPreset
                 (lifeform.Location.X < (lifeform.CurrentWorld.Width - (lifeform.CurrentWorld.Width / 4))) &&
                 (lifeform.Location.Y > (lifeform.CurrentWorld.Height / 4)) &&
                 (lifeform.Location.Y < (lifeform.CurrentWorld.Height - (lifeform.CurrentWorld.Height / 4)));
-        }
+        }*/
     }
 }

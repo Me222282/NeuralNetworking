@@ -138,7 +138,7 @@ namespace NetworkProgram
                     }
 
                     counter = 0;
-                    world = world.NextGeneration(Settings.LifeForms, CheckLifeform);
+                    world = world.NextGeneration(Settings.LifeForms, Settings.CheckLifeform);
 
                     exportGen = exportGens.Contains(world.Generation);
 
@@ -271,50 +271,6 @@ namespace NetworkProgram
             }
         }
 
-        //public static ICheckLifeform CheckLifeformFunc;
-        public static bool CheckLifeform(Lifeform lifeform)
-        {
-            // Get to left
-            //return lifeform.Location.X > (lifeform.CurrentWorld.Width / 2);
-
-            // Get to centre X
-            //return lifeform.Location.X > (lifeform.CurrentWorld.Width / 4) &&
-            //    lifeform.Location.X < (lifeform.CurrentWorld.Width - (lifeform.CurrentWorld.Width / 4));
-
-            // Get to corners
-            //return (lifeform.Location.X < (lifeform.CurrentWorld.Width / 4) && (lifeform.Location.Y < (lifeform.CurrentWorld.Height / 4))) ||
-            //    (lifeform.Location.X > (lifeform.CurrentWorld.Width - (lifeform.CurrentWorld.Width / 4)) && (lifeform.Location.Y > (lifeform.CurrentWorld.Height - (lifeform.CurrentWorld.Height / 4)))) ||
-            //    (lifeform.Location.X > (lifeform.CurrentWorld.Width - (lifeform.CurrentWorld.Width / 4)) && (lifeform.Location.Y < (lifeform.CurrentWorld.Height / 4))) ||
-            //    (lifeform.Location.X < (lifeform.CurrentWorld.Width / 4) && (lifeform.Location.Y > (lifeform.CurrentWorld.Height - (lifeform.CurrentWorld.Height / 4))));
-
-            // Get to checkered patern location
-            //return ((lifeform.Location.X + lifeform.Location.Y) % 2) == 0;
-
-            // Have an odd number of neighbours
-            World world = lifeform.CurrentWorld;
-            Vector2I pos = lifeform.Location;
-
-            int neighbours = 0;
-
-            if (pos.X + 1 < world.Width)
-            {
-                neighbours += world.LifeformGrid[pos.X + 1, pos.Y] is null ? 0 : 1;
-            }
-            if (pos.Y + 1 < world.Height)
-            {
-                neighbours += world.LifeformGrid[pos.X, pos.Y + 1] is null ? 0 : 1;
-            }
-            if (pos.X - 1 >= 0)
-            {
-                neighbours += world.LifeformGrid[pos.X - 1, pos.Y] is null ? 0 : 1;
-            }
-            if (pos.Y - 1 >= 0)
-            {
-                neighbours += world.LifeformGrid[pos.X, pos.Y - 1] is null ? 0 : 1;
-            }
-
-            return neighbours % 2 == 1;
-        }
         public void SetupEnvironment()
         {
             // Inner Cells
@@ -322,11 +278,6 @@ namespace NetworkProgram
             {
                 InnerCell.Add();
             }
-
-            LFLCell.Add();
-            LFRCell.Add();
-            LFUCell.Add();
-            LFDCell.Add();
 
             // Load all possible Cells
             for (int d = 0; d < Settings.LoadedDlls.Length; d++)

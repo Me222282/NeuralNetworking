@@ -24,7 +24,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="DllPreset.dll">
+    <None Update="dlls\centre.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="dlls\DllPreset.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="dlls\neighbours.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="dlls\sense.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="settings.json">

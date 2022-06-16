@@ -15,8 +15,13 @@
         "mutationChance": 0.001,
         "colourGrade": 15
     },
-    
-    "dlls": ["./DllPreset.dll"],
+
+    "dlls": 
+    [
+        "dlls/sense.dll",
+        "dlls/DllPreset.dll",
+        "dlls/neighbours.dll"
+    ],
     
     "exporting":
     {
