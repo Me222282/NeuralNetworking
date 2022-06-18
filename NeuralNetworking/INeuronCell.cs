@@ -1,5 +1,12 @@
 ﻿namespace Zene.NeuralNetworking
 {
+    public enum NeuonType
+    {
+        Getter,
+        Setter,
+        Inner
+    }
+
     public interface INeuronCell
     {
         public string Name { get; }

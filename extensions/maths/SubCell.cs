@@ -30,9 +30,7 @@ namespace maths
                 return 0;
             }
             
-            return Math.Tanh(
-                lifeform.GetNeuron<NeuronValue>(NeuronAllocant).Value
-            );
+            return lifeform.GetNeuron<NeuronValue>(NeuronAllocant).Value;
         }
 
         public void SetValue(Lifeform lifeform, double value)
