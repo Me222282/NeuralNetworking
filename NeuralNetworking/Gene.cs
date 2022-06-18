@@ -53,13 +53,14 @@
 
         public static double MutationChance { get; set; }
         public static double StrengthChange { get; set; } = 2d;
+        public static double StrengthRange { get; set; }
 
         public static Gene Generate(PRNG random)
         {
             return new Gene(
                 (ushort)random.Generate(0, ushort.MaxValue),
                 (ushort)random.Generate(0, ushort.MaxValue),
-                (uint)random.Generate(0, uint.MaxValue));
+                random.Generate(-StrengthRange, StrengthRange));
         }
         public static Gene Generate() => Generate(Lifeform.Random);
     }
