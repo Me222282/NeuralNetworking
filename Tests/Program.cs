@@ -222,13 +222,42 @@ namespace NetworkProgram
 
         private void SimulateCustom()
         {
+            
             Gene[] genes1 = new Gene[]
             {
-                new Gene(10, 10, -1d),
-                new Gene(11, 10, 1d),
-                new Gene(12, 11, 1d),
-                new Gene(13, 11, -1d),
+                new Gene(18, 16, -1d),
+                new Gene(19, 16, 1d),
+                new Gene(20, 17, 1d),
+                new Gene(21, 17, -1d),
             };
+            /*
+            Gene[] genes1 = new Gene[]
+            {
+                //new Gene(18, 16, -1d),
+                //new Gene(19, 16, 1d),
+                //new Gene(20, 17, 1d),
+                //new Gene(21, 17, -1d),
+
+                // LFL
+                new Gene(4, 4, 1d),
+                new Gene(18, 4, 1d),
+                new Gene(6, 16, 1d),
+
+                // LFR
+                new Gene(4, 7, 1d),
+                new Gene(19, 7, 1d),
+                new Gene(9, 16, -1d),
+
+                // LFU
+                new Gene(4, 10, 1d),
+                new Gene(20, 10, 1d),
+                new Gene(12, 17, -1d),
+
+                // LFD
+                new Gene(4, 13, 1d),
+                new Gene(21, 13, 1d),
+                new Gene(15, 17, 1d),
+            };*/
 
             Lifeform l = new Lifeform(genes1, Vector2I.Zero, null);
 
@@ -271,6 +300,63 @@ namespace NetworkProgram
             }
         }
 
+        private void LoadMaths()
+        {
+            int dllLocation = Settings.LoadedDlls.FindDll("maths");
+            
+            if (dllLocation < 0)
+            {
+                return;
+            }
+
+            DllLoad dll = Settings.LoadedDlls[dllLocation];
+
+            int sub = -1;
+            int div = -1;
+            int multi = -1;
+            int con = -1;
+            int conNeg = -1;
+
+            for (int i = 0; i < dll.CellNames.Length; i++)
+            {
+                switch (dll.CellNames[i])
+                {
+                    case "maths.SubCell":
+                        sub = i;
+                        continue;
+
+                    case "maths.DivCell":
+                        div = i;
+                        continue;
+
+                    case "maths.MultiCell":
+                        multi = i;
+                        continue;
+
+                    case "maths.Const1Cell":
+                        con = i;
+                        continue;
+
+                    case "maths.Const_1Cell":
+                        conNeg = i;
+                        continue;
+
+                    default:
+                        return;
+                }
+            }
+
+            dll.AddCell(con);
+            dll.AddCell(conNeg);
+
+            for (int i = 0; i < Settings.InnerCells; i++)
+            {
+                dll.AddCell(sub);
+                dll.AddCell(div);
+                dll.AddCell(multi);
+            }
+        }
+
         public void SetupEnvironment()
         {
             // Inner Cells
@@ -279,10 +365,12 @@ namespace NetworkProgram
                 InnerCell.Add();
             }
 
+            LoadMaths();
+
             // Load all possible Cells
             for (int d = 0; d < Settings.LoadedDlls.Length; d++)
             {
-                if (!Settings.LoadedDlls[d].ContainsCells)
+                if (!Settings.LoadedDlls[d].ContainsCells || Settings.LoadedDlls[d].Name == "maths")
                 {
                     continue;
                 }
@@ -294,7 +382,10 @@ namespace NetworkProgram
             }
 
             Gene.MutationChance = Settings.Mutation;
+            Lifeform.ColourGrade = Settings.ColourGrade;
             Lifeform.Random = new PRNG((ulong)Settings.Seed);
+
+            Settings.SelectedDll = Settings.LoadedDlls.FindDll("neighbours");
         }
 
         public static void Export(int generation, FramePart[,] frames, Lifeform[] lifeforms, Settings settings)

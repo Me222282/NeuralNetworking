@@ -11,7 +11,7 @@
     {
         "count": 1000,
         "brainSize": 20,
-        "innerCells": 10,
+        "innerCells": 4,
         "mutationChance": 0.001,
         "colourGrade": 15
     },
@@ -20,6 +20,7 @@
     [
         "dlls/sense.dll",
         "dlls/DllPreset.dll",
+        "dlls/maths.dll",
         "dlls/neighbours.dll"
     ],
     
@@ -27,7 +28,7 @@
     {
         "name": "export",
         "path": "./exports",
-        "exports": []
+        "exports": [0]
     },
     
     "window":

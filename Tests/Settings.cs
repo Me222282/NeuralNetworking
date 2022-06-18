@@ -22,6 +22,7 @@ namespace NetworkProgram
         public int BrainSize { get; private set; }
         public int InnerCells { get; private set; }
         public double Mutation { get; private set; }
+        public byte ColourGrade { get; private set; }
 
         public string[] Dlls { get; private set; }
         public int[] ExportGens { get; private set; }
@@ -92,6 +93,11 @@ namespace NetworkProgram
         public bool CheckLifeform(Lifeform lifeform)
         {
             bool value;
+
+            if (!LoadedDlls[_selectedDll].CanCheckLifeform)
+            {
+                throw new Exception($"Selected dll {LoadedDlls[_selectedDll].Path} doesn't support CheckLifeform.");
+            }
 
             try
             {
@@ -237,7 +243,7 @@ namespace NetworkProgram
             }
             try
             {
-                Lifeform.ColourGrade = lifeform.GetProperty("colourGrade").GetByte();
+                values.ColourGrade = lifeform.GetProperty("colourGrade").GetByte();
             }
             catch (Exception) { }
 

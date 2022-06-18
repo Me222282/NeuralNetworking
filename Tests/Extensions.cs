@@ -29,5 +29,8 @@ namespace NetworkProgram
 
             return types[i];
         }
+
+        public static int FindDll(this DllLoad[] dlls, string name)
+            => Array.FindIndex(dlls, d => d.Name == name);
     }
 }

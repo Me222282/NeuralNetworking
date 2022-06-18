@@ -30,6 +30,9 @@
     <None Update="dlls\DllPreset.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="dlls\maths.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="dlls\neighbours.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

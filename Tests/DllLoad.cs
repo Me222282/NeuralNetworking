@@ -28,6 +28,8 @@ namespace NetworkProgram
 
         public string Path => _assembly.Location;
 
+        public string Name => _assembly.GetName().Name;
+
         public bool CanCheckLifeform { get; }
         public LifeformCondition CheckLifeform { get; }
 
