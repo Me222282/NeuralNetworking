@@ -115,7 +115,7 @@ namespace Zene.NeuralNetworking
             Destination = NeuralNetwork.PosibleSetCells[dN];
 
             // Scale the strength value to a number between -MaxScale and +MaxScale
-            Scale = GetScale(gene.Strength);
+            Scale = gene.Strength;
         }
 
         public INeuronCell Source { get; }
@@ -162,29 +162,6 @@ namespace Zene.NeuralNetworking
             value *= Scale;
 
             Destination.SetValue(lifeform, value);
-        }
-
-        private const double _uintMax = uint.MaxValue;
-
-        public static double GetScale(uint value)
-        {
-            // Find scale between uint bounds
-            double scale = value / _uintMax;
-
-            return ((MaxScale + MaxScale) * scale) - MaxScale;
-        }
-        public static uint GetStrength(double value)
-        {
-            // Make sure in bounds
-            double boundVal = Math.Clamp(value, -MaxScale, MaxScale);
-
-            // Make it so min value is now 0 and max relative
-            boundVal += MaxScale;
-            double max = MaxScale + MaxScale;
-
-            double scale = boundVal / max;
-
-            return (uint)Math.Round(scale * uint.MaxValue);
         }
     }
 }

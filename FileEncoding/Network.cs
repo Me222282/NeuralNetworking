@@ -171,7 +171,7 @@ namespace FileEncoding
                     ushort source = stream.Read<ushort>();
                     ushort destination = stream.Read<ushort>();
 
-                    uint strength = stream.Read<uint>();
+                    double strength = stream.Read<double>();
 
                     genes[l][g] = new Gene(source, destination, strength);
                 }

@@ -2,34 +2,22 @@
 {
     public struct Gene
     {
-        public Gene(ushort src, ushort des, uint str)
+        public Gene(ushort src, ushort des, double str)
         {
             Source = src;
             Destination = des;
             Strength = str;
         }
-        /// <summary>
-        /// Asigns <see cref="Strength"/> to <paramref name="str"/> passed through <see cref="Neuron.GetStrength(double)"/>.
-        /// </summary>
-        /// <param name="src"></param>
-        /// <param name="des"></param>
-        /// <param name="str"></param>
-        public Gene(ushort src, ushort des, double str)
-        {
-            Source = src;
-            Destination = des;
-            Strength = Neuron.GetStrength(str);
-        }
 
         public ushort Source { get; }
         public ushort Destination { get; }
-        public uint Strength { get; }
+        public double Strength { get; }
 
         public Gene CreateChild()
         {
             ushort source = Source;
             ushort destination = Destination;
-            uint strength = Strength;
+            double strength = Strength;
 
             if (Lifeform.OneInChance(MutationChance))
             {
@@ -52,7 +40,7 @@
                         break;
 
                     case 2:
-                        strength += (uint)Lifeform.Random.Generate(-StrengthChange, StrengthChange);
+                        strength += Lifeform.Random.Generate(-StrengthChange, StrengthChange);
                         break;
                 }
             }
@@ -64,7 +52,7 @@
         }
 
         public static double MutationChance { get; set; }
-        public static uint StrengthChange { get; set; } = 1000;
+        public static double StrengthChange { get; set; } = 2d;
 
         public static Gene Generate(PRNG random)
         {

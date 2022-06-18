@@ -220,19 +220,19 @@ namespace Zene.NeuralNetworking
         {
             int r = 0;
             int g = 0;
-            uint b = 0;
+            double b = 0;
 
             foreach (Gene gene in genes)
             {
                 r += gene.Source % Neuron.SourceModifier;
                 g += gene.Destination % Neuron.DestinationModifier;
 
-                double scale = Math.Round(Neuron.GetScale(gene.Strength));
+                double scale = Math.Round(gene.Strength);
 
                 // Value cannot be passed through % or /
-                if (scale == 0.0) { continue; }
+                //if (scale == 0.0) { continue; }
 
-                b += gene.Strength % (uint)scale;
+                b += gene.Strength;
             }
 
             return new Colour(
