@@ -25,5 +25,10 @@ namespace NetworkProgram
         {
             throw new NotSupportedException();
         }
+
+        public void Setup(NeuralNetwork network)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

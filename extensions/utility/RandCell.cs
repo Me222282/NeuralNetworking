@@ -21,7 +21,9 @@ namespace utility
         {
             throw new NotSupportedException();
         }
-
+        
+        public void Setup(NeuralNetwork network) { return; }
+        
         public static void Add()
         {
             NeuralNetwork.PosibleGetCells.Add(new RandCell());

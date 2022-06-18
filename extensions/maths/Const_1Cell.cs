@@ -15,6 +15,8 @@ namespace maths
         public void SetValue(Lifeform lifeform, double value) => throw new NotSupportedException();
         public void Activate(Lifeform lifeform) => throw new NotSupportedException();
         
+        public void Setup(NeuralNetwork network) { return; }
+        
         public static void Add()
         {
             NeuralNetwork.PosibleGetCells.Add(new Const_1Cell());

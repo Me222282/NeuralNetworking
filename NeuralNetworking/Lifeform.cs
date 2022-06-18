@@ -21,8 +21,6 @@ namespace Zene.NeuralNetworking
             _location = pos;
             PreLocation = pos;
 
-            Properties = new LifeProperties(0);
-
             CurrentWorld = world;
         }
 
@@ -32,7 +30,6 @@ namespace Zene.NeuralNetworking
         public bool Alive { get; set; } = true;
 
         public Colour Colour { get; }
-        public LifeProperties Properties;
         public World CurrentWorld { get; internal set; }
 
         private Vector2I _location;
@@ -95,9 +92,18 @@ namespace Zene.NeuralNetworking
 
             Age++;
 
-            Properties.ClearNeuronValues();
+            NeuralNetwork.ResetNeuronData();
 
             NeuralNetwork.Compute(this);
+        }
+
+        public void SetNeuron<T>(int index, T value)
+        {
+            NeuralNetwork.NeuronData[index] = value;
+        }
+        public T GetNeuron<T>(int index)
+        {
+            return (T)NeuralNetwork.NeuronData[index];
         }
 
         public override bool Equals(object obj)
@@ -105,12 +111,11 @@ namespace Zene.NeuralNetworking
             return obj is Lifeform l &&
                 l.Genes == Genes &&
                 l.NeuralNetwork == NeuralNetwork &&
-                l.Age == Age &&
-                l.Properties == Properties;
+                l.Age == Age;
         }
         public override int GetHashCode()
         {
-            return HashCode.Combine(Genes, NeuralNetwork, Age, Properties);
+            return HashCode.Combine(Genes, NeuralNetwork, Age);
         }
 
         public static PRNG Random { get; set; }

@@ -9,16 +9,14 @@ namespace maths
         
         public DivCell(int neuronAllocant)
         {
-            NeuronActiveAllocant = neuronAllocant;
-            NeuronDivAllocant = neuronAllocant + 2;
+            NeuronAllocant = neuronAllocant;
 
             Name = $"DIV{_count}";
             _count++;
         }
 
         // The allocated position in the LifeformProperties.NeuronValues array.
-        public readonly int NeuronDivAllocant;
-        public readonly int NeuronActiveAllocant;
+        public readonly int NeuronAllocant;
 
         public string Name { get; }
 
@@ -27,35 +25,40 @@ namespace maths
 
         public double GetValue(Lifeform lifeform)
         {
-            if (lifeform.Properties.NeuronValues[NeuronActiveAllocant] == 0d)
+            if (!lifeform.GetNeuron<NeuronValue>(NeuronAllocant).Active)
             {
                 return 0;
             }
             
-            return Math.Tanh(lifeform.Properties.NeuronValues[NeuronDivAllocant]);
+            return Math.Tanh(lifeform.GetNeuron<NeuronValue>(NeuronAllocant).Value);
         }
 
         public void SetValue(Lifeform lifeform, double value)
         {
-            if (lifeform.Properties.NeuronValues[NeuronActiveAllocant] == 0d)
+            if (!lifeform.GetNeuron<NeuronValue>(NeuronAllocant).Active)
             {
-                lifeform.Properties.NeuronValues[NeuronActiveAllocant] = 1d;
-                lifeform.Properties.NeuronValues[NeuronDivAllocant] = value;
+                lifeform.GetNeuron<NeuronValue>(NeuronAllocant).Active = true;
+                lifeform.GetNeuron<NeuronValue>(NeuronAllocant).Value = value;
                 return;
             }
             
-            lifeform.Properties.NeuronValues[NeuronDivAllocant] /= value;
+            lifeform.GetNeuron<NeuronValue>(NeuronAllocant).Value /= value;
         }
 
         public void Activate(Lifeform lifeform) { return; }
         
+        public void Setup(NeuralNetwork network)
+        {
+            network.NeuronData[NeuronAllocant] = new NeuronValue();
+        }
+        
         public static void Add()
         {
-            DivCell cell = new DivCell(LifeProperties.NeuronValueNumber);
+            DivCell cell = new DivCell(NeuralNetwork.NeuronValueCount);
             
             NeuralNetwork.PosibleGetCells.Add(cell);
             NeuralNetwork.PosibleSetCells.Add(cell);
-            LifeProperties.NeuronValueNumber += 2;
+            NeuralNetwork.NeuronValueCount += 1;
         }
     }
 }

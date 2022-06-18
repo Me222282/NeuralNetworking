@@ -21,6 +21,8 @@ namespace utility
         {
             throw new NotSupportedException();
         }
+        
+        public void Setup(NeuralNetwork network) { return; }
 
         public static void Add()
         {

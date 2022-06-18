@@ -5,8 +5,8 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <ProjectReference Include="H:\Documents\Visual Studio 2019\Projects\NeuralNetworking\NeuralNetworking\NeuralNetworking.csproj" />
-    <ProjectReference Include="H:\Documents\Visual Studio 2019\Projects\NeuralNetworking\Zene\Structs\src\Structs.csproj" />
+    <ProjectReference Include="..\..\NeuralNetworking\NeuralNetworking.csproj" />
+    <ProjectReference Include="..\..\Zene\Structs\src\Structs.csproj" />
   </ItemGroup>
   
 </Project>

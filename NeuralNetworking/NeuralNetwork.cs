@@ -5,6 +5,8 @@ namespace Zene.NeuralNetworking
 {
     public class NeuralNetwork
     {
+        public static int NeuronValueCount { get; set; } = 0;
+
         private NeuralNetwork(Neuron[] neurons)
         {
             //List<Neuron> neuronList = new List<Neuron>(neurons);
@@ -13,6 +15,7 @@ namespace Zene.NeuralNetworking
             Array.Sort(neurons, CompareNeuron);
 
             Neurons = neurons;
+            NeuronData = new object[NeuronValueCount];
         }
 
         private static int CompareNeuron(Neuron x, Neuron y)
@@ -46,6 +49,20 @@ namespace Zene.NeuralNetworking
         /// List of <see cref="Neuron"/> in process order.
         /// </summary>
         public Neuron[] Neurons { get; }
+
+        public object[] NeuronData { get; set; }
+
+        public void ResetNeuronData()
+        {
+            for (int g = 0; g < PosibleGetCells.Count; g++)
+            {
+                PosibleGetCells[g].Setup(this);
+            }
+            for (int s = 0; s < PosibleSetCells.Count; s++)
+            {
+                PosibleSetCells[s].Setup(this);
+            }
+        }
 
         /// <summary>
         /// Compute the actions of a <see cref="Lifeform"/> for this frame.

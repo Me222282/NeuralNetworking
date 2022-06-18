@@ -5,14 +5,17 @@ namespace NetworkProgram
 {
     public struct InnerCell : INeuronCell
     {
+        private static int _count = 0;
+
         public InnerCell(int neuronAllocant)
         {
             NeuronAllocant = neuronAllocant;
 
-            Name = $"IN{neuronAllocant}";
+            Name = $"IN{_count}";
+            _count++;
         }
 
-        // The allocated position in the LifeformProperties.NeuronValues array.
+        // The allocated position in the NeuralNetwork.NeuronData array.
         public readonly int NeuronAllocant;
 
         public string Name { get; }
@@ -20,20 +23,25 @@ namespace NetworkProgram
         public int GetOrder => 10;
         public int SetOrder => 0;
 
-        public double GetValue(Lifeform lifeform) => Math.Tanh(lifeform.Properties.NeuronValues[NeuronAllocant]);
+        public void Setup(NeuralNetwork network)
+        {
+            network.NeuronData[NeuronAllocant] = new double();
+        }
+
+        public double GetValue(Lifeform lifeform) => Math.Tanh(lifeform.GetNeuron<double>(NeuronAllocant));
 
         public void SetValue(Lifeform lifeform, double value)
         {
-            lifeform.Properties.NeuronValues[NeuronAllocant] += value;
+            lifeform.SetNeuron(NeuronAllocant, lifeform.GetNeuron<double>(NeuronAllocant) + value);
         }
 
         public void Activate(Lifeform lifeform) { return; }
 
         public static void Add()
         {
-            NeuralNetwork.PosibleGetCells.Add(new InnerCell(LifeProperties.NeuronValueNumber));
-            NeuralNetwork.PosibleSetCells.Add(new InnerCell(LifeProperties.NeuronValueNumber));
-            LifeProperties.NeuronValueNumber++;
+            NeuralNetwork.PosibleGetCells.Add(new InnerCell(NeuralNetwork.NeuronValueCount));
+            NeuralNetwork.PosibleSetCells.Add(new InnerCell(NeuralNetwork.NeuronValueCount));
+            NeuralNetwork.NeuronValueCount++;
         }
     }
 }

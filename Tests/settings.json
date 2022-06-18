@@ -29,7 +29,7 @@
     {
         "name": "export",
         "path": "./exports",
-        "exports": [0]
+        "exports": []
     },
     
     "window":
