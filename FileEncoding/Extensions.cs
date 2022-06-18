@@ -16,5 +16,32 @@ namespace FileEncoding
 
             return MemoryMarshal.Cast<byte, T>(data)[0];
         }
+
+        public static unsafe void Write(this Stream stream, string value)
+        {
+            stream.Write(value.Length);
+
+            fixed (char* ptr = &value.AsSpan()[0])
+            {
+                stream.Write(new ReadOnlySpan<byte>(ptr, sizeof(char) * value.Length));
+            }
+        }
+
+        public static unsafe string ReadString(this Stream stream)
+        {
+            int length = stream.Read<int>();
+
+            byte[] data = new byte[sizeof(char) * length];
+            stream.Read(data);
+
+            string value;
+
+            fixed (byte* ptr = &data[0])
+            {
+                value = new string((char*)ptr);
+            }
+
+            return value;
+        }
     }
 }

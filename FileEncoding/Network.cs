@@ -95,13 +95,7 @@ namespace FileEncoding
             // Write list of dll paths
             for (int i = 0; i < dlls.Length; i++)
             {
-                stream.Write(dlls[i].Length);
-
-                // Write string
-                for (int c = 0; c < dlls[i].Length; c++)
-                {
-                    stream.Write(dlls[i][c]);
-                }
+                stream.Write(dlls[i]);
             }
 
             for (int l = 0; l < lifeforms.Length; l++)
@@ -143,17 +137,7 @@ namespace FileEncoding
             // Read list of dll paths
             for (int i = 0; i < dllLength; i++)
             {
-                int strLength = stream.Read<int>();
-
-                char[] str = new char[strLength];
-
-                // Write string
-                for (int c = 0; c < dlls[i].Length; c++)
-                {
-                    str[c] = stream.Read<char>();
-                }
-
-                dlls[i] = new string(str);
+                dlls[i] = stream.ReadString();
             }
 
             Gene[][] genes = new Gene[lifeformLength][];
