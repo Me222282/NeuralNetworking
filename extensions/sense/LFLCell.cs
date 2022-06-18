@@ -6,11 +6,16 @@ namespace sense
 {
     public struct LFLCell : INeuronCell
     {
+        public LFLCell(int neuron) { }
+        
         public string Name => "LFL";
 
         public int GetOrder => 0;
         public int SetOrder => throw new NotSupportedException();
-
+        
+        public static NeuronType NeuronType => NeuronType.Getter;
+        public static bool UseNeuronValue => false;
+        
         internal const int SenseDistance = 10;
 
         public double GetValue(Lifeform lifeform)
@@ -50,10 +55,5 @@ namespace sense
         public void Activate(Lifeform lifeform) => throw new NotSupportedException();
         
         public void Setup(NeuralNetwork network) { return; }
-        
-        public static void Add()
-        {
-            NeuralNetwork.PosibleGetCells.Add(new LFLCell());
-        }
     }
 }

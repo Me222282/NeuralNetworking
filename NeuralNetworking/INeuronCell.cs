@@ -1,6 +1,6 @@
 ﻿namespace Zene.NeuralNetworking
 {
-    public enum NeuonType
+    public enum NeuronType
     {
         Getter,
         Setter,

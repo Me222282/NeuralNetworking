@@ -22,7 +22,10 @@ namespace maths
 
         public int GetOrder => 10;
         public int SetOrder => 0;
-
+        
+        public static NeuronType NeuronType => NeuronType.Inner;
+        public static bool UseNeuronValue => true;
+        
         public double GetValue(Lifeform lifeform)
         {
             if (!lifeform.GetNeuron<NeuronValue>(NeuronAllocant).Active)

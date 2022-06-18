@@ -18,7 +18,10 @@ namespace movement
 
         public int GetOrder => throw new NotSupportedException();
         public int SetOrder => 1;
-
+        
+        public static NeuronType NeuronType => NeuronType.Setter;
+        public static bool UseNeuronValue => true;
+        
         public double GetValue(Lifeform lifeform) => throw new NotSupportedException();
 
         public void SetValue(Lifeform lifeform, double value)

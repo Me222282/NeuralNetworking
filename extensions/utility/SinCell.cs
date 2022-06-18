@@ -5,11 +5,16 @@ namespace utility
 {
     public struct SinCell : INeuronCell
     {
+        public SinCell(int neuron) { }
+        
         public string Name => "SIN";
 
         public int GetOrder => 0;
         public int SetOrder => throw new NotSupportedException();
-
+        
+        public static NeuronType NeuronType => NeuronType.Getter;
+        public static bool UseNeuronValue => false;
+        
         public double GetValue(Lifeform lifeform) => Math.Sin(lifeform.CurrentWorld.Time);
 
         public void SetValue(Lifeform lifeform, double value)
@@ -23,10 +28,5 @@ namespace utility
         }
         
         public void Setup(NeuralNetwork network) { return; }
-
-        public static void Add()
-        {
-            NeuralNetwork.PosibleGetCells.Add(new SinCell());
-        }
     }
 }

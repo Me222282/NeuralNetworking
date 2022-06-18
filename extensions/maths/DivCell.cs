@@ -22,7 +22,10 @@ namespace maths
 
         public int GetOrder => 10;
         public int SetOrder => 0;
-
+        
+        public static NeuronType NeuronType => NeuronType.Inner;
+        public static bool UseNeuronValue => true;
+        
         public double GetValue(Lifeform lifeform)
         {
             if (!lifeform.GetNeuron<NeuronValue>(NeuronAllocant).Active)
@@ -50,15 +53,6 @@ namespace maths
         public void Setup(NeuralNetwork network)
         {
             network.NeuronData[NeuronAllocant] = new NeuronValue();
-        }
-        
-        public static void Add()
-        {
-            DivCell cell = new DivCell(NeuralNetwork.NeuronValueCount);
-            
-            NeuralNetwork.PosibleGetCells.Add(cell);
-            NeuralNetwork.PosibleSetCells.Add(cell);
-            NeuralNetwork.NeuronValueCount += 1;
         }
     }
 }

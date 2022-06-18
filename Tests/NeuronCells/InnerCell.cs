@@ -7,6 +7,9 @@ namespace NetworkProgram
     {
         private static int _count = 0;
 
+        public static NeuronType NeuronType => NeuronType.Inner;
+        public static bool UseNeuronValue => true;
+
         public InnerCell(int neuronAllocant)
         {
             NeuronAllocant = neuronAllocant;

@@ -5,11 +5,16 @@ namespace movement
 {
     public struct PDCell : INeuronCell
     {
+        public PDCell(int neuron) { }
+        
         public string Name => "PD_";
 
         public int GetOrder => 0;
         public int SetOrder => throw new NotSupportedException();
-
+        
+        public static NeuronType NeuronType => NeuronType.Getter;
+        public static bool UseNeuronValue => false;
+        
         public double GetValue(Lifeform lifeform)
         {
             return (double)(lifeform.CurrentWorld.Height - lifeform.Location.Y) / lifeform.CurrentWorld.Height;
@@ -19,10 +24,5 @@ namespace movement
         public void Activate(Lifeform lifeform) => throw new NotSupportedException();
         
         public void Setup(NeuralNetwork network) { return; }
-        
-        public static void Add()
-        {
-            NeuralNetwork.PosibleGetCells.Add(new PDCell());
-        }
     }
 }
