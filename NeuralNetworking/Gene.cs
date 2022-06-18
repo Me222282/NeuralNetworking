@@ -73,20 +73,6 @@
                 (ushort)random.Generate(0, ushort.MaxValue),
                 (uint)random.Generate(0, uint.MaxValue));
         }
-        public static Gene Generate()
-        {
-            ushort a;
-            ushort b;
-            uint c;
-
-            lock (Lifeform.RandSync)
-            {
-                a = (ushort)Lifeform.Random.Generate(0, ushort.MaxValue);
-                b = (ushort)Lifeform.Random.Generate(0, ushort.MaxValue);
-                c = (uint)Lifeform.Random.Generate(0, uint.MaxValue);
-            }
-
-            return new Gene(a, b, c);
-        }
+        public static Gene Generate() => Generate(Lifeform.Random);
     }
 }

@@ -114,7 +114,7 @@ namespace Zene.NeuralNetworking
         }
 
         public static PRNG Random { get; set; }
-        public static object RandSync { get; } = new object();
+        //public static object RandSync { get; } = new object();
 
         public static Lifeform Generate(PRNG random, int nGene, Vector2I location, World world)
         {
@@ -212,16 +212,9 @@ namespace Zene.NeuralNetworking
         public static bool OneInChance(double chance)
         {
             // Guaranteed
-            if (chance >= 1) { return true; }
-
-            bool compare;
-
-            lock (RandSync)
-            {
-                compare = Random.Generate() < chance;
-            }
-
-            return compare;
+            return chance >= 1 ||
+                // Chance
+                Random.Generate() < chance;
         }
         private static Colour GeneColour(Gene[] genes)
         {
