@@ -1,16 +1,16 @@
 ﻿using System;
 using Zene.NeuralNetworking;
 
-namespace DllPreset
+namespace utility
 {
-    public struct SinCell : INeuronCell
+    public struct RandCell : INeuronCell
     {
-        public string Name => "SIN";
+        public string Name => "RND";
 
         public int GetOrder => 0;
         public int SetOrder => throw new NotSupportedException();
 
-        public double GetValue(Lifeform lifeform) => Math.Sin(lifeform.CurrentWorld.Time);
+        public double GetValue(Lifeform lifeform) => Lifeform.Random.Generate(-1d, 1d);
 
         public void SetValue(Lifeform lifeform, double value)
         {
@@ -24,7 +24,7 @@ namespace DllPreset
 
         public static void Add()
         {
-            NeuralNetwork.PosibleGetCells.Add(new SinCell());
+            NeuralNetwork.PosibleGetCells.Add(new RandCell());
         }
     }
 }

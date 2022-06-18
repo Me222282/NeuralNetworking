@@ -1,7 +1,7 @@
 ﻿using System;
 using Zene.NeuralNetworking;
 
-namespace DllPreset
+namespace utility
 {
     public struct CosCell : INeuronCell
     {

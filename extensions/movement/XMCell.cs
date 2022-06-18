@@ -2,13 +2,13 @@
 using Zene.NeuralNetworking;
 using Zene.Structs;
 
-namespace DllPreset
+namespace movement
 {
-    public struct YMCell : INeuronCell
+    public struct XMCell : INeuronCell
     {
-        public string Name => "YM_";
+        public string Name => "XM_";
 
-        public YMCell(int neuronAllocant)
+        public XMCell(int neuronAllocant)
         {
             NeuronAllocant = neuronAllocant;
         }
@@ -36,20 +36,20 @@ namespace DllPreset
             {
                 if (Lifeform.OneInChance(value))
                 {
-                    lifeform.Shift(new Vector2I(0, 1));
+                    lifeform.Shift(new Vector2I(1, 0));
                     return;
                 }
             }
 
             if (Lifeform.OneInChance(-value))
             {
-                lifeform.Shift(new Vector2I(0, -1));
+                lifeform.Shift(new Vector2I(-1, 0));
             }
         }
 
         public static void Add()
         {
-            NeuralNetwork.PosibleSetCells.Add(new YMCell(LifeProperties.NeuronValueNumber));
+            NeuralNetwork.PosibleSetCells.Add(new XMCell(LifeProperties.NeuronValueNumber));
             LifeProperties.NeuronValueNumber++;
         }
     }

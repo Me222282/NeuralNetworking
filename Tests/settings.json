@@ -19,7 +19,8 @@
     "dlls": 
     [
         "dlls/sense.dll",
-        "dlls/DllPreset.dll",
+        "dlls/movement.dll",
+        "dlls/utility.dll",
         "dlls/maths.dll",
         "dlls/neighbours.dll"
     ],

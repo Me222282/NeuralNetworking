@@ -1,7 +1,7 @@
 ﻿using System;
 using Zene.NeuralNetworking;
 
-namespace DllPreset
+namespace movement
 {
     public struct PRCell : INeuronCell
     {

@@ -1,18 +1,18 @@
 ﻿using System;
 using Zene.NeuralNetworking;
 
-namespace DllPreset
+namespace movement
 {
-    public struct PDCell : INeuronCell
+    public struct PUCell : INeuronCell
     {
-        public string Name => "PD_";
+        public string Name => "PU_";
 
         public int GetOrder => 0;
         public int SetOrder => throw new NotSupportedException();
 
         public double GetValue(Lifeform lifeform)
         {
-            return (double)(lifeform.CurrentWorld.Height - lifeform.Location.Y) / lifeform.CurrentWorld.Height;
+            return (double)lifeform.Location.Y / lifeform.CurrentWorld.Height;
         }
 
         public void SetValue(Lifeform lifeform, double value) => throw new NotSupportedException();
@@ -20,7 +20,7 @@ namespace DllPreset
 
         public static void Add()
         {
-            NeuralNetwork.PosibleGetCells.Add(new PDCell());
+            NeuralNetwork.PosibleGetCells.Add(new PUCell());
         }
     }
 }
