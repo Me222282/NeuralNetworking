@@ -10,8 +10,8 @@
     "lifeform": 
     {
         "count": 1000,
-        "brainSize": 20,
-        "strengthRange": 25,
+        "brainSize": 80,
+        "strengthRange": 2,
         "mutationChance": 0.001,
         "colourGrade": 15
     },

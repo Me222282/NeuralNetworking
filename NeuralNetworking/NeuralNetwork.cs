@@ -24,25 +24,21 @@ namespace Zene.NeuralNetworking
             {
                 return 1;
             }
-            else if (x.Source.GetOrder < y.Source.GetOrder)
+            if (x.Source.GetOrder < y.Source.GetOrder)
             {
                 return -1;
             }
-            else
+
+            if (x.Destination.SetOrder > y.Destination.SetOrder)
             {
-                if (x.Destination.SetOrder > y.Destination.SetOrder)
-                {
-                    return 1;
-                }
-                else if (x.Destination.SetOrder < y.Destination.SetOrder)
-                {
-                    return -1;
-                }
-                else
-                {
-                    return 0;
-                }
+                return 1;
             }
+            if (x.Destination.SetOrder < y.Destination.SetOrder)
+            {
+                return -1;
+            }
+
+            return 0;
         }
 
         /// <summary>
