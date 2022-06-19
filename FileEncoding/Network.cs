@@ -109,19 +109,8 @@ namespace FileEncoding
 
             for (int l = 0; l < lifeforms.Length; l++)
             {
-                Gene[] genes = lifeforms[l].Genes;
-
-                // Number of genes
-                stream.Write(genes.Length);
-
                 // Write network
-                for (int g = 0; g < genes.Length; g++)
-                {
-                    stream.Write(genes[g].Source);
-                    stream.Write(genes[g].Destination);
-
-                    stream.Write(genes[g].Strength);
-                }
+                stream.Write(lifeforms[l].Genes);
             }
 
             zip.Dispose();
@@ -163,21 +152,8 @@ namespace FileEncoding
 
             for (int l = 0; l < lifeformLength; l++)
             {
-                // Number of genes
-                int geneLength = stream.Read<int>();
-
-                genes[l] = new Gene[geneLength];
-
-                // Write network
-                for (int g = 0; g < geneLength; g++)
-                {
-                    ushort source = stream.Read<ushort>();
-                    ushort destination = stream.Read<ushort>();
-
-                    double strength = stream.Read<double>();
-
-                    genes[l][g] = new Gene(source, destination, strength);
-                }
+                // Read network
+                genes[l] = stream.ReadArray<Gene>();
             }
 
             zip.Dispose();
