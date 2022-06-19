@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Zene.NeuralNetworking
 {
@@ -65,6 +67,12 @@ namespace Zene.NeuralNetworking
         {
             //init
             Sgenrand(seed);
+        }
+
+        private PRNG(ulong[] mt, int mti)
+        {
+            this.mt = mt;
+            this.mti = mti;
         }
 
         #region helpers methods
@@ -222,5 +230,31 @@ namespace Zene.NeuralNetworking
             return (Generate() * (higherBound - lowerBound)) + lowerBound;
         }
         #endregion
+
+        public unsafe void WriteToStream(Stream stream)
+        {
+            fixed (ulong* ptr = &mt[0])
+            {
+                stream.Write(new ReadOnlySpan<byte>(ptr, mt.Length * sizeof(ulong)));
+            }
+
+            fixed (int* ptr = &mti)
+            {
+                stream.Write(new ReadOnlySpan<byte>(ptr, sizeof(int)));
+            }
+        }
+
+        public static unsafe PRNG FromStream(Stream stream)
+        {
+            Span<byte> buffer = new byte[625 * sizeof(ulong)];
+            stream.Read(buffer);
+
+            Span<byte> integer = stackalloc byte[sizeof(int)];
+            stream.Read(integer);
+
+            return new PRNG(
+                MemoryMarshal.Cast<byte, ulong>(buffer).ToArray(),
+                MemoryMarshal.Cast<byte, int>(integer)[0]);
+        }
     }
 }

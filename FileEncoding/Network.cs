@@ -93,6 +93,9 @@ namespace FileEncoding
 
             LZ4EncoderStream zip = LZ4Stream.Encode(stream);
 
+            // Write data from random to stream
+            Lifeform.Random.WriteToStream(stream);
+
             // Write list of dll paths
             for (int i = 0; i < dlls.Length; i++)
             {
@@ -138,6 +141,9 @@ namespace FileEncoding
             int cellLength = stream.Read<int>();
 
             LZ4DecoderStream zip = LZ4Stream.Decode(stream);
+
+            // Read PRNG data from stream
+            Lifeform.Random = PRNG.FromStream(stream);
 
             dlls = new string[dllLength];
             // Read list of dll paths
