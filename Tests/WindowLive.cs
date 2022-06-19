@@ -11,14 +11,14 @@ namespace NetworkProgram
         public WindowLive(int width, int height, string title, Settings settings)
             : base(width, height, title, settings)
         {
-            _exportGens = new List<int>(Settings.ExportGens);
-
             _world = new World(
                 Settings.LifeForms,
                 Settings.BrainSize,
                 Settings.WorldSize,
                 Settings.WorldSize,
                 Settings.GenLength);
+
+            ExportGenSetup();
         }
         public WindowLive(int width, int height, string title, Settings settings, Lifeform[] lifeforms, int genStart = 0)
             : base(width, height, title, settings)
@@ -28,20 +28,18 @@ namespace NetworkProgram
                 throw new Exception();
             }
 
-            _exportGens = new List<int>(Settings.ExportGens);
-
             _world = new World(
                 Settings.WorldSize,
                 Settings.WorldSize,
                 lifeforms,
                 Settings.GenLength,
                 genStart);
+
+            ExportGenSetup();
         }
         public WindowLive(int width, int height, string title, Settings settings, Gene[][] genes, int genStart = 0)
             : base(width, height, title, settings)
         {
-            _exportGens = new List<int>(Settings.ExportGens);
-
             _world = new World(
                 Settings.WorldSize,
                 Settings.WorldSize,
@@ -51,6 +49,8 @@ namespace NetworkProgram
                     Settings.WorldSize),
                 Settings.GenLength,
                 genStart);
+
+            ExportGenSetup();
         }
 
         private int _exporting = 0;
@@ -58,8 +58,19 @@ namespace NetworkProgram
 
         private World _world;
         private bool _exportGen;
-        private readonly List<int> _exportGens;
+        private List<int> _exportGens;
         private FramePart[,] _frames = null;
+
+        private void ExportGenSetup()
+        {
+            _exportGens = new List<int>(Settings.ExportGens);
+            _exportGen = _exportGens.Contains(0);
+
+            if (_exportGen)
+            {
+                _frames = new FramePart[Settings.GenLength, _world.Lifeforms.Length];
+            }
+        }
 
         protected override void Update()
         {

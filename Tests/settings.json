@@ -6,11 +6,12 @@
         "generationLength": 300,
         "generationCount": 0
     },
-    
-    "lifeform":
+
+    "lifeform": 
     {
         "count": 1000,
         "brainSize": 20,
+        "strengthRange": 25,
         "mutationChance": 0.001,
         "colourGrade": 15
     },
@@ -29,7 +30,7 @@
     {
         "name": "export",
         "path": "./exports",
-        "exports": []
+        "exports": [0]
     },
     
     "window":

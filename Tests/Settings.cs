@@ -21,6 +21,7 @@ namespace NetworkProgram
         public int LifeForms { get; private set; }
         public int BrainSize { get; private set; }
         public int InnerCells { get; private set; }
+        public double StrengthRange { get; private set; }
         public double Mutation { get; private set; }
         public byte ColourGrade { get; private set; }
 
@@ -109,6 +110,7 @@ namespace NetworkProgram
                 }
             }
 
+            Gene.StrengthRange = StrengthRange;
             Gene.MutationChance = Mutation;
             Lifeform.ColourGrade = ColourGrade;
             Lifeform.Random = new PRNG(Seed);
@@ -245,6 +247,15 @@ namespace NetworkProgram
             catch (Exception)
             {
                 Console.WriteLine("\"lifeform\" must contain the integer \"brainSize\".");
+                throw new Exception("Invalid settings file");
+            }
+            try
+            {
+                values.StrengthRange = lifeform.GetProperty("strengthRange").GetDouble();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("\"lifeform\" must contain the double \"strengthRange\".");
                 throw new Exception("Invalid settings file");
             }
             try

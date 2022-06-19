@@ -92,8 +92,8 @@ namespace NetworkProgram
 
             if (Settings.Windowed)
             {
-                SimulateCustom();
-                //SimulateLive();
+                //SimulateCustom();
+                SimulateLive();
             }
             else { Simulate(); }
         }
