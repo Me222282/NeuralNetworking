@@ -1,4 +1,7 @@
-﻿namespace Zene.NeuralNetworking
+﻿using System;
+using System.Collections.Generic;
+
+namespace Zene.NeuralNetworking
 {
     public struct Gene
     {
@@ -6,6 +9,26 @@
         {
             Source = src;
             Destination = des;
+            Strength = str;
+        }
+        public Gene(string src, string des, double str)
+        {
+            bool validSrc = _getCells.TryGetValue(src, out int srcIndex);
+
+            if (!validSrc)
+            {
+                throw new Exception($"No get cell named {src} exists.");
+            }
+
+            bool validDes = _setCells.TryGetValue(des, out int desIndex);
+
+            if (!validDes)
+            {
+                throw new Exception($"No set cell named {des} exists.");
+            }
+
+            Source = (ushort)srcIndex;
+            Destination = (ushort)desIndex;
             Strength = str;
         }
 
@@ -63,5 +86,21 @@
                 random.Generate(-StrengthRange, StrengthRange));
         }
         public static Gene Generate() => Generate(Lifeform.Random);
+
+        private static readonly Dictionary<string, int> _getCells = new Dictionary<string, int>();
+        private static readonly Dictionary<string, int> _setCells = new Dictionary<string, int>();
+
+        public static void GenNameRef()
+        {
+            for (int i = 0; i < NeuralNetwork.PosibleGetCells.Count; i++)
+            {
+                _getCells.Add(NeuralNetwork.PosibleGetCells[i].Name, i);
+            }
+
+            for (int i = 0; i < NeuralNetwork.PosibleSetCells.Count; i++)
+            {
+                _setCells.Add(NeuralNetwork.PosibleSetCells[i].Name, i);
+            }
+        }
     }
 }

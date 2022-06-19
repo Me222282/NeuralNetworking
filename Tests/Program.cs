@@ -224,41 +224,37 @@ namespace NetworkProgram
 
         private void SimulateCustom()
         {
+            Gene.GenNameRef();
             
             Gene[] genes1 = new Gene[]
             {
-                new Gene(18, 16, -1d),
-                new Gene(19, 16, 1d),
-                new Gene(20, 17, 1d),
-                new Gene(21, 17, -1d),
+                new Gene("LFL", "XM_", 1d),
+                new Gene("LFR", "XM_", -1d),
+                new Gene("LFU", "YM_", 1d),
+                new Gene("LFD", "YM_", -1d)
             };
             /*
             Gene[] genes1 = new Gene[]
             {
-                //new Gene(18, 16, -1d),
-                //new Gene(19, 16, 1d),
-                //new Gene(20, 17, 1d),
-                //new Gene(21, 17, -1d),
-
                 // LFL
-                new Gene(4, 4, 1d),
-                new Gene(18, 4, 1d),
-                new Gene(6, 16, 1d),
+                new Gene("CONST1", "SUB0", 1d),
+                new Gene("LFL", "SUB0", 1d),
+                new Gene("SUB0", "XM_", 1d),
 
                 // LFR
-                new Gene(4, 7, 1d),
-                new Gene(19, 7, 1d),
-                new Gene(9, 16, -1d),
+                new Gene("CONST1", "SUB1", 1d),
+                new Gene("LFR", "SUB1", 1d),
+                new Gene("SUB1", "XM_", -1d),
 
                 // LFU
-                new Gene(4, 10, 1d),
-                new Gene(20, 10, 1d),
-                new Gene(12, 17, -1d),
+                new Gene("CONST1", "SUB2", 1d),
+                new Gene("LFU", "SUB2", 1d),
+                new Gene("SUB2", "YM_", -1d),
 
                 // LFD
-                new Gene(4, 13, 1d),
-                new Gene(21, 13, 1d),
-                new Gene(15, 17, 1d),
+                new Gene("CONST1", "SUB3", 1d),
+                new Gene("LFD", "SUB3", 1d),
+                new Gene("SUB3", "YM_", 1d),
             };*/
 
             Lifeform l = new Lifeform(genes1, Vector2I.Zero, null);
