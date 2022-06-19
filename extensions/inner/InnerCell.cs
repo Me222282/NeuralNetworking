@@ -3,6 +3,12 @@ using Zene.NeuralNetworking;
 
 namespace inner
 {
+    internal class DataValue
+    {
+        public double Total;
+        public int Count;
+    }
+    
     public struct InnerCell : INeuronCell
     {
         private static int _count = 0;
@@ -28,14 +34,21 @@ namespace inner
 
         public void Setup(NeuralNetwork network)
         {
-            network.NeuronData[NeuronAllocant] = new double();
+            network.NeuronData[NeuronAllocant] = new DataValue();
         }
 
-        public double GetValue(Lifeform lifeform) => Math.Tanh(lifeform.GetNeuron<double>(NeuronAllocant));
+        public double GetValue(Lifeform lifeform)
+        {
+            DataValue dv = lifeform.GetNeuron<DataValue>(NeuronAllocant);
+            
+            return dv.Total / dv.Count;
+        }
 
         public void SetValue(Lifeform lifeform, double value)
         {
-            lifeform.SetNeuron(NeuronAllocant, lifeform.GetNeuron<double>(NeuronAllocant) + value);
+            DataValue dv = lifeform.GetNeuron<DataValue>(NeuronAllocant);
+            dv.Total += value;
+            dv.Count++;
         }
 
         public void Activate(Lifeform lifeform) { return; }

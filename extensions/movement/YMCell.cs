@@ -54,11 +54,5 @@ namespace movement
         {
             network.NeuronData[NeuronAllocant] = new double();
         }
-
-        public static void Add()
-        {
-            NeuralNetwork.PosibleSetCells.Add(new YMCell(NeuralNetwork.NeuronValueCount));
-            NeuralNetwork.NeuronValueCount++;
-        }
     }
 }

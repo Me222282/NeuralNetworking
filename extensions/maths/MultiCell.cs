@@ -54,14 +54,5 @@ namespace maths
         {
             network.NeuronData[NeuronAllocant] = new NeuronValue();
         }
-        
-        public static void Add()
-        {
-            MultiCell cell = new MultiCell(NeuralNetwork.NeuronValueCount);
-            
-            NeuralNetwork.PosibleGetCells.Add(cell);
-            NeuralNetwork.PosibleSetCells.Add(cell);
-            NeuralNetwork.NeuronValueCount += 1;
-        }
     }
 }

@@ -22,6 +22,7 @@
 
     "Const1Cell": 1,
     "Const_1Cell": 1,
+    "AddCell": 10,
     "SubCell": 10,
     "MultiCell": 10,
     "DivCell": 10

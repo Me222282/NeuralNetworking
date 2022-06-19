@@ -4,6 +4,7 @@ namespace maths
     {
         private static readonly string[] _cellNames = new string[]
         {
+            nameof(AddCell),
             nameof(SubCell),
             nameof(MultiCell),
             nameof(DivCell),
