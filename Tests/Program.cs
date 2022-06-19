@@ -300,15 +300,15 @@ namespace NetworkProgram
 
         public void SetupEnvironment()
         {
-            Neurons[] neurons;
+            CellValue[] neurons;
 
             if (!File.Exists(NeuronsPath))
             {
-                neurons = Neurons.Generate(new FileStream(NeuronsPath, FileMode.Create), Settings);
+                neurons = Settings.GenerateCellValues(new FileStream(NeuronsPath, FileMode.Create), Settings);
             }
             else
             {
-                neurons = Neurons.Parse(File.ReadAllText(NeuronsPath), Settings);
+                neurons = Settings.ParseCellValues(File.ReadAllText(NeuronsPath), Settings);
             }
 
             Settings.SetupEnvironment(neurons);

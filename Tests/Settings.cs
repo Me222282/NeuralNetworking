@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FileEncoding;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using Zene.NeuralNetworking;
@@ -70,6 +72,8 @@ namespace NetworkProgram
             }
         }
 
+        public CellValue[] CellValues { get; private set; }
+
         public void LoadDlls()
         {
             LoadedDlls = new DllLoad[Dlls.Length];
@@ -91,15 +95,17 @@ namespace NetworkProgram
             }
         }
 
-        public void SetupEnvironment(Neurons[] neurons)
+        public void SetupEnvironment(CellValue[] cellValues)
         {
-            // Add neuron cells in order
-            for (int n = 0; n < neurons.Length; n++)
-            {
-                int d = neurons[n].DllIndex;
-                int c = neurons[n].CellIndex;
+            CellValues = cellValues;
 
-                for (int i = 0; i < neurons[n].Count; i++)
+            // Add neuron cells in order
+            for (int n = 0; n < cellValues.Length; n++)
+            {
+                int d = cellValues[n].DllIndex;
+                int c = cellValues[n].CellIndex;
+
+                for (int i = 0; i < cellValues[n].Count; i++)
                 {
                     if (LoadedDlls[d].CellNames[0] == "InnerCell")
                     {
@@ -423,6 +429,87 @@ namespace NetworkProgram
             }
 
             return new Colour(value[0], value[1], value[2], value[3]);
+        }
+
+        public static CellValue[] ParseCellValues(string json, Settings settings)
+        {
+            JsonElement decode = JsonDocument.Parse(json).RootElement;
+
+            LinkedList<CellValue> neurons = new LinkedList<CellValue>();
+
+            Dictionary<string, Vector2I> locations = new Dictionary<string, Vector2I>();
+
+            // Add all cells to dictionary
+            for (int i = 0; i < settings.LoadedDlls.Length; i++)
+            {
+                if (!settings.LoadedDlls[i].ContainsCells)
+                {
+                    continue;
+                }
+
+                for (int s = 0; s < settings.LoadedDlls[i].CellNames.Length; s++)
+                {
+                    locations.Add(
+                        settings.LoadedDlls[i].CellNames[s],
+                        new Vector2I(i, s));
+                }
+            }
+
+            foreach (JsonProperty je in decode.EnumerateObject())
+            {
+                bool exists = locations.TryGetValue(je.Name, out Vector2I index);
+
+                if (!exists)
+                {
+                    throw new Exception($"No dll contains a cell named {je.Name}");
+                }
+
+                bool valid = je.Value.TryGetInt32(out int count);
+
+                if (!valid)
+                {
+                    throw new Exception($"Property {je.Name} must contain an integer.");
+                }
+
+                neurons.AddLast(new CellValue(index.X, index.Y, count));
+            }
+
+            CellValue[] array = new CellValue[neurons.Count];
+            neurons.CopyTo(array, 0);
+            return array;
+        }
+        public static CellValue[] GenerateCellValues(Stream stream, Settings settings)
+        {
+            LinkedList<CellValue> neurons = new LinkedList<CellValue>();
+
+            Utf8JsonWriter jw = new Utf8JsonWriter(stream,
+                new JsonWriterOptions
+                {
+                    Indented = true,
+                });
+
+            jw.WriteStartObject();
+
+            for (int i = 0; i < settings.LoadedDlls.Length; i++)
+            {
+                if (!settings.LoadedDlls[i].ContainsCells)
+                {
+                    continue;
+                }
+
+                for (int s = 0; s < settings.LoadedDlls[i].CellNames.Length; s++)
+                {
+                    neurons.AddLast(new CellValue(i, s, 1));
+                    jw.WriteNumber(settings.LoadedDlls[i].CellNames[s], 1);
+                }
+            }
+
+            jw.WriteEndObject();
+            jw.Dispose();
+
+            CellValue[] array = new CellValue[neurons.Count];
+            neurons.CopyTo(array, 0);
+            return array;
         }
     }
 }
