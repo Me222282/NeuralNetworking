@@ -10,7 +10,10 @@ namespace maths
         public SubCell(int neuronAllocant)
         {
             NeuronAllocant = neuronAllocant;
-
+            
+            GetOrder = neuronAllocant;
+            SetOrder = -neuronAllocant;
+            
             Name = $"SUB{_count}";
             _count++;
         }
@@ -20,8 +23,8 @@ namespace maths
 
         public string Name { get; }
 
-        public int GetOrder => 10;
-        public int SetOrder => 0;
+        public int GetOrder { get; }
+        public int SetOrder { get; }
         
         public static NeuronType NeuronType => NeuronType.Inner;
         public static bool UseNeuronValue => true;

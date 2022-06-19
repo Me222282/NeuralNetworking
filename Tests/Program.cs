@@ -92,8 +92,8 @@ namespace NetworkProgram
 
             if (Settings.Windowed)
             {
-                //SimulateCustom();
-                SimulateLive();
+                SimulateCustom();
+                //SimulateLive();
             }
             else { Simulate(); }
         }
@@ -254,7 +254,7 @@ namespace NetworkProgram
                 // LFD
                 new Gene("CONST1", "SUB3", 1d),
                 new Gene("LFD", "SUB3", 1d),
-                new Gene("SUB3", "YM_", 1d),
+                new Gene("SUB3", "YM_", 1d)
             };*/
 
             Lifeform l = new Lifeform(genes1, Vector2I.Zero, null);

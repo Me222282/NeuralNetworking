@@ -19,6 +19,9 @@ namespace inner
         public InnerCell(int neuronAllocant)
         {
             NeuronAllocant = neuronAllocant;
+            
+            GetOrder = neuronAllocant;
+            SetOrder = -neuronAllocant;
 
             Name = $"IN{_count}";
             _count++;
@@ -29,8 +32,8 @@ namespace inner
 
         public string Name { get; }
 
-        public int GetOrder => 10;
-        public int SetOrder => 0;
+        public int GetOrder { get; }
+        public int SetOrder { get; }
 
         public void Setup(NeuralNetwork network)
         {
