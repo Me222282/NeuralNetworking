@@ -12,12 +12,14 @@ namespace NetworkProgram
 {
     internal sealed class Program
     {
-        #if (DEBUG)
+#if (DEBUG)
         private const string SettingsPath = "settings.json";
-        #else
+        private const string NeuronsPath = "neurons.json";
+#else
         private const string SettingsPath = "../settings.json";
-        #endif
-        
+        private const string NeuronsPath = "../neurons.json";
+#endif
+
         private Program(Settings settings)
         {
             Settings = settings;
@@ -160,7 +162,7 @@ namespace NetworkProgram
 
                 counter++;
 
-                if (Settings.Delay != 0)
+                if (Settings.Delay > 0)
                 {
                     System.Threading.Thread.Sleep(Settings.Delay);
                 }
@@ -300,90 +302,20 @@ namespace NetworkProgram
             }
         }
 
-        private void LoadMaths()
-        {
-            int dllLocation = Settings.LoadedDlls.FindDll("maths");
-            
-            if (dllLocation < 0)
-            {
-                return;
-            }
-
-            DllLoad dll = Settings.LoadedDlls[dllLocation];
-
-            int sub = -1;
-            int div = -1;
-            int multi = -1;
-            int con = -1;
-            int conNeg = -1;
-
-            for (int i = 0; i < dll.CellNames.Length; i++)
-            {
-                switch (dll.CellNames[i])
-                {
-                    case "maths.SubCell":
-                        sub = i;
-                        continue;
-
-                    case "maths.DivCell":
-                        div = i;
-                        continue;
-
-                    case "maths.MultiCell":
-                        multi = i;
-                        continue;
-
-                    case "maths.Const1Cell":
-                        con = i;
-                        continue;
-
-                    case "maths.Const_1Cell":
-                        conNeg = i;
-                        continue;
-
-                    default:
-                        return;
-                }
-            }
-
-            dll.AddCell(con);
-            dll.AddCell(conNeg);
-
-            for (int i = 0; i < Settings.InnerCells; i++)
-            {
-                dll.AddCell(sub);
-                dll.AddCell(div);
-                dll.AddCell(multi);
-            }
-        }
-
         public void SetupEnvironment()
         {
-            // Inner Cells
-            for (int i = 0; i < Settings.InnerCells; i++)
+            Neurons[] neurons;
+
+            if (!File.Exists(NeuronsPath))
             {
-                InnerCell.Add();
+                neurons = Neurons.Generate(new FileStream(NeuronsPath, FileMode.Create), Settings);
+            }
+            else
+            {
+                neurons = Neurons.Parse(File.ReadAllText(NeuronsPath), Settings);
             }
 
-            LoadMaths();
-
-            // Load all possible Cells
-            for (int d = 0; d < Settings.LoadedDlls.Length; d++)
-            {
-                if (!Settings.LoadedDlls[d].ContainsCells || Settings.LoadedDlls[d].Name == "maths")
-                {
-                    continue;
-                }
-
-                for (int c = 0; c < Settings.LoadedDlls[d].CellNames.Length; c++)
-                {
-                    Settings.LoadedDlls[d].AddCell(c);
-                }
-            }
-
-            Gene.MutationChance = Settings.Mutation;
-            Lifeform.ColourGrade = Settings.ColourGrade;
-            Lifeform.Random = new PRNG((ulong)Settings.Seed);
+            Settings.SetupEnvironment(neurons);
 
             Settings.SelectedDll = Settings.LoadedDlls.FindDll("neighbours");
         }

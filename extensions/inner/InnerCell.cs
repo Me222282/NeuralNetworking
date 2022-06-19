@@ -1,7 +1,7 @@
 ﻿using System;
 using Zene.NeuralNetworking;
 
-namespace NetworkProgram
+namespace inner
 {
     public struct InnerCell : INeuronCell
     {
@@ -39,12 +39,5 @@ namespace NetworkProgram
         }
 
         public void Activate(Lifeform lifeform) { return; }
-
-        public static void Add()
-        {
-            NeuralNetwork.PosibleGetCells.Add(new InnerCell(NeuralNetwork.NeuronValueCount));
-            NeuralNetwork.PosibleSetCells.Add(new InnerCell(NeuralNetwork.NeuronValueCount));
-            NeuralNetwork.NeuronValueCount++;
-        }
     }
 }

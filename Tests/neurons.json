@@ -1,0 +1,28 @@
+﻿{
+    "InnerCell": 10,
+
+    "LFLCell": 1,
+    "LFRCell": 1,
+    "LFUCell": 1,
+    "LFDCell": 1,
+
+    "PDCell": 1,
+    "PLCell": 1,
+    "PRCell": 1,
+    "PUCell": 1,
+    "XMCell": 1,
+    "XPCell": 1,
+    "YMCell": 1,
+    "YPCell": 1,
+
+    "CosCell": 1,
+    "RandCell": 1,
+    "SinCell": 1,
+    "TimeCell": 1,
+
+    "Const1Cell": 1,
+    "Const_1Cell": 1,
+    "SubCell": 10,
+    "MultiCell": 10,
+    "DivCell": 10
+}

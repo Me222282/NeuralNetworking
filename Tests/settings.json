@@ -11,17 +11,17 @@
     {
         "count": 1000,
         "brainSize": 20,
-        "innerCells": 4,
         "mutationChance": 0.001,
         "colourGrade": 15
     },
 
     "dlls": 
     [
-        "dlls/sense.dll",
+        "dlls/inner.dll",
         "dlls/movement.dll",
         "dlls/utility.dll",
         "dlls/maths.dll",
+        "dlls/sense.dll",
         "dlls/neighbours.dll"
     ],
     

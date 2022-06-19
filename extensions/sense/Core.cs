@@ -4,10 +4,10 @@ namespace sense
     {
         private static readonly string[] _cellNames = new string[]
         {
-            typeof(LFLCell).FullName,
-            typeof(LFRCell).FullName,
-            typeof(LFUCell).FullName,
-            typeof(LFDCell).FullName
+            nameof(LFLCell),
+            nameof(LFRCell),
+            nameof(LFUCell),
+            nameof(LFDCell)
         };
 
         public static string[] GetCellNames() => _cellNames;

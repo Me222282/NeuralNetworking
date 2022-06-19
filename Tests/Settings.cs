@@ -13,7 +13,7 @@ namespace NetworkProgram
             Path = path;
         }
 
-        public int Seed { get; private set; }
+        public ulong Seed { get; private set; }
         public int WorldSize { get; private set; }
         public int GenLength { get; private set; }
         public int Gens { get; private set; }
@@ -88,6 +88,30 @@ namespace NetworkProgram
                 
                 LoadedDlls[i] = value;
             }
+        }
+
+        public void SetupEnvironment(Neurons[] neurons)
+        {
+            // Add neuron cells in order
+            for (int n = 0; n < neurons.Length; n++)
+            {
+                int d = neurons[n].DllIndex;
+                int c = neurons[n].CellIndex;
+
+                for (int i = 0; i < neurons[n].Count; i++)
+                {
+                    if (LoadedDlls[d].CellNames[0] == "InnerCell")
+                    {
+                        InnerCells = c;
+                    }
+
+                    LoadedDlls[d].AddCell(c);
+                }
+            }
+
+            Gene.MutationChance = Mutation;
+            Lifeform.ColourGrade = ColourGrade;
+            Lifeform.Random = new PRNG(Seed);
         }
 
         public bool CheckLifeform(Lifeform lifeform)
@@ -170,11 +194,11 @@ namespace NetworkProgram
             // World properties
             try
             {
-                values.Seed = world.GetProperty("seed").GetInt32();
+                values.Seed = world.GetProperty("seed").GetUInt64();
             }
             catch (Exception)
             {
-                Console.WriteLine("\"world\" must contain the integer \"seed\".");
+                Console.WriteLine("\"world\" must contain the unsigned long \"seed\".");
                 throw new Exception("Invalid settings file");
             }
             try
@@ -221,15 +245,6 @@ namespace NetworkProgram
             catch (Exception)
             {
                 Console.WriteLine("\"lifeform\" must contain the integer \"brainSize\".");
-                throw new Exception("Invalid settings file");
-            }
-            try
-            {
-                values.InnerCells = lifeform.GetProperty("innerCells").GetInt32();
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("\"lifeform\" must contain the integer \"innerCells\".");
                 throw new Exception("Invalid settings file");
             }
             try

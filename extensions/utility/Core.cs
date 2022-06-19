@@ -4,10 +4,10 @@ namespace utility
     {
         private static readonly string[] _cellNames = new string[]
         {
-            typeof(CosCell).FullName,
-            typeof(RandCell).FullName,
-            typeof(SinCell).FullName,
-            typeof(TimeCell).FullName
+            nameof(CosCell),
+            nameof(RandCell),
+            nameof(SinCell),
+            nameof(TimeCell)
         };
 
         public static string[] GetCellNames() => _cellNames;

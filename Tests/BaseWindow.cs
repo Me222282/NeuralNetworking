@@ -104,7 +104,7 @@ namespace NetworkProgram
                 GLFW.SwapBuffers(Handle);
                 GLFW.PollEvents();
 
-                if (Settings.Delay != 0 && _running)
+                if (Settings.Delay > 0 && _running)
                 {
                     System.Threading.Thread.Sleep(Settings.Delay);
                 }

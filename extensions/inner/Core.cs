@@ -1,14 +1,10 @@
-namespace maths
+namespace inner
 {
     public static class Core
     {
         private static readonly string[] _cellNames = new string[]
         {
-            nameof(SubCell),
-            nameof(MultiCell),
-            nameof(DivCell),
-            nameof(Const1Cell),
-            nameof(Const_1Cell)
+            nameof(InnerCell)
         };
 
         public static string[] GetCellNames() => _cellNames;

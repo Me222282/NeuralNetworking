@@ -78,7 +78,7 @@ namespace NetworkProgram
         public static DllLoad LoadDll(string path)
         {
             Assembly assembly = Assembly.LoadFrom(path);
-            Type coreT = Extensions.GetType(assembly,"Core");
+            Type coreT = Extensions.GetType(assembly, "Core");
 
             if (coreT is null)
             {
@@ -87,7 +87,7 @@ namespace NetworkProgram
 
             LifeformCondition checkLF = LoadCheckLF(coreT);
 
-            string[] cellNames = GetCellNames(coreT);
+            string[] cellNames = GetCellNames(coreT, out string space);
             Cell[] cells = null;
 
             if (cellNames is not null)
@@ -96,7 +96,7 @@ namespace NetworkProgram
 
                 for (int i = 0; i < cellNames.Length; i++)
                 {
-                    ConstructorInfo ci = GetCellData(assembly.GetType(cellNames[i]), out NeuronType type, out bool nv);
+                    ConstructorInfo ci = GetCellData(assembly.GetType($"{space}.{cellNames[i]}"), out NeuronType type, out bool nv);
                     cells[i] = new Cell(ci, type, nv);
                 }
             }
@@ -129,12 +129,14 @@ namespace NetworkProgram
 
             return mi.CreateDelegate<LifeformCondition>();
         }
-        private static string[] GetCellNames(Type core)
+        private static string[] GetCellNames(Type core, out string @namespace)
         {
             if (core is null)
             {
                 throw new ArgumentNullException(nameof(core));
             }
+
+            @namespace = core.Namespace;
 
             MethodInfo mi = core.GetMethod("GetCellNames");
 
@@ -156,7 +158,7 @@ namespace NetworkProgram
         {
             if (type is null)
             {
-                throw new Exception($"{type.FullName} doesn't exist.");
+                throw new Exception($"Type doesn't exist.");
             }
 
             if (!typeof(INeuronCell).IsAssignableFrom(type))
