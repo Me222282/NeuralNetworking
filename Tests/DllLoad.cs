@@ -50,29 +50,8 @@ namespace NetworkProgram
             }
 
             INeuronCell nc = (INeuronCell)_cells[index].ci.Invoke(new object[] { NeuralNetwork.NeuronValueCount });
-            if (_cells[index].nv)
-            {
-                NeuralNetwork.NeuronValueCount++;
-            }
 
-            switch (_cells[index].nt)
-            {
-                case NeuronType.Getter:
-                    NeuralNetwork.PosibleGetCells.Add(nc);
-                    return;
-
-                case NeuronType.Setter:
-                    NeuralNetwork.PosibleSetCells.Add(nc);
-                    return;
-
-                case NeuronType.Inner:
-                    NeuralNetwork.PosibleGetCells.Add(nc);
-                    NeuralNetwork.PosibleSetCells.Add(nc);
-                    return;
-
-                default:
-                    throw new Exception($"Invalid {nameof(NeuronType)} at index {index}.");
-            }
+            NeuralNetwork.AddCell(nc, _cells[index].nt, _cells[index].nv);
         }
 
         public static DllLoad LoadDll(string path)

@@ -5,7 +5,7 @@ namespace Zene.NeuralNetworking
 {
     public class NeuralNetwork
     {
-        public static int NeuronValueCount { get; set; } = 0;
+        public static int NeuronValueCount { get; private set; } = 0;
 
         private NeuralNetwork(Neuron[] neurons)
         {
@@ -106,11 +106,38 @@ namespace Zene.NeuralNetworking
         /// <summary>
         /// The list of posible <see cref="INeuronCell"/> that have get values.
         /// </summary>
-        public static List<INeuronCell> PosibleGetCells { get; } = new List<INeuronCell>();
+        internal static List<INeuronCell> PosibleGetCells { get; } = new List<INeuronCell>();
         /// <summary>
         /// The list of posible <see cref="INeuronCell"/> that have set values.
         /// </summary>
-        public static List<INeuronCell> PosibleSetCells { get; } = new List<INeuronCell>();
+        internal static List<INeuronCell> PosibleSetCells { get; } = new List<INeuronCell>();
+
+        public static void AddCell(INeuronCell cell, NeuronType type, bool allocant)
+        {
+            if (allocant)
+            {
+                NeuronValueCount++;
+            }
+
+            switch (type)
+            {
+                case NeuronType.Getter:
+                    PosibleGetCells.Add(cell);
+                    return;
+
+                case NeuronType.Setter:
+                    PosibleSetCells.Add(cell);
+                    return;
+
+                case NeuronType.Inner:
+                    PosibleGetCells.Add(cell);
+                    PosibleSetCells.Add(cell);
+                    return;
+
+                default:
+                    throw new ArgumentException(nameof(type));
+            }
+        }
     }
 
     public struct Neuron
