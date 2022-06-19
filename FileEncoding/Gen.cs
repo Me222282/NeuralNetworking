@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.IO.Compression;
 using K4os.Compression.LZ4.Streams;
 using Zene.Structs;
 

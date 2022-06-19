@@ -273,31 +273,6 @@ namespace NetworkProgram
             window.Run();
         }
 
-        private static void ConvertFromOld(string[] paths)
-        {
-            foreach (string s in paths)
-            {
-                byte[] data = File.ReadAllBytes(s);
-
-                FramePart[,] frameData = Gen.ImportFramesOld(data, out _, out _, out int ws);
-
-                Console.WriteLine(s);
-
-                Console.WriteLine("Enter generation");
-                int g = int.Parse(Console.ReadLine());
-
-                Console.WriteLine("Enter brain size");
-                int b = int.Parse(Console.ReadLine());
-
-                Console.WriteLine("Enter inner cell count");
-                int i = int.Parse(Console.ReadLine());
-
-                Console.WriteLine();
-
-                Gen.ExportFrames(new FileStream(s, FileMode.Create), frameData, ws, g, b, i, 15);
-            }
-        }
-
         public void SetupEnvironment()
         {
             CellValue[] neurons;
