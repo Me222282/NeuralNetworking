@@ -44,6 +44,7 @@ namespace NetworkProgram
 
                 Title = _titles[_vidCounter];
                 ReferenceSize = new Vector2I(_worldSize[_vidCounter]);
+                CalculateViewMat();
             }
         }
         protected override void Render()

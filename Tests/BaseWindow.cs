@@ -206,21 +206,29 @@ namespace NetworkProgram
             // Set drawing view
             Framebuffer.ViewSize = new Vector2I(e.Width, e.Height);
 
+            CalculateViewMat();
+        }
+
+        protected void CalculateViewMat()
+        {
+            int winWidth = Width;
+            int winHeight = Height;
+
             int w;
             int h;
 
-            if (e.Height > e.Width)
+            if (winHeight > winWidth)
             {
                 w = ReferenceSize.X;
-                h = (int)((e.Height / (double)e.Width) * ReferenceSize.X);
+                h = (int)((winHeight / (double)winWidth) * ReferenceSize.X);
             }
             else // Width is bigger
             {
                 h = ReferenceSize.Y;
-                w = (int)((e.Width / (double)e.Height) * ReferenceSize.Y);
+                w = (int)((winWidth / (double)winHeight) * ReferenceSize.Y);
             }
 
-            _drawScale = ((double)w / e.Width, (double)h / e.Height);
+            _drawScale = ((double)w / winWidth, (double)h / winHeight);
 
             _shader.Matrix3 = Matrix4.CreateOrthographic(w, h, -10, 10);
         }
