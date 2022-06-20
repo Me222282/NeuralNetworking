@@ -59,19 +59,21 @@ namespace NetworkProgram
                 return;
             }
 
+            RetreiveAllFiles(args, out string[] genFiles, out string[] netFiles);
+
             Core.Init();
 
             Program program = new Program(settings);
-            program.Run(args);
+            program.Run(genFiles, netFiles);
 
             Core.Terminate();
         }
 
-        private void Run(string[] args)
+        private void Run(string[] gens, string[] nets)
         {
-            if (args.Length > 0)
+            if (gens.Length > 0)
             {
-                RunGeneration(args);
+                RunGeneration(gens);
                 return;
             }
 
@@ -307,6 +309,69 @@ namespace NetworkProgram
             stream.Close();
 
             Network.ExportLifeforms($"{settings.ExportPath}/{settings.ExportName}-lf{generation}.txt", lifeforms);
+        }
+
+        public static void RetreiveAllFiles(string[] paths, out string[] gens, out string[] nets)
+        {
+            if (paths == null || paths.Length == 0)
+            {
+                gens = Array.Empty<string>();
+                nets = Array.Empty<string>();
+                return;
+            }
+
+            LinkedList<string> linkedGens = new LinkedList<string>();
+            LinkedList<string> linkedNets = new LinkedList<string>();
+
+            for (int i = 0; i < paths.Length; i++)
+            {
+                if (paths[i].IsDirectory())
+                {
+                    ManageDirectory(paths[i], linkedGens, linkedNets);
+                    continue;
+                }
+
+                ManageFile(paths[i], linkedGens, linkedNets);
+            }
+
+            gens = new string[linkedGens.Count];
+            linkedGens.CopyTo(gens, 0);
+
+            nets = new string[linkedNets.Count];
+            linkedNets.CopyTo(nets, 0);
+        }
+        private static void ManageDirectory(string dir, LinkedList<string> gens, LinkedList<string> nets)
+        {
+            SortFiles(Directory.GetFiles(dir), gens, nets);
+
+            string[] subDirs = Directory.GetDirectories(dir);
+
+            for (int i = 0; i < subDirs.Length; i++)
+            {
+                ManageDirectory(subDirs[i], gens, nets);
+            }
+        }
+        private static void SortFiles(string[] files, LinkedList<string> gens, LinkedList<string> nets)
+        {
+            for (int i = 0; i < files.Length; i++)
+            {
+                ManageFile(files[i], gens, nets);
+            }
+        }
+        private static void ManageFile(string file, LinkedList<string> gens, LinkedList<string> nets)
+        {
+            Validation v = Validation.Get(file);
+
+            if (v == Gen.Validation)
+            {
+                gens.AddLast(file);
+                return;
+            }
+            if (v == Network.Validation)
+            {
+                nets.AddLast(file);
+                return;
+            }
         }
     }
 }

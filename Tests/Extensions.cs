@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 
 namespace NetworkProgram
@@ -32,5 +33,7 @@ namespace NetworkProgram
 
         public static int FindDll(this DllLoad[] dlls, string name)
             => Array.FindIndex(dlls, d => d.Name == name);
+
+        public static bool IsDirectory(this string dir) => File.GetAttributes(dir).HasFlag(FileAttributes.Directory);
     }
 }

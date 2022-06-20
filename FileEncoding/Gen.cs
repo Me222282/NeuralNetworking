@@ -7,53 +7,8 @@ namespace FileEncoding
 {
     public static class Gen
     {
-        private const string _v = "ZeneGen3";
+        public static readonly Validation Validation = new Validation("ZeneGen3");
 
-        private struct Validation
-        {
-            public Validation(string str)
-            {
-                if (str.Length != 8)
-                {
-                    throw new Exception();
-                }
-
-                One = (byte)str[0];
-                Two = (byte)str[1];
-                Three = (byte)str[2];
-                Four = (byte)str[3];
-                Five = (byte)str[4];
-                Six = (byte)str[5];
-                Seven = (byte)str[6];
-                Eight = (byte)str[7];
-            }
-
-            public byte One;
-            public byte Two;
-            public byte Three;
-            public byte Four;
-            public byte Five;
-            public byte Six;
-            public byte Seven;
-            public byte Eight;
-
-            public override bool Equals(object obj)
-            {
-                return obj is Validation v &&
-                    v.One == One &&
-                    v.Two == Two &&
-                    v.Three == Three &&
-                    v.Four == Four &&
-                    v.Five == Five &&
-                    v.Six == Six &&
-                    v.Seven == Seven &&
-                    v.Eight == Eight;
-            }
-            public override int GetHashCode()
-            {
-                return HashCode.Combine(One, Two, Three, Four, Five, Six, Seven, Eight);
-            }
-        }
         public enum DataType : byte
         {
             Int = 0,
@@ -66,7 +21,7 @@ namespace FileEncoding
             int lifeCount = frameData.GetLength(1);
             int frameCount = frameData.GetLength(0);
 
-            stream.Write(new Validation(_v));
+            stream.Write(Validation);
 
             DataType type;
             // Determine smallest type that can fit world
@@ -142,7 +97,7 @@ namespace FileEncoding
         {
             Validation v = stream.Read<Validation>();
 
-            if (!v.Equals(new Validation(_v)))
+            if (!v.Equals(Validation))
             {
                 throw new Exception($"{nameof(stream)} doesn't contain a gen file.");
             }
@@ -223,13 +178,9 @@ namespace FileEncoding
 
         public static bool IsGenFile(string path)
         {
-            Stream stream = new FileStream(path, FileMode.Open);
+            Validation v = Validation.Get(path);
 
-            Validation v = stream.Read<Validation>();
-
-            stream.Close();
-
-            return v.Equals(new Validation(_v));
+            return v.Equals(Validation);
         }
     }
 }
