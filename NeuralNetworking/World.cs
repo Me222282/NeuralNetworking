@@ -274,6 +274,7 @@ namespace Zene.NeuralNetworking
                 world.Lifeforms[count] = life;
 
                 count++;
+                currentLifeform++;
             }
 
             return world;
