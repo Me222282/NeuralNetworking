@@ -108,6 +108,8 @@ namespace FileEncoding
             {
                 // Read network
                 genes[l] = stream.ReadArray<Gene>();
+
+                Console.WriteLine($"Loaded lifeform {l}");
             }
 
             zip.Dispose();
