@@ -36,11 +36,12 @@ namespace Zene.NeuralNetworking
         public ushort Destination { get; }
         public double Strength { get; }
 
-        public Gene CreateChild()
+        public Gene CreateChild(out bool mutation)
         {
             ushort source = Source;
             ushort destination = Destination;
             double strength = Strength;
+            mutation = false;
 
             if (Lifeform.OneInChance(MutationChance))
             {
@@ -66,6 +67,8 @@ namespace Zene.NeuralNetworking
                         strength += Lifeform.Random.Generate(-StrengthChange, StrengthChange);
                         break;
                 }
+
+                mutation = true;
             }
 
             return new Gene(
@@ -73,6 +76,7 @@ namespace Zene.NeuralNetworking
                 destination,
                 strength);
         }
+        public Gene CreateChild() => CreateChild(out _);
 
         public static double MutationChance { get; set; }
         public static double StrengthChange { get; set; } = 2d;

@@ -7,12 +7,12 @@ namespace Zene.NeuralNetworking
     {
         public static int NeuronValueCount { get; private set; } = 0;
 
-        private NeuralNetwork(Neuron[] neurons)
+        private NeuralNetwork(Neuron[] neurons, bool sort = true)
         {
-            //List<Neuron> neuronList = new List<Neuron>(neurons);
-            //neuronList.Sort(CompareNeuron);
-
-            Array.Sort(neurons, CompareNeuron);
+            if (sort)
+            {
+                Array.Sort(neurons, CompareNeuron);
+            }
 
             Neurons = neurons;
             NeuronData = new object[NeuronValueCount];
@@ -76,6 +76,14 @@ namespace Zene.NeuralNetworking
             {
                 PosibleSetCells[i].Activate(lifeform);
             }
+        }
+
+        public NeuralNetwork Copy()
+        {
+            Neuron[] neurons = new Neuron[Neurons.Length];
+            Neurons.CopyTo(neurons, 0);
+
+            return new NeuralNetwork(neurons, false);
         }
 
         /// <summary>

@@ -23,6 +23,24 @@ namespace Zene.NeuralNetworking
 
             CurrentWorld = world;
         }
+        private Lifeform(Gene[] genes, NeuralNetwork network, Vector2I pos, World world)
+        {
+            Genes = genes;
+            NeuralNetwork = network.Copy();
+
+            if (genes.Length < 1)
+            {
+                Colour = new Colour();
+            }
+            else
+            {
+                Colour = GeneColour(genes);
+            }
+            _location = pos;
+            PreLocation = pos;
+
+            CurrentWorld = world;
+        }
 
         public Gene[] Genes { get; }
         public NeuralNetwork NeuralNetwork { get; }
@@ -71,13 +89,26 @@ namespace Zene.NeuralNetworking
         {
             Gene[] genes = new Gene[Genes.Length];
 
+            bool mutant = false;
+
             for (int i = 0; i < Genes.Length; i++)
             {
-                genes[i] = Genes[i].CreateChild();
+                genes[i] = Genes[i].CreateChild(out bool mut);
+
+                mutant |= mut;
+            }
+
+            if (mutant)
+            {
+                return new Lifeform(
+                    genes,
+                    location,
+                    world);
             }
 
             return new Lifeform(
                 genes,
+                NeuralNetwork,
                 location,
                 world);
         }

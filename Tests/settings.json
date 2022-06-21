@@ -30,12 +30,12 @@
     {
         "name": "export",
         "path": "./exports",
-        "exports": [0, 10, 50, 100, 200]
+        "exports": []
     },
     
     "window":
     {
-        "render": false,
+        "render": true,
         "frameDelay": 0,
         "vSync": true,
         "lowPoly": false,
