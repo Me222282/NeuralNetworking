@@ -24,13 +24,13 @@ namespace Zene.NeuralNetworking
             Lifeforms = new Lifeform[lifeCount];
 
             LifeformGrid = new Lifeform[width, height];
-            Vector2I[] posHierarchy = NoiseMap(width, height, seed);
 
             _random = new PRNG((ulong)seed);
+            _randPos = new RandomPosition(width, height, _random);
 
             for (int i = 0; i < lifeCount; i++)
             {
-                Vector2I pos = posHierarchy[i];
+                Vector2I pos = _randPos.Next();
 
                 Lifeform life = Lifeform.Generate(_random, geneCount, pos, this);
 
@@ -51,13 +51,13 @@ namespace Zene.NeuralNetworking
             Lifeforms = new Lifeform[lifeCount];
 
             LifeformGrid = new Lifeform[width, height];
-            Vector2I[] posHierarchy = NoiseMap(width, height, Lifeform.Random.Generate(0, int.MaxValue));
 
             _random = Lifeform.Random;
+            _randPos = new RandomPosition(width, height, _random);
 
             for (int i = 0; i < lifeCount; i++)
             {
-                Vector2I pos = posHierarchy[i];
+                Vector2I pos = _randPos.Next();
 
                 Lifeform life = Lifeform.Generate(geneCount, pos, this);
 
@@ -123,7 +123,7 @@ namespace Zene.NeuralNetworking
             }
         }
 
-        private World(int width, int height, int generation, int genLength, PRNG r)
+        private World(int width, int height, int generation, int genLength, PRNG r, RandomPosition rp)
         {
             Width = width;
             Height = height;
@@ -132,6 +132,7 @@ namespace Zene.NeuralNetworking
             GenerationLength = genLength;
 
             _random = r;
+            _randPos = rp;
 
             _rect = new Rectangle(0, height - 1, width - 1, height - 1);
             LifeformGrid = new Lifeform[width, height];
@@ -162,6 +163,7 @@ namespace Zene.NeuralNetworking
         private readonly Rectangle _rect;
 
         private readonly PRNG _random;
+        private readonly RandomPosition _randPos;
 
         public void Update()
         {
@@ -221,7 +223,7 @@ namespace Zene.NeuralNetworking
 
         public World NextGeneration(int width, int height, int lifeCount, LifeformCondition lifeformCondition)
         {
-            World world = new World(width, height, Generation + 1, GenerationLength, _random);
+            World world = new World(width, height, Generation + 1, GenerationLength, _random, _randPos);
 
             List<Lifeform> survivors = new List<Lifeform>();
 
@@ -242,7 +244,8 @@ namespace Zene.NeuralNetworking
                 return world;
             }
 
-            Vector2I[] posHierarchy = NoiseMap(width, height, _random.Generate(0, int.MaxValue));
+            _randPos.Reset();
+
             int childCount = (int)Math.Floor((double)lifeCount / survivors.Count);
             Console.WriteLine($"Generation {Generation} - {(((double)survivors.Count / Lifeforms.Length) * 100):F2}% survived");
             world.Lifeforms = new Lifeform[lifeCount];
@@ -253,7 +256,7 @@ namespace Zene.NeuralNetworking
             {
                 for (int c = 0; c < childCount; c++)
                 {
-                    Vector2I pos = posHierarchy[count];
+                    Vector2I pos = _randPos.Next();
 
                     Lifeform life = survivors[i].CreateChild(pos, world);
                     world.LifeformGrid[pos.X, pos.Y] = life;
@@ -267,7 +270,7 @@ namespace Zene.NeuralNetworking
             int currentLifeform = 0;
             while (count < lifeCount)
             {
-                Vector2I pos = posHierarchy[count];
+                Vector2I pos = _randPos.Next();
 
                 Lifeform life = survivors[currentLifeform].CreateChild(pos, world);
                 world.LifeformGrid[pos.X, pos.Y] = life;
@@ -289,47 +292,6 @@ namespace Zene.NeuralNetworking
         public Lifeform GetLifeform(int x, int y)
         {
             return LifeformGrid[x, y];
-        }
-
-        public static Vector2I[] NoiseMap(int w, int h, int seed)
-        {
-            static int Compare(NoiseValue x, NoiseValue y)
-            {
-                return x.Value.CompareTo(y.Value);
-            }
-
-            List<NoiseValue> ptList = new List<NoiseValue>();
-
-            Noise.NoiseGenerator oSimplexNoise = new Noise.NoiseGenerator(seed);
-            for (int x = 0; x < w; x++)
-            {
-                for (int y = 0; y < h; y++)
-                {
-                    double value = oSimplexNoise.Evaluate(x, y);
-
-                    ptList.Add(new NoiseValue()
-                    {
-                        Location = new Vector2I(x, y),
-                        Value = value
-                    });
-                }
-            }
-
-            ptList.Sort(Compare);
-
-            Vector2I[] output = new Vector2I[ptList.Count];
-
-            for (int i = 0; i < ptList.Count; i++)
-            {
-                output[i] = ptList[i].Location;
-            }
-
-            return output;
-        }
-        internal struct NoiseValue
-        {
-            public Vector2I Location { get; set; }
-            public double Value { get; set; }
         }
     }
 }

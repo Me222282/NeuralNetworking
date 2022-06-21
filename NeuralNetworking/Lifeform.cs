@@ -184,39 +184,39 @@ namespace Zene.NeuralNetworking
 
         public static Lifeform[] FromGenes(PRNG random, Gene[] genes, int lifeCount, int width, int height)
         {
-            Vector2I[] posHierarchy = World.NoiseMap(width, height, random.Generate(0, int.MaxValue));
+            RandomPosition rp = new RandomPosition(width, height, random);
 
             Lifeform[] lifeforms = new Lifeform[lifeCount];
 
             for (int i = 0; i < lifeCount; i++)
             {
-                lifeforms[i] = new Lifeform(genes, posHierarchy[i], null);
+                lifeforms[i] = new Lifeform(genes, rp.Next(), null);
             }
 
             return lifeforms;
         }
         public static Lifeform[] FromGenes(PRNG random, Gene[][] genes, int lifeCount, int width, int height)
         {
-            Vector2I[] posHierarchy = World.NoiseMap(width, height, random.Generate(0, int.MaxValue));
+            RandomPosition rp = new RandomPosition(width, height, random);
 
             Lifeform[] lifeforms = new Lifeform[lifeCount];
 
             for (int i = 0; i < lifeCount; i++)
             {
-                lifeforms[i] = new Lifeform(genes[random.Generate(0, genes.Length - 1)], posHierarchy[i], null);
+                lifeforms[i] = new Lifeform(genes[random.Generate(0, genes.Length - 1)], rp.Next(), null);
             }
 
             return lifeforms;
         }
         public static Lifeform[] FromGenes(PRNG random, Gene[][] genes, int width, int height)
         {
-            Vector2I[] posHierarchy = World.NoiseMap(width, height, random.Generate(0, int.MaxValue));
+            RandomPosition rp = new RandomPosition(width, height, random);
 
             Lifeform[] lifeforms = new Lifeform[genes.Length];
 
             for (int i = 0; i < genes.Length; i++)
             {
-                lifeforms[i] = new Lifeform(genes[i], posHierarchy[i], null);
+                lifeforms[i] = new Lifeform(genes[i], rp.Next(), null);
             }
 
             return lifeforms;
