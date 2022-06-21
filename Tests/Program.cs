@@ -188,11 +188,7 @@ namespace NetworkProgram
         }
         private void RunGeneration(string[] paths)
         {
-            FramePart[][,] frames = new FramePart[paths.Length][,];
-            int[] frameCount = new int[paths.Length];
-            int[] lifeCount = new int[paths.Length];
-            int[] worldSize = new int[paths.Length];
-            int[] generation = new int[paths.Length];
+            GenFile[] genFiles = new GenFile[paths.Length];
 
             for (int i = 0; i < paths.Length; i++)
             {
@@ -212,7 +208,7 @@ namespace NetworkProgram
 
                 try
                 {
-                    frames[i] = Gen.Import(stream, out frameCount[i], out lifeCount[i], out worldSize[i], out generation[i], out _, out _, out _);
+                    genFiles[i] = GenFile.Import(stream);
                 }
                 catch (Exception)
                 {
@@ -224,7 +220,7 @@ namespace NetworkProgram
                 stream.Close();
             }
 
-            WindowOpen window = new WindowOpen(128 * 6, 128 * 6, paths, Settings, frames, frameCount, lifeCount, worldSize, generation);
+            WindowOpen window = new WindowOpen(128 * 6, 128 * 6, paths, Settings, genFiles);
 
             window.Run();
         }
@@ -302,7 +298,7 @@ namespace NetworkProgram
         {
             FileStream stream = new FileStream($"{settings.ExportPath}/{settings.ExportName}{generation}.gen", FileMode.Create);
 
-            Gen.Export(
+            GenFile.Export(
                 stream,
                 frames,
                 settings.WorldSize,
@@ -313,7 +309,7 @@ namespace NetworkProgram
 
             stream.Close();
 
-            Network.ExportLifeforms($"{settings.ExportPath}/{settings.ExportName}-lf{generation}.txt", lifeforms);
+            NetFile.ExportLifeforms($"{settings.ExportPath}/{settings.ExportName}-lf{generation}.txt", lifeforms);
         }
 
         public static void RetreiveAllFiles(string[] paths, out string[] gens, out string[] nets)
@@ -367,13 +363,13 @@ namespace NetworkProgram
         {
             Validation v = Validation.Get(file);
 
-            if (v == Gen.Validation)
+            if (v == GenFile.Validation)
             {
                 gens.AddLast(file);
                 Console.WriteLine($"Found gen file: {file}");
                 return;
             }
-            if (v == Network.Validation)
+            if (v == NetFile.Validation)
             {
                 nets.AddLast(file);
                 Console.WriteLine($"Found net file: {file}");

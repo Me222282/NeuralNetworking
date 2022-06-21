@@ -6,44 +6,41 @@ namespace NetworkProgram
 {
     public class WindowOpen : BaseWindow
     {
-        public WindowOpen(int width, int height, string[] titles, Settings settings, FramePart[][,] frames, int[] counts, int[] lives, int[] size, int[] gens)
-            : base(width, height, titles[0], settings, new Vector2I(size[0]))
+        public WindowOpen(int width, int height, string[] titles, Settings settings, GenFile[] genFiles)
+            : base(width, height, titles[0], settings, new Vector2I(genFiles[0].WorldSize))
         {
-            _frames = frames;
-            _frameCount = counts;
-            _lifeCount = lives;
-            _worldSize = size;
-            _generation = gens;
+            _genFiles = genFiles;
             _titles = titles;
 
-            Console.WriteLine($"Generation {_generation[_vidCounter]}");
+            _current = genFiles[0];
+            Console.WriteLine($"Generation {_current.Generation}");
         }
 
-        private int _vidCounter = 0;
+        private int _fileIndex = 0;
 
-        private readonly int[] _worldSize;
-        private readonly int[] _frameCount;
-        private readonly int[] _lifeCount;
-        private readonly int[] _generation;
-        private readonly FramePart[][,] _frames;
+        private readonly GenFile[] _genFiles;
         private readonly string[] _titles;
+
+        private GenFile _current;
 
         protected override void Update()
         {
-            if (Counter >= _frameCount[_vidCounter])
+            if (Counter >= _current.FrameCount)
             {
                 Counter = 0;
-                _vidCounter++;
+                _fileIndex++;
 
-                if (_vidCounter >= _frames.Length)
+                if (_fileIndex >= _genFiles.Length)
                 {
-                    _vidCounter = 0;
+                    _fileIndex = 0;
                 }
 
-                Console.WriteLine($"Generation {_generation[_vidCounter]}");
+                _current = _genFiles[_fileIndex];
 
-                Title = _titles[_vidCounter];
-                ReferenceSize = new Vector2I(_worldSize[_vidCounter]);
+                Console.WriteLine($"Generation {_current.Generation}");
+
+                Title = _titles[_fileIndex];
+                ReferenceSize = new Vector2I(_current.WorldSize);
                 CalculateViewMat();
             }
         }
@@ -51,9 +48,9 @@ namespace NetworkProgram
         {
             base.Render();
 
-            for (int l = 0; l < _lifeCount[_vidCounter]; l++)
+            for (int l = 0; l < _current.LifeCount; l++)
             {
-                FramePart fp = _frames[_vidCounter][Counter, l];
+                FramePart fp = _current.Frames[Counter, l];
 
                 if (!fp.Alive) { continue; }
 

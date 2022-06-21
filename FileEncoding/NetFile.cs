@@ -5,8 +5,24 @@ using K4os.Compression.LZ4.Streams;
 
 namespace FileEncoding
 {
-    public static class Network
+    public struct NetFile
     {
+        public NetFile(Gene[][] genes, int generation, string[] dlls, CellValue[] cellValues)
+        {
+            Genes = genes;
+            Generation = generation;
+            Dlls = dlls;
+            CellOrder = cellValues;
+        }
+
+        public Gene[][] Genes { get; }
+
+        public int Generation { get; }
+        public string[] Dlls { get; }
+        public CellValue[] CellOrder { get; }
+
+        public void Export(Stream stream) => Export(stream, Generation, Dlls, CellOrder, Genes);
+
         public static readonly Validation Validation = new Validation("ZeneNet1");
 
         public static void ExportLifeforms(string path, Lifeform[] lifeforms)
@@ -28,6 +44,47 @@ namespace FileEncoding
             stream.Close();
         }
 
+        public static void Export(Stream stream, int generation, string[] dlls, CellValue[] cellValues, Gene[][] genes)
+        {
+            if (genes == null)
+            {
+                throw new ArgumentNullException(nameof(genes));
+            }
+            if (dlls == null)
+            {
+                dlls = Array.Empty<string>();
+            }
+
+            stream.Write(Validation);
+            stream.Write(generation);
+            stream.Write(genes.Length);
+            stream.Write(dlls.Length);
+            stream.Write(cellValues.Length);
+
+            LZ4EncoderStream zip = LZ4Stream.Encode(stream);
+
+            // Write data from random to stream
+            Lifeform.Random.WriteToStream(stream);
+
+            // Write list of dll paths
+            for (int i = 0; i < dlls.Length; i++)
+            {
+                stream.Write(dlls[i]);
+            }
+            // Write the order and count of the neuron cells
+            for (int i = 0; i < cellValues.Length; i++)
+            {
+                stream.Write(cellValues[i]);
+            }
+
+            for (int g = 0; g < genes.Length; g++)
+            {
+                // Write network
+                stream.Write(genes[g]);
+            }
+
+            zip.Dispose();
+        }
         public static void Export(Stream stream, int generation, string[] dlls, CellValue[] cellValues, Lifeform[] lifeforms)
         {
             if (lifeforms == null)
@@ -69,7 +126,7 @@ namespace FileEncoding
 
             zip.Dispose();
         }
-        public static Gene[][] Import(Stream stream, out int generation, out string[] dlls, out CellValue[] cellValues)
+        public static NetFile Import(Stream stream)
         {
             Validation v = stream.Read<Validation>();
 
@@ -78,7 +135,7 @@ namespace FileEncoding
                 throw new Exception($"{nameof(stream)} doesn't contain a network file.");
             }
 
-            generation = stream.Read<int>();
+            int generation = stream.Read<int>();
             int lifeformLength = stream.Read<int>();
             int dllLength = stream.Read<int>();
             int cellLength = stream.Read<int>();
@@ -88,14 +145,14 @@ namespace FileEncoding
             // Read PRNG data from stream
             Lifeform.Random = PRNG.FromStream(stream);
 
-            dlls = new string[dllLength];
+            string[] dlls = new string[dllLength];
             // Read list of dll paths
             for (int i = 0; i < dllLength; i++)
             {
                 dlls[i] = stream.ReadString();
             }
 
-            cellValues = new CellValue[cellLength];
+            CellValue[] cellValues = new CellValue[cellLength];
             // Read the order and count of the neuron cells
             for (int i = 0; i < cellLength; i++)
             {
@@ -114,7 +171,7 @@ namespace FileEncoding
 
             zip.Dispose();
 
-            return genes;
+            return new NetFile(genes, generation, dlls, cellValues);
         }
 
         public static bool IsNetFile(string path)

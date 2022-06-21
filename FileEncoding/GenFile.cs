@@ -5,17 +5,38 @@ using Zene.Structs;
 
 namespace FileEncoding
 {
-    public static class Gen
+    public struct GenFile
     {
+        public GenFile(FramePart[,] frames, int worldSize, int generation, int brainSize, int innerCells, byte colourGrade)
+        {
+            Frames = frames;
+            WorldSize = worldSize;
+            Generation = generation;
+            BrainSize = brainSize;
+            InnerCells = innerCells;
+            ColourGrade = colourGrade;
+        }
+
+        public FramePart[,] Frames { get; }
+        public int FrameCount => Frames.GetLength(0);
+        public int LifeCount => Frames.GetLength(1);
+
+        public int WorldSize { get; }
+        public int Generation { get; }
+        public int BrainSize { get; }
+        public int InnerCells { get; }
+        public byte ColourGrade { get; }
+
+        public void Export(Stream stream) => Export(stream, Frames, WorldSize, Generation, BrainSize, InnerCells, ColourGrade);
+
         public static readonly Validation Validation = new Validation("ZeneGen3");
 
-        public enum DataType : byte
+        private enum DataType : byte
         {
             Int = 0,
             Short = 1,
             Byte = 2
         }
-
         public static void Export(Stream stream, FramePart[,] frameData, int worldSize, int generation, int brainSize, int innerCells, byte colourGrade)
         {
             int lifeCount = frameData.GetLength(1);
@@ -91,9 +112,7 @@ namespace FileEncoding
 
             zip.Dispose();
         }
-        public static FramePart[,] Import(Stream stream,
-            out int frameCount, out int lifeCount, out int worldSize,
-            out int generation, out int brainSize, out int innerCells, out byte colourGrade)
+        public static GenFile Import(Stream stream)
         {
             Validation v = stream.Read<Validation>();
 
@@ -110,13 +129,13 @@ namespace FileEncoding
                 _ => throw new Exception("Invalid data size specifier.")
             };
 
-            worldSize = (int)stream.Read<uint>();
-            frameCount = (int)stream.Read<uint>();
-            lifeCount = (int)stream.Read<uint>();
-            generation = stream.Read<int>();
-            brainSize = (int)stream.Read<uint>();
-            innerCells = (int)stream.Read<uint>();
-            colourGrade = (byte)stream.ReadByte();
+            int worldSize = (int)stream.Read<uint>();
+            int frameCount = (int)stream.Read<uint>();
+            int lifeCount = (int)stream.Read<uint>();
+            int generation = stream.Read<int>();
+            int brainSize = (int)stream.Read<uint>();
+            int innerCells = (int)stream.Read<uint>();
+            byte colourGrade = (byte)stream.ReadByte();
 
             LZ4DecoderStream zip = LZ4Stream.Decode(stream);
 
@@ -173,7 +192,7 @@ namespace FileEncoding
 
             zip.Dispose();
 
-            return frames;
+            return new GenFile(frames, worldSize, generation, brainSize, innerCells, colourGrade);
         }
 
         public static bool IsGenFile(string path)
