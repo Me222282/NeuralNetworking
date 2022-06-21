@@ -65,18 +65,18 @@ namespace FileEncoding
             // Write list of dll paths
             for (int i = 0; i < dlls.Length; i++)
             {
-                stream.Write(dlls[i]);
+                zip.Write(dlls[i]);
             }
             // Write the order and count of the neuron cells
             for (int i = 0; i < cellValues.Length; i++)
             {
-                stream.Write(cellValues[i]);
+                zip.Write(cellValues[i]);
             }
 
             for (int g = 0; g < genes.Length; g++)
             {
                 // Write network
-                stream.Write(genes[g]);
+                zip.Write(genes[g]);
             }
 
             zip.Dispose();
@@ -106,18 +106,18 @@ namespace FileEncoding
             // Write list of dll paths
             for (int i = 0; i < dlls.Length; i++)
             {
-                stream.Write(dlls[i]);
+                zip.Write(dlls[i]);
             }
             // Write the order and count of the neuron cells
             for (int i = 0; i < cellValues.Length; i++)
             {
-                stream.Write(cellValues[i]);
+                zip.Write(cellValues[i]);
             }
 
             for (int l = 0; l < lifeforms.Length; l++)
             {
                 // Write network
-                stream.Write(lifeforms[l].Genes);
+                zip.Write(lifeforms[l].Genes);
             }
 
             zip.Dispose();
@@ -145,14 +145,14 @@ namespace FileEncoding
             // Read list of dll paths
             for (int i = 0; i < dllLength; i++)
             {
-                dlls[i] = stream.ReadString();
+                dlls[i] = zip.ReadString();
             }
 
             CellValue[] cellValues = new CellValue[cellLength];
             // Read the order and count of the neuron cells
             for (int i = 0; i < cellLength; i++)
             {
-                cellValues[i] = stream.Read<CellValue>();
+                cellValues[i] = zip.Read<CellValue>();
             }
 
             Gene[][] genes = new Gene[lifeformLength][];
@@ -160,7 +160,7 @@ namespace FileEncoding
             for (int l = 0; l < lifeformLength; l++)
             {
                 // Read network
-                genes[l] = stream.ReadArray<Gene>();
+                genes[l] = zip.ReadArray<Gene>();
 
                 Console.WriteLine($"Loaded lifeform {l}");
             }

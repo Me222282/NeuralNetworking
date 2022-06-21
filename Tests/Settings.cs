@@ -117,17 +117,17 @@ namespace NetworkProgram
 
         public bool CheckLifeform(Lifeform lifeform)
         {
-            for (int i = 0; i < LoadedDlls.Length; i++)
+            for (int i = 0; i < _checkLFs.Length; i++)
             {
                 bool value;
 
                 try
                 {
-                    value = LoadedDlls[i].CheckLifeform(lifeform);
+                    value = _checkLFs[i](lifeform);
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"{LoadedDlls[i].Path} threw {e.GetType().FullName} with message: {e.Message}");
+                    throw new Exception($"{e.GetType().FullName} was thrown with message: {e.Message}");
                 }
 
                 if (value)
