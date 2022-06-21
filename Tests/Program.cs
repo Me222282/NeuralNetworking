@@ -334,10 +334,10 @@ namespace NetworkProgram
 
         public static void Export(int generation, FramePart[,] frames, Lifeform[] lifeforms, Settings settings)
         {
-            FileStream stream = new FileStream($"{settings.ExportPath}/{settings.ExportName}{generation}.gen", FileMode.Create);
+            FileStream genStream = new FileStream($"{settings.ExportPath}/{settings.ExportName}{generation}.gen", FileMode.Create);
 
             GenFile.Export(
-                stream,
+                genStream,
                 frames,
                 settings.WorldSize,
                 generation,
@@ -345,9 +345,13 @@ namespace NetworkProgram
                 settings.InnerCells,
                 Lifeform.ColourGrade);
 
-            stream.Close();
+            genStream.Close();
 
-            NetFile.ExportLifeforms($"{settings.ExportPath}/{settings.ExportName}-lf{generation}.txt", lifeforms);
+            StreamWriter txtStream = new StreamWriter($"{settings.ExportPath}/{settings.ExportName}-lf{generation}.txt", false);
+
+            NetFile.ExportLifeforms(txtStream, lifeforms);
+
+            txtStream.Close();
         }
 
         public static void RetreiveAllFiles(string[] paths, out string[] gens, out string[] nets)

@@ -25,10 +25,8 @@ namespace FileEncoding
 
         public static readonly Validation Validation = new Validation("ZeneNet1");
 
-        public static void ExportLifeforms(string path, Lifeform[] lifeforms)
+        public static void ExportLifeforms(StreamWriter stream, Lifeform[] lifeforms)
         {
-            StreamWriter stream = new StreamWriter(path, false);
-
             for (int i = 0; i < lifeforms.Length; i++)
             {
                 stream.WriteLine($"Lifeform {i}\n");
@@ -40,8 +38,6 @@ namespace FileEncoding
 
                 stream.WriteLine();
             }
-
-            stream.Close();
         }
 
         public static void Export(Stream stream, int generation, string[] dlls, CellValue[] cellValues, Gene[][] genes)
