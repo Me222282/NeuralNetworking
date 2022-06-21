@@ -285,13 +285,14 @@ namespace Zene.NeuralNetworking
         public World NextGeneration(int lifeCount, LifeformCondition lifeformCondition) => NextGeneration(Width, Height, lifeCount, lifeformCondition);
         public World NextGeneration(LifeformCondition lifeformCondition) => NextGeneration(Width, Height, Lifeforms.Length, lifeformCondition);
 
-        public Lifeform GetLifeform(Vector2I location)
+        public Lifeform this[Vector2I location]
         {
-            return LifeformGrid[location.X, location.Y];
+            get => LifeformGrid[location.X, location.Y];
+            set => MoveLifeform(value, location);
         }
-        public Lifeform GetLifeform(int x, int y)
+        public Lifeform this[int x, int y]
         {
-            return LifeformGrid[x, y];
+            get => LifeformGrid[x, y];
         }
     }
 }
