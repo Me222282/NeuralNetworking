@@ -71,9 +71,14 @@ namespace NetworkProgram
 
         private void Run(string[] gens, string[] nets)
         {
-            if (gens.Length > 0)
+            if (gens.Length > nets.Length)
             {
                 RunGeneration(gens);
+                return;
+            }
+            if (nets.Length > 0)
+            {
+                // Execute .net files
                 return;
             }
 
@@ -365,11 +370,13 @@ namespace NetworkProgram
             if (v == Gen.Validation)
             {
                 gens.AddLast(file);
+                Console.WriteLine($"Found gen file: {file}");
                 return;
             }
             if (v == Network.Validation)
             {
                 nets.AddLast(file);
+                Console.WriteLine($"Found net file: {file}");
                 return;
             }
         }
