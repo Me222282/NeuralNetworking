@@ -46,6 +46,8 @@ namespace NetworkProgram
         /// </summary>
         public void CreateExport()
         {
+            if (ExportPath == null) { return; }
+
             Directory.CreateDirectory(ExportPath);
         }
 
@@ -91,6 +93,26 @@ namespace NetworkProgram
                     throw new Exception($"Failed to load {Dlls[i]}. {e.Message}");
                 }
                 
+                LoadedDlls[i] = value;
+            }
+        }
+        public void LoadDlls(string[] dlls)
+        {
+            LoadedDlls = new DllLoad[dlls.Length];
+
+            for (int i = 0; i < dlls.Length; i++)
+            {
+                DllLoad value;
+
+                try
+                {
+                    value = DllLoad.LoadDll(dlls[i]);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Failed to load {dlls[i]}. {e.Message}");
+                }
+
                 LoadedDlls[i] = value;
             }
         }
@@ -317,6 +339,8 @@ namespace NetworkProgram
                     Console.WriteLine("\"exporting\" must contain the string \"path\"");
                     throw new Exception("Invalid settings file");
                 }
+
+                values.ExportPath = System.IO.Path.Combine(Program.ExecutablePath, values.ExportPath);
             }
 
             if (!windowProps) { return values; }

@@ -258,6 +258,20 @@ namespace NetworkProgram
                 stream.Close();
             }
 
+            try
+            {
+                Settings.LoadDlls(netFiles[0].Dlls);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.ReadLine();
+                return;
+            }
+
+            Settings.SetupEnvironment(netFiles[0].CellOrder);
+            Settings.CreateExport();
+
             WindowLive window = new WindowLive(128 * 6, 128 * 6, paths[0], Settings, netFiles[0]);
 
             window.Run();
@@ -318,13 +332,15 @@ namespace NetworkProgram
         {
             CellValue[] neurons;
 
-            if (!File.Exists(NeuronsPath))
+            string neuronsPath = Path.Combine(ExecutablePath, NeuronsPath);
+
+            if (!File.Exists(neuronsPath))
             {
-                neurons = Settings.GenerateCellValues(new FileStream(NeuronsPath, FileMode.Create), Settings);
+                neurons = Settings.GenerateCellValues(new FileStream(neuronsPath, FileMode.Create), Settings);
             }
             else
             {
-                neurons = Settings.ParseCellValues(File.ReadAllText(NeuronsPath), Settings);
+                neurons = Settings.ParseCellValues(File.ReadAllText(neuronsPath), Settings);
             }
 
             Settings.SetupEnvironment(neurons);
@@ -352,6 +368,17 @@ namespace NetworkProgram
             NetFile.ExportLifeforms(txtStream, lifeforms);
 
             txtStream.Close();
+
+            FileStream netStream = new FileStream($"{settings.ExportPath}/{settings.ExportName}{generation}.net", FileMode.Create);
+
+            NetFile.Export(
+                netStream,
+                generation,
+                settings.Dlls,
+                settings.CellValues,
+                lifeforms);
+
+            netStream.Close();
         }
 
         public static void RetreiveAllFiles(string[] paths, out string[] gens, out string[] nets)
