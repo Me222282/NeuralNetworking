@@ -52,53 +52,16 @@ namespace NetworkProgram
         }
 
         public DllLoad[] LoadedDlls { get; private set; }
-        private int _selectedDll = 0;
-        /// <summary>
-        /// The <see cref="DllLoad"/> from <see cref="LoadedDlls"/> used by <see cref="CheckLifeform(Lifeform)"/>.
-        /// </summary>
-        public int SelectedDll
-        {
-            get => _selectedDll;
-            set
-            {
-                if (LoadedDlls.Length <= value)
-                {
-                    throw new IndexOutOfRangeException();
-                }
-                if (!LoadedDlls[value].CanCheckLifeform)
-                {
-                    throw new Exception("Selected dll doesn't contain a \"CheckLifeform\" method.");
-                }
-
-                _selectedDll = value;
-            }
-        }
+        private LifeformCondition[] _checkLFs;
 
         public CellValue[] CellValues { get; private set; }
 
-        public void LoadDlls()
-        {
-            LoadedDlls = new DllLoad[Dlls.Length];
-
-            for (int i = 0; i < Dlls.Length; i++)
-            {
-                DllLoad value;
-
-                try
-                {
-                    value = DllLoad.LoadDll(Dlls[i]);
-                }
-                catch (Exception e)
-                {
-                    throw new Exception($"Failed to load {Dlls[i]}. {e.Message}");
-                }
-                
-                LoadedDlls[i] = value;
-            }
-        }
+        public void LoadDlls() => LoadDlls(Dlls);
         public void LoadDlls(string[] dlls)
         {
             LoadedDlls = new DllLoad[dlls.Length];
+
+            LinkedList<LifeformCondition> checkLFs = new LinkedList<LifeformCondition>();
 
             for (int i = 0; i < dlls.Length; i++)
             {
@@ -114,7 +77,15 @@ namespace NetworkProgram
                 }
 
                 LoadedDlls[i] = value;
+
+                if (value.CanCheckLifeform)
+                {
+                    checkLFs.AddLast(value.CheckLifeform);
+                }
             }
+
+            _checkLFs = new LifeformCondition[checkLFs.Count];
+            checkLFs.CopyTo(_checkLFs, 0);
         }
 
         public void SetupEnvironment(CellValue[] cellValues)
@@ -146,23 +117,28 @@ namespace NetworkProgram
 
         public bool CheckLifeform(Lifeform lifeform)
         {
-            bool value;
-
-            if (!LoadedDlls[_selectedDll].CanCheckLifeform)
+            for (int i = 0; i < LoadedDlls.Length; i++)
             {
-                throw new Exception($"Selected dll {LoadedDlls[_selectedDll].Path} doesn't support CheckLifeform.");
+                bool value;
+
+                try
+                {
+                    value = LoadedDlls[i].CheckLifeform(lifeform);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"{LoadedDlls[i].Path} threw {e.GetType().FullName} with message: {e.Message}");
+                }
+
+                if (value)
+                {
+                    continue;
+                }
+
+                return false;
             }
 
-            try
-            {
-                value = LoadedDlls[_selectedDll].CheckLifeform(lifeform);
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"{LoadedDlls[_selectedDll].Path} threw {e.GetType().FullName} with message: {e.Message}");
-            }
-
-            return value;
+            return true;
         }
 
         public static Settings Parse(string json, string path, bool forceWindow = false)

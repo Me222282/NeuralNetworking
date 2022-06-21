@@ -344,8 +344,6 @@ namespace NetworkProgram
             }
 
             Settings.SetupEnvironment(neurons);
-
-            Settings.SelectedDll = Settings.LoadedDlls.FindDll("neighbours");
         }
 
         public static void Export(int generation, FramePart[,] frames, Lifeform[] lifeforms, Settings settings)
