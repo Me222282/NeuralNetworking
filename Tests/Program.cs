@@ -78,7 +78,7 @@ namespace NetworkProgram
             }
             if (nets.Length > 0)
             {
-                // Execute .net files
+                RunNetworks(nets);
                 return;
             }
 
@@ -221,6 +221,44 @@ namespace NetworkProgram
             }
 
             WindowOpen window = new WindowOpen(128 * 6, 128 * 6, paths, Settings, genFiles);
+
+            window.Run();
+        }
+        private void RunNetworks(string[] paths)
+        {
+            NetFile[] netFiles = new NetFile[paths.Length];
+
+            for (int i = 0; i < paths.Length; i++)
+            {
+                FileStream stream;
+                try
+                {
+                    stream = new FileStream(paths[i], FileMode.Open);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine($"{paths[i]} is an invalid path.");
+                    Console.ReadLine();
+                    return;
+                }
+
+                Console.WriteLine($"Opened file {i} at {paths[i]}");
+
+                try
+                {
+                    netFiles[i] = NetFile.Import(stream);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine($"{paths[i]} is an invalid net file.");
+                    Console.ReadLine();
+                    return;
+                }
+
+                stream.Close();
+            }
+
+            WindowLive window = new WindowLive(128 * 6, 128 * 6, paths[0], Settings, netFiles[0]);
 
             window.Run();
         }

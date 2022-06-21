@@ -52,6 +52,20 @@ namespace NetworkProgram
 
             ExportGenSetup();
         }
+        public WindowLive(int width, int height, string title, Settings settings, NetFile netFile)
+            : base(width, height, title, settings)
+        {
+            _world = new World(
+                Settings.WorldSize,
+                Settings.WorldSize,
+                Lifeform.FromGenes(Lifeform.Random, netFile.Genes,
+                    Settings.WorldSize,
+                    Settings.WorldSize),
+                Settings.GenLength,
+                netFile.Generation);
+
+            ExportGenSetup();
+        }
 
         private int _exporting = 0;
         private readonly object _exportRef = new object();

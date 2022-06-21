@@ -177,6 +177,19 @@ namespace Zene.NeuralNetworking
 
             return lifeforms;
         }
+        public static Lifeform[] FromGenes(PRNG random, Gene[][] genes, int width, int height)
+        {
+            Vector2I[] posHierarchy = World.NoiseMap(width, height, random.Generate(0, int.MaxValue));
+
+            Lifeform[] lifeforms = new Lifeform[genes.Length];
+
+            for (int i = 0; i < genes.Length; i++)
+            {
+                lifeforms[i] = new Lifeform(genes[i], posHierarchy[i], null);
+            }
+
+            return lifeforms;
+        }
 
         public static Lifeform Empty { get; } = Dud(Vector2I.Zero, null);
         /// <summary>
