@@ -212,7 +212,7 @@ namespace NetworkProgram
 
                 try
                 {
-                    frames[i] = Gen.ImportFrames(stream, out frameCount[i], out lifeCount[i], out worldSize[i], out generation[i], out _, out _, out _);
+                    frames[i] = Gen.Import(stream, out frameCount[i], out lifeCount[i], out worldSize[i], out generation[i], out _, out _, out _);
                 }
                 catch (Exception)
                 {
@@ -302,7 +302,7 @@ namespace NetworkProgram
         {
             FileStream stream = new FileStream($"{settings.ExportPath}/{settings.ExportName}{generation}.gen", FileMode.Create);
 
-            Gen.ExportFrames(
+            Gen.Export(
                 stream,
                 frames,
                 settings.WorldSize,

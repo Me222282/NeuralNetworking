@@ -16,7 +16,7 @@ namespace FileEncoding
             Byte = 2
         }
 
-        public static void ExportFrames(Stream stream, FramePart[,] frameData, int worldSize, int generation, int brainSize, int innerCells, byte colourGrade)
+        public static void Export(Stream stream, FramePart[,] frameData, int worldSize, int generation, int brainSize, int innerCells, byte colourGrade)
         {
             int lifeCount = frameData.GetLength(1);
             int frameCount = frameData.GetLength(0);
@@ -91,7 +91,7 @@ namespace FileEncoding
 
             zip.Dispose();
         }
-        public static FramePart[,] ImportFrames(Stream stream,
+        public static FramePart[,] Import(Stream stream,
             out int frameCount, out int lifeCount, out int worldSize,
             out int generation, out int brainSize, out int innerCells, out byte colourGrade)
         {
