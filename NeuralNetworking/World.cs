@@ -80,6 +80,7 @@ namespace Zene.NeuralNetworking
             LifeformGrid = new Lifeform[width, height];
 
             _random = new PRNG((ulong)seed);
+            _randPos = new RandomPosition(width, height, _random);
 
             for (int i = 0; i < lifeforms.Length; i++)
             {
@@ -108,6 +109,7 @@ namespace Zene.NeuralNetworking
             LifeformGrid = new Lifeform[width, height];
 
             _random = Lifeform.Random;
+            _randPos = new RandomPosition(width, height, _random);
 
             for (int i = 0; i < lifeforms.Length; i++)
             {
