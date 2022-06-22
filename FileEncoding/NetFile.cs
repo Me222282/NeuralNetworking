@@ -7,12 +7,13 @@ namespace FileEncoding
 {
     public struct NetFile
     {
-        public NetFile(Gene[][] genes, int generation, string[] dlls, CellValue[] cellValues)
+        public NetFile(Gene[][] genes, int generation, string[] dlls, CellValue[] cellValues, PRNG random)
         {
             Genes = genes;
             Generation = generation;
             Dlls = dlls;
             CellOrder = cellValues;
+            Random = random;
         }
 
         public Gene[][] Genes { get; }
@@ -20,8 +21,9 @@ namespace FileEncoding
         public int Generation { get; }
         public string[] Dlls { get; }
         public CellValue[] CellOrder { get; }
+        public PRNG Random { get; }
 
-        public void Export(Stream stream) => Export(stream, Generation, Dlls, CellOrder, Genes);
+        public void Export(Stream stream) => Export(stream, Generation, Dlls, CellOrder, Genes, Random);
 
         public static readonly Validation Validation = new Validation("ZeneNet1");
 
@@ -40,7 +42,7 @@ namespace FileEncoding
             }
         }
 
-        public static void Export(Stream stream, int generation, string[] dlls, CellValue[] cellValues, Gene[][] genes)
+        public static void Export(Stream stream, int generation, string[] dlls, CellValue[] cellValues, Gene[][] genes, PRNG random)
         {
             if (genes == null)
             {
@@ -60,7 +62,7 @@ namespace FileEncoding
             LZ4EncoderStream zip = LZ4Stream.Encode(stream);
 
             // Write data from random to stream
-            Lifeform.Random.WriteToStream(stream);
+            random.WriteToStream(stream);
 
             // Write list of dll paths
             for (int i = 0; i < dlls.Length; i++)
@@ -139,7 +141,7 @@ namespace FileEncoding
             LZ4DecoderStream zip = LZ4Stream.Decode(stream);
 
             // Read PRNG data from stream
-            Lifeform.Random = PRNG.FromStream(stream);
+            PRNG random = PRNG.FromStream(stream);
 
             string[] dlls = new string[dllLength];
             // Read list of dll paths
@@ -167,7 +169,7 @@ namespace FileEncoding
 
             zip.Dispose();
 
-            return new NetFile(genes, generation, dlls, cellValues);
+            return new NetFile(genes, generation, dlls, cellValues, random);
         }
 
         public static bool IsNetFile(string path)

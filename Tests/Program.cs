@@ -272,6 +272,9 @@ namespace NetworkProgram
             Settings.SetupEnvironment(netFiles[0].CellOrder);
             Settings.CreateExport();
 
+            // Continue using PRNG from original simulation
+            Lifeform.Random = netFiles[0].Random;
+
             WindowLive window = new WindowLive(128 * 6, 128 * 6, paths[0], Settings, netFiles[0]);
 
             window.Run();
