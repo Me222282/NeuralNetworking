@@ -3,7 +3,7 @@ using System.IO;
 
 namespace FileEncoding
 {
-    public struct Validation
+    public unsafe struct Validation
     {
         public Validation(string str)
         {
@@ -12,41 +12,31 @@ namespace FileEncoding
                 throw new Exception();
             }
 
-            One = (byte)str[0];
-            Two = (byte)str[1];
-            Three = (byte)str[2];
-            Four = (byte)str[3];
-            Five = (byte)str[4];
-            Six = (byte)str[5];
-            Seven = (byte)str[6];
-            Eight = (byte)str[7];
+            _data[0] = (byte)str[0];
+            _data[1] = (byte)str[1];
+            _data[2] = (byte)str[2];
+            _data[3] = (byte)str[3];
+            _data[4] = (byte)str[4];
+            _data[5] = (byte)str[5];
+            _data[6] = (byte)str[6];
+            _data[7] = (byte)str[7];
         }
 
-        internal byte One;
-        internal byte Two;
-        internal byte Three;
-        internal byte Four;
-        internal byte Five;
-        internal byte Six;
-        internal byte Seven;
-        internal byte Eight;
+        private fixed byte _data[8];
 
         public override bool Equals(object obj)
         {
             return obj is Validation v &&
-                v.One == One &&
-                v.Two == Two &&
-                v.Three == Three &&
-                v.Four == Four &&
-                v.Five == Five &&
-                v.Six == Six &&
-                v.Seven == Seven &&
-                v.Eight == Eight;
+                v._data[0] == _data[0] &&
+                v._data[1] == _data[1] &&
+                v._data[2] == _data[2] &&
+                v._data[3] == _data[3] &&
+                v._data[4] == _data[4] &&
+                v._data[5] == _data[5] &&
+                v._data[6] == _data[6] &&
+                v._data[7] == _data[7];
         }
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(One, Two, Three, Four, Five, Six, Seven, Eight);
-        }
+        public override int GetHashCode() => HashCode.Combine(_data[0], _data[1], _data[2], _data[3], _data[4], _data[5], _data[6], _data[7]);
 
         public static bool operator ==(Validation left, Validation right) => left.Equals(right);
         public static bool operator !=(Validation left, Validation right) => !left.Equals(right);
