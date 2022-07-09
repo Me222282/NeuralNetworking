@@ -1,8 +1,8 @@
-﻿using Zene.Graphics;
+﻿using System;
+using Zene.Graphics;
 using Zene.Graphics.Shaders;
 using Zene.Structs;
 using Zene.Windowing;
-using Zene.Windowing.Base;
 
 namespace NetworkProgram
 {
@@ -83,36 +83,33 @@ namespace NetworkProgram
 
         protected Vector2I ReferenceSize { get; set; }
 
-        public void Run()
+        protected override void OnStart(EventArgs e)
         {
+            base.OnStart(e);
+
             if (Settings.VSync)
             {
-                GLFW.SwapInterval(1);
+                Zene.Windowing.Base.GLFW.SwapInterval(-1);
             }
             else
             {
-                GLFW.SwapInterval(0);
+                Zene.Windowing.Base.GLFW.SwapInterval(0);
             }
+        }
+        protected override void OnUpdate(EventArgs e)
+        {
+            base.OnUpdate(e);
 
-            while (GLFW.WindowShouldClose(Handle) == 0) // While window shouldn't close
+            if (_running) { UpdateData(); }
+
+            Render();
+
+            if (Settings.Delay > 0 && _running)
             {
-                if (_running) { Update(); }
-
-                Render();
-
-                // Manage window input and output
-                GLFW.SwapBuffers(Handle);
-                GLFW.PollEvents();
-
-                if (Settings.Delay > 0 && _running)
-                {
-                    System.Threading.Thread.Sleep(Settings.Delay);
-                }
-
-                if (_running) { Counter++; }
+                System.Threading.Thread.Sleep(Settings.Delay);
             }
 
-            Dispose();
+            if (_running) { Counter++; }
         }
 
         protected override void Dispose(bool dispose)
@@ -127,7 +124,7 @@ namespace NetworkProgram
             }
         }
 
-        protected abstract void Update();
+        protected abstract void UpdateData();
         protected virtual void Render()
         {
             _shader.Bind();

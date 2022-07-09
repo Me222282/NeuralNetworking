@@ -86,7 +86,7 @@ namespace NetworkProgram
             }
         }
 
-        protected override void Update()
+        protected override void UpdateData()
         {
             if (_world.Generation >= Settings.Gens && Settings.Gens > 0)
             {

@@ -23,7 +23,7 @@ namespace NetworkProgram
 
         private GenFile _current;
 
-        protected override void Update()
+        protected override void UpdateData()
         {
             if (Counter >= _current.FrameCount)
             {
