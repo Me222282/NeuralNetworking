@@ -37,7 +37,6 @@
     {
         "render": true,
         "frameDelay": 0,
-        "vSync": true,
         "lowPoly": false,
         "borderSize": 1,
         "borderColour": [128, 128, 128]

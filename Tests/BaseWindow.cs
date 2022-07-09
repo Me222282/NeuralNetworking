@@ -83,19 +83,6 @@ namespace NetworkProgram
 
         protected Vector2I ReferenceSize { get; set; }
 
-        protected override void OnStart(EventArgs e)
-        {
-            base.OnStart(e);
-
-            if (Settings.VSync)
-            {
-                Zene.Windowing.Base.GLFW.SwapInterval(-1);
-            }
-            else
-            {
-                Zene.Windowing.Base.GLFW.SwapInterval(0);
-            }
-        }
         protected override void OnUpdate(EventArgs e)
         {
             base.OnUpdate(e);

@@ -34,7 +34,6 @@ namespace NetworkProgram
 
         public bool Windowed { get; private set; }
         public int Delay { get; private set; }
-        public bool VSync { get; private set; }
         public bool LowPoly { get; private set; }
         public double BorderSize { get; private set; }
         public Colour BorderColour { get; private set; }
@@ -342,18 +341,6 @@ namespace NetworkProgram
                 if (values.Windowed)
                 {
                     Console.WriteLine("\"window\" must contain the integer \"frameDelay\" when \"render\" is true.");
-                    throw new Exception("Invalid settings file");
-                }
-            }
-            try
-            {
-                values.VSync = window.GetProperty("vSync").GetBoolean();
-            }
-            catch (Exception)
-            {
-                if (values.Windowed)
-                {
-                    Console.WriteLine("\"window\" must contain the boolean \"vSync\" when \"render\" is true.");
                     throw new Exception("Invalid settings file");
                 }
             }
